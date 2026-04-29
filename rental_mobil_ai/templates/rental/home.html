@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rental Mobil AI</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #0f1117;
+            color: white;
+        }
+
+        .container {
+            padding: 40px;
+        }
+
+        .title {
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        .grid {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background-color: #171923;
+            padding: 20px;
+            border-radius: 16px;
+            width: 300px;
+        }
+
+        .img {
+            height: 150px;
+            background: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            border-radius: 12px;
+        }
+
+        .name {
+            font-size: 22px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .info {
+            margin-top: 8px;
+            color: #ddd;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #14532d;
+            border-radius: 10px;
+            text-align: center;
+            color: #86efac;
+        }
+
+        .btn {
+            margin-top: 15px;
+            padding: 12px;
+            width: 100%;
+            border: none;
+            border-radius: 10px;
+            background-color: #2563eb;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            display: block;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+
+        .btn:hover {
+            background-color: #1d4ed8;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <div class="title">🚗 Rental Mobil AI</div>
+    <div class="subtitle">Temukan mobil terbaik untuk perjalananmu</div>
+
+    <div class="grid">
+        {% for car in cars %}
+        <div class="card">
+            <div class="img">{{ car.image }}</div>
+
+            <div class="name">{{ car.name }}</div>
+
+            <div class="info">💰 Rp {{ car.price }} / hari</div>
+            <div class="info">👥 {{ car.capacity }}</div>
+            <div class="info">⚙️ {{ car.transmission }}</div>
+
+            <div class="status">{{ car.status }}</div>
+
+            <a href="{% url 'booking' car.id %}" class="btn">Booking</a>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+</body>
+</html>

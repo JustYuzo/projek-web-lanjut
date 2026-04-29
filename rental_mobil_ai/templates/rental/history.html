@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Riwayat Booking</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #0f1117;
+            color: white;
+        }
+
+        .container {
+            padding: 40px;
+        }
+
+        .history-box {
+            background-color: #1e293b;
+            padding: 20px;
+            border-radius: 14px;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            padding: 12px 18px;
+            background: #2563eb;
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📜 Riwayat Booking</h1>
+
+    <a href="{% url 'home' %}" class="btn">Kembali ke Home</a>
+
+    {% if history %}
+        {% for h in history %}
+            <div class="history-box">
+                👤 {{ h.nama }} <br>
+                🚗 {{ h.mobil }} <br>
+                📅 {{ h.tanggal }} <br>
+                ⏳ {{ h.hari }} hari <br>
+                💰 Rp {{ h.total }}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Belum ada booking.</p>
+    {% endif %}
+</div>
+
+</body>
+</html>
