@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Rekomendasi Mobil</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #0f1117;
+            color: white;
+        }
+
+        .container {
+            padding: 40px;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .card, .result {
+            background-color: #171923;
+            border: 1px solid #2d3748;
+            border-radius: 18px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            margin-top: 8px;
+            margin-bottom: 18px;
+            box-sizing: border-box;
+        }
+
+        button, .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            background-color: #2563eb;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            box-sizing: border-box;
+            margin-top: 12px;
+        }
+
+        .warning {
+            background-color: #7f1d1d;
+            color: #fecaca;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .success-title {
+            color: #86efac;
+            margin-top: 25px;
+        }
+
+        .car-name {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .info {
+            color: #d1d5db;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h1>🤖 AI Rekomendasi Mobil</h1>
+    <p>Masukkan kebutuhanmu, lalu sistem akan merekomendasikan mobil yang paling cocok.</p>
+
+    <div class="card">
+        <form method="POST">
+            {% csrf_token %}
+
+            <label>Jumlah Orang</label>
+            <input type="number" name="jumlah_orang" min="1" value="1" required>
+
+            <label>Budget per Hari</label>
+            <input type="number" name="budget" min="100000" value="500000" required>
+
+            <label>Kebutuhan</label>
+            <select name="kebutuhan">
+                <option value="Hemat">Hemat</option>
+                <option value="Keluarga">Keluarga</option>
+                <option value="Nyaman">Nyaman</option>
+            </select>
+
+            <button type="submit">Cari Rekomendasi</button>
+        </form>
+
+        <a href="{% url 'home' %}" class="btn">Kembali ke Home</a>
+    </div>
+
+    {% if hasil %}
+        <h2 class="success-title">Mobil yang cocok untuk kamu:</h2>
+
+        {% for car in hasil %}
+            <div class="result">
+                <div class="car-name">{{ car.image }} {{ car.name }}</div>
+                <div class="info">💰 Rp {{ car.price }} / hari</div>
+                <div class="info">👥 {{ car.capacity }}</div>
+                <div class="info">⚙️ {{ car.transmission }}</div>
+                <div class="info">✅ Cocok untuk kebutuhan kamu.</div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if pesan %}
+        <div class="warning">{{ pesan }}</div>
+    {% endif %}
+</div>
+</body>
+</html>
