@@ -1,15 +1,42 @@
 from django.shortcuts import render
+from django.http import JsonResponse
 from datetime import date
 from .models import Booking
 
 cars = [
-    {"id": 0, "name": "Toyota Avanza", "price": 350000, "capacity": "7 Orang", "transmission": "Manual", "status": "Tersedia", "image": "🚙"},
-    {"id": 1, "name": "Honda Brio", "price": 300000, "capacity": "5 Orang", "transmission": "Matic", "status": "Tersedia", "image": "🚗"},
-    {"id": 2, "name": "Toyota Innova", "price": 500000, "capacity": "7 Orang", "transmission": "Matic", "status": "Tersedia", "image": "🚘"},
+    {
+        "id": 0,
+        "name": "Toyota Avanza",
+        "price": 350000,
+        "capacity": "7 Orang",
+        "transmission": "Manual",
+        "status": "Tersedia",
+        "image": "🚙",
+    },
+    {
+        "id": 1,
+        "name": "Honda Brio",
+        "price": 300000,
+        "capacity": "5 Orang",
+        "transmission": "Matic",
+        "status": "Tersedia",
+        "image": "🚗",
+    },
+    {
+        "id": 2,
+        "name": "Toyota Innova",
+        "price": 500000,
+        "capacity": "7 Orang",
+        "transmission": "Matic",
+        "status": "Tersedia",
+        "image": "🚘",
+    },
 ]
+
 
 def home(request):
     return render(request, "rental/home.html", {"cars": cars})
+
 
 def booking(request, car_id):
     car = cars[car_id]
@@ -41,9 +68,11 @@ def booking(request, car_id):
         "today": date.today()
     })
 
+
 def history(request):
     data_booking = Booking.objects.all().order_by("-id")
     return render(request, "rental/history.html", {"history": data_booking})
+
 
 def ai_rekomendasi(request):
     hasil = []
@@ -71,4 +100,12 @@ def ai_rekomendasi(request):
     return render(request, "rental/ai.html", {
         "hasil": hasil,
         "pesan": pesan
+    })
+
+
+def api_cars(request):
+    return JsonResponse({
+        "status": "success",
+        "message": "Data mobil berhasil diambil",
+        "data": cars
     })

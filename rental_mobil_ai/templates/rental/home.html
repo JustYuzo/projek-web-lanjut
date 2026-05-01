@@ -16,7 +16,6 @@
             padding: 40px;
         }
 
-        /* HEADER */
         .header {
             display: flex;
             justify-content: space-between;
@@ -52,14 +51,12 @@
             margin-bottom: 25px;
         }
 
-        /* GRID */
         .grid {
             display: flex;
             gap: 24px;
             flex-wrap: wrap;
         }
 
-        /* CARD */
         .card {
             background-color: #171923;
             padding: 20px;
@@ -120,14 +117,12 @@
         .btn:hover {
             background-color: #1d4ed8;
         }
-
     </style>
 </head>
 
 <body>
 <div class="container">
 
-    <!-- HEADER -->
     <div class="header">
         <div class="title">🚗 Rental Mobil AI</div>
 
@@ -135,6 +130,7 @@
             <a href="{% url 'home' %}">Home</a>
             <a href="{% url 'history' %}">Riwayat</a>
             <a href="{% url 'ai' %}">AI</a>
+            <a href="{% url 'api_cars' %}">API</a>
         </div>
     </div>
 
@@ -142,7 +138,6 @@
         Temukan mobil terbaik untuk perjalananmu dengan bantuan AI 🚀
     </div>
 
-    <!-- GRID MOBIL -->
     <div class="grid">
         {% for car in cars %}
         <div class="card">
