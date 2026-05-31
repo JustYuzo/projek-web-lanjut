@@ -1,99 +1,137 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>AI Rekomendasi Mobil</title>
+    <title>AI Rental Mobil</title>
 
     <style>
         body {
-            margin: 0;
             font-family: Arial, sans-serif;
-            background-color: #0f1117;
-            color: white;
+            background: #f3f6ff;
+            margin: 0;
+            padding: 0;
         }
 
         .container {
-            padding: 40px;
-            max-width: 900px;
-            margin: auto;
+            width: 900px;
+            margin: 40px auto;
         }
 
-        .card, .result {
-            background-color: #171923;
-            border: 1px solid #2d3748;
-            border-radius: 18px;
+        h1 {
+            text-align: center;
+            color: #2563eb;
+        }
+
+        .box {
+            background: white;
             padding: 25px;
-            margin-top: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        label {
+            font-weight: bold;
         }
 
         input, select {
             width: 100%;
-            padding: 14px;
-            border-radius: 10px;
-            border: none;
+            padding: 12px;
             margin-top: 8px;
-            margin-bottom: 18px;
-            box-sizing: border-box;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
         }
 
-        button, .btn {
-            width: 100%;
-            padding: 14px;
-            border-radius: 10px;
-            border: none;
-            background-color: #2563eb;
+        button {
+            background: #2563eb;
             color: white;
-            font-weight: bold;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
             cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            display: block;
-            box-sizing: border-box;
-            margin-top: 12px;
         }
 
-        .warning {
-            background-color: #7f1d1d;
-            color: #fecaca;
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .card {
+            background: #f9fafb;
+            border: 1px solid #ddd;
             padding: 15px;
-            border-radius: 12px;
-            margin-top: 20px;
+            border-radius: 10px;
+            margin-top: 10px;
         }
 
-        .success-title {
-            color: #86efac;
-            margin-top: 25px;
+        .chat-box {
+            height: 350px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 10px;
+            background: #fafafa;
+            margin-bottom: 15px;
         }
 
-        .car-name {
-            font-size: 24px;
+        .user {
+            background: #2563eb;
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 8px 0;
+            text-align: right;
+        }
+
+        .bot {
+            background: #e5e7eb;
+            color: #111;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 8px 0;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            margin: 0;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #2563eb;
             font-weight: bold;
-        }
-
-        .info {
-            color: #d1d5db;
-            margin-top: 8px;
         }
     </style>
 </head>
 
 <body>
-<div class="container">
-    <h1>🤖 AI Rekomendasi Mobil</h1>
-    <p>Masukkan kebutuhanmu, lalu sistem akan merekomendasikan mobil yang paling cocok.</p>
 
-    <div class="card">
+<div class="container">
+
+    <a href="/" class="back">← Kembali ke Beranda</a>
+
+    <h1>AI Rental Mobil</h1>
+
+    <div class="box">
+        <h2>Rekomendasi Mobil Otomatis</h2>
+
         <form method="POST">
             {% csrf_token %}
 
             <label>Jumlah Orang</label>
-            <input type="number" name="jumlah_orang" min="1" value="1" required>
+            <input type="number" name="jumlah_orang" min="1" placeholder="Contoh: 5" required>
 
-            <label>Budget per Hari</label>
-            <input type="number" name="budget" min="100000" value="500000" required>
+            <label>Budget Per Hari</label>
+            <input type="number" name="budget" min="100000" placeholder="Contoh: 400000" required>
 
             <label>Kebutuhan</label>
-            <select name="kebutuhan">
+            <select name="kebutuhan" required>
                 <option value="Hemat">Hemat</option>
                 <option value="Keluarga">Keluarga</option>
                 <option value="Nyaman">Nyaman</option>
@@ -102,26 +140,82 @@
             <button type="submit">Cari Rekomendasi</button>
         </form>
 
-        <a href="{% url 'home' %}" class="btn">Kembali ke Home</a>
+        {% if pesan %}
+            <p style="color:red; margin-top:15px;">{{ pesan }}</p>
+        {% endif %}
+
+        {% if hasil %}
+            <h3>Hasil Rekomendasi:</h3>
+
+            {% for car in hasil %}
+                <div class="card">
+                    <h3>{{ car.image }} {{ car.name }}</h3>
+                    <p>Harga: Rp {{ car.price }} / hari</p>
+                    <p>Kapasitas: {{ car.capacity }}</p>
+                    <p>Transmisi: {{ car.transmission }}</p>
+                    <p>Status: {{ car.status }}</p>
+                </div>
+            {% endfor %}
+        {% endif %}
     </div>
 
-    {% if hasil %}
-        <h2 class="success-title">Mobil yang cocok untuk kamu:</h2>
+    <div class="box">
+        <h2>Chat dengan AI DeepSeek</h2>
 
-        {% for car in hasil %}
-            <div class="result">
-                <div class="car-name">{{ car.image }} {{ car.name }}</div>
-                <div class="info">💰 Rp {{ car.price }} / hari</div>
-                <div class="info">👥 {{ car.capacity }}</div>
-                <div class="info">⚙️ {{ car.transmission }}</div>
-                <div class="info">✅ Cocok untuk kebutuhan kamu.</div>
+        <div class="chat-box" id="chat-box">
+            <div class="bot">
+                Halo! Saya AI Rental Mobil. Kamu bisa tanya rekomendasi mobil, harga sewa, atau kebutuhan perjalanan.
             </div>
-        {% endfor %}
-    {% endif %}
+        </div>
 
-    {% if pesan %}
-        <div class="warning">{{ pesan }}</div>
-    {% endif %}
+        <div class="chat-input">
+            <input type="text" id="message" placeholder="Contoh: Saya mau sewa mobil untuk keluarga 6 orang">
+            <button onclick="sendMessage()">Kirim</button>
+        </div>
+    </div>
+
 </div>
+
+<script>
+    async function sendMessage() {
+        const input = document.getElementById("message");
+        const chatBox = document.getElementById("chat-box");
+        const message = input.value.trim();
+
+        if (message === "") {
+            return;
+        }
+
+        chatBox.innerHTML += `<div class="user">${message}</div>`;
+        input.value = "";
+
+        chatBox.innerHTML += `<div class="bot">AI sedang berpikir...</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        try {
+            const response = await fetch("/ai/chat/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: message
+                })
+            });
+
+            const data = await response.json();
+
+            const botMessages = document.querySelectorAll(".bot");
+            botMessages[botMessages.length - 1].innerText = data.reply;
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+        } catch (error) {
+            const botMessages = document.querySelectorAll(".bot");
+            botMessages[botMessages.length - 1].innerText = "Terjadi error saat menghubungi AI.";
+        }
+    }
+</script>
+
 </body>
 </html>
