@@ -1,0 +1,340 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - SmartDrive</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #1f1f1f;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .frame {
+            width: 100%;
+            min-height: 100vh;
+            background: #111827;
+        }
+
+        .tab-header {
+            height: 58px;
+            background: #151d33;
+            display: flex;
+            border-bottom: 2px solid #008cff;
+        }
+
+        .tab-header a {
+            flex: 1;
+            text-align: center;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: bold;
+            padding-top: 20px;
+            color: #4c5a75;
+        }
+
+        .tab-header .active {
+            color: #0094ff;
+        }
+
+        .content {
+            min-height: calc(100vh - 58px);
+            display: flex;
+        }
+
+        .left {
+            width: 55%;
+            background: linear-gradient(#2f65a9, #2b5c9a);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brand {
+            position: absolute;
+            top: 70px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .brand img.logo {
+            width: 80px;
+            margin-bottom: 10px;
+        }
+
+        .brand h1 {
+            font-size: 38px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .brand h1 span {
+            color: #009dff;
+        }
+
+        .brand p {
+            margin-top: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .car-image {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 58%;
+            object-fit: contain;
+        }
+
+        .right {
+            width: 45%;
+            background: #151d33;
+            padding: 70px 70px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .right h2 {
+            font-size: 38px;
+            line-height: 1.1;
+            margin-bottom: 8px;
+        }
+
+        .right .subtitle {
+            color: #8b93a7;
+            font-size: 15px;
+            margin-bottom: 34px;
+        }
+
+        label {
+            display: block;
+            color: #b8bfce;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            height: 44px;
+            background: #4b5565;
+            border: 1px solid #8b94a7;
+            border-radius: 6px;
+            outline: none;
+            padding: 0 12px;
+            color: white;
+            margin-bottom: 18px;
+            font-size: 15px;
+        }
+
+        .forgot {
+            display: block;
+            text-align: right;
+            color: #0094ff;
+            font-size: 13px;
+            text-decoration: none;
+            margin-top: -8px;
+            margin-bottom: 30px;
+        }
+
+        .main-btn {
+            width: 100%;
+            height: 44px;
+            border: 1px solid #8b94a7;
+            background: transparent;
+            color: white;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .main-btn:hover {
+            background: #0094ff;
+            border-color: #0094ff;
+        }
+
+        .divider {
+            text-align: center;
+            color: #6f778b;
+            font-size: 13px;
+            margin: 24px 0;
+        }
+
+        .social-row {
+            display: flex;
+            gap: 26px;
+        }
+
+        .social-btn {
+            flex: 1;
+            height: 40px;
+            border: 1px solid #8b94a7;
+            border-radius: 6px;
+            background: transparent;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .social-btn:hover {
+            background: #202a44;
+        }
+
+        .google-icon {
+            color: #4285f4;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .facebook-icon {
+            background: #1877f2;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 13px;
+        }
+
+        .register-text {
+            margin-top: 18px;
+            text-align: center;
+            color: #7e8799;
+            font-size: 13px;
+        }
+
+        .register-text a {
+            color: #0094ff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        @media (max-width: 900px) {
+            .content {
+                flex-direction: column;
+            }
+
+            .left,
+            .right {
+                width: 100%;
+            }
+
+            .left {
+                min-height: 420px;
+            }
+
+            .right {
+                padding: 50px 35px;
+            }
+
+            .car-image {
+                height: 55%;
+            }
+
+            .right h2 {
+                font-size: 32px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .brand h1 {
+                font-size: 30px;
+            }
+
+            .brand p {
+                font-size: 12px;
+            }
+
+            .right {
+                padding: 40px 25px;
+            }
+
+            .social-row {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="frame">
+    <div class="tab-header">
+        <a href="{% url 'login' %}" class="active">Masuk</a>
+        <a href="{% url 'signup' %}">Daftar</a>
+    </div>
+
+    <div class="content">
+        <div class="left">
+            <div class="brand">
+                <img src="{% static 'images/logo-tim.png' %}" class="logo" alt="Logo">
+                <h1><span>Smart</span>Drive</h1>
+                <p>SEWA MOBIL CERDAS & TERPERCAYA</p>
+            </div>
+
+            <img src="{% static 'images/mobil-hitam.png' %}" class="car-image" alt="Mobil">
+        </div>
+
+        <div class="right">
+            <h2>Selamat Datang<br>Kembali</h2>
+            <p class="subtitle">Masuk untuk melanjutkan pemesanan anda</p>
+
+            <form>
+                <label>EMAIL</label>
+                <input type="email">
+
+                <label>KATA SANDI</label>
+                <input type="password">
+
+                <a href="#" class="forgot">Lupa kata sandi?</a>
+
+                <button type="submit" class="main-btn">MASUK</button>
+            </form>
+
+            <div class="divider">atau</div>
+
+            <div class="social-row">
+                <button class="social-btn">
+                    <span class="google-icon">G</span>
+                    Google
+                </button>
+
+                <button class="social-btn">
+                    <span class="facebook-icon">f</span>
+                    Facebook
+                </button>
+            </div>
+
+            <p class="register-text">
+                Belum punya akun?
+                <a href="{% url 'signup' %}">Daftar sekarang</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

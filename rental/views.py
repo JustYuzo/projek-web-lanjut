@@ -52,6 +52,13 @@ client = OpenAI(
 def home(request):
     return render(request, "rental/home.html", {"cars": cars})
 
+def login_page(request):
+    return render(request, "rental/login.html")
+
+
+def signup_page(request):
+    return render(request, "rental/signup.html")
+
 
 def booking(request, car_id):
     car = cars[car_id]
