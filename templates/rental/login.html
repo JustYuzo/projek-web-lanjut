@@ -119,6 +119,16 @@
             margin-bottom: 34px;
         }
 
+        .error-message {
+            background: rgba(255, 80, 80, 0.12);
+            border: 1px solid #ff6b6b;
+            color: #ff8b8b;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
         label {
             display: block;
             color: #b8bfce;
@@ -138,6 +148,10 @@
             color: white;
             margin-bottom: 18px;
             font-size: 15px;
+        }
+
+        input:focus {
+            border-color: #0094ff;
         }
 
         .forgot {
@@ -302,12 +316,20 @@
             <h2>Selamat Datang<br>Kembali</h2>
             <p class="subtitle">Masuk untuk melanjutkan pemesanan anda</p>
 
-            <form>
+            {% if error %}
+                <div class="error-message">
+                    {{ error }}
+                </div>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+
                 <label>EMAIL</label>
-                <input type="email">
+                <input type="email" name="email" required>
 
                 <label>KATA SANDI</label>
-                <input type="password">
+                <input type="password" name="password" required>
 
                 <a href="#" class="forgot">Lupa kata sandi?</a>
 
@@ -317,12 +339,12 @@
             <div class="divider">atau</div>
 
             <div class="social-row">
-                <button class="social-btn">
+                <button type="button" class="social-btn">
                     <span class="google-icon">G</span>
                     Google
                 </button>
 
-                <button class="social-btn">
+                <button type="button" class="social-btn">
                     <span class="facebook-icon">f</span>
                     Facebook
                 </button>

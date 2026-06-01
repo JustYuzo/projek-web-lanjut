@@ -104,6 +104,12 @@
             background-color: #1d58bf;
         }
 
+        .user-info {
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
         .team-logo {
             width: 80px;
             height: 80px;
@@ -409,8 +415,13 @@
 
         <div class="nav-right">
             <div class="auth-buttons">
-                <a href="{% url 'login' %}" class="login-btn">Login</a>
-                <a href="{% url 'signup' %}" class="signup-btn">Sign Up</a>
+                {% if user.is_authenticated %}
+                    <span class="user-info">Halo, {{ user.first_name|default:user.username }}</span>
+                    <a href="{% url 'logout' %}" class="signup-btn">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="login-btn">Login</a>
+                    <a href="{% url 'signup' %}" class="signup-btn">Sign Up</a>
+                {% endif %}
             </div>
 
             <img src="{% static 'images/logo-tim.png' %}" class="team-logo" alt="Logo Tim">

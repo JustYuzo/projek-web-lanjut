@@ -1,7 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from datetime import date
 from .models import Booking
+
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.contrib.auth.decorators import login_required
 
 import os
 import json
@@ -52,14 +56,83 @@ client = OpenAI(
 def home(request):
     return render(request, "rental/home.html", {"cars": cars})
 
+
 def login_page(request):
-    return render(request, "rental/login.html")
+    if request.user.is_authenticated:
+        return redirect("home")
+
+    error = None
+
+    if request.method == "POST":
+        email = request.POST.get("email", "").strip()
+        password = request.POST.get("password", "")
+
+        if email == "" or password == "":
+            error = "Email dan kata sandi wajib diisi."
+        else:
+            try:
+                user_obj = User.objects.get(email=email)
+                username = user_obj.username
+            except User.DoesNotExist:
+                username = email
+
+            user = authenticate(request, username=username, password=password)
+
+            if user is not None:
+                auth_login(request, user)
+                next_url = request.GET.get("next")
+                if next_url:
+                    return redirect(next_url)
+                return redirect("home")
+            else:
+                error = "Email atau kata sandi salah."
+
+    return render(request, "rental/login.html", {
+        "error": error
+    })
 
 
 def signup_page(request):
-    return render(request, "rental/signup.html")
+    if request.user.is_authenticated:
+        return redirect("home")
+
+    error = None
+
+    if request.method == "POST":
+        nama_depan = request.POST.get("nama_depan", "").strip()
+        nama_belakang = request.POST.get("nama_belakang", "").strip()
+        email = request.POST.get("email", "").strip()
+        no_telpon = request.POST.get("no_telpon", "").strip()
+        password = request.POST.get("password", "")
+        setuju = request.POST.get("setuju")
+
+        if nama_depan == "" or nama_belakang == "" or email == "" or no_telpon == "" or password == "":
+            error = "Semua data wajib diisi."
+        elif setuju is None:
+            error = "Kamu harus menyetujui syarat dan ketentuan."
+        elif User.objects.filter(email=email).exists():
+            error = "Email sudah terdaftar."
+        else:
+            User.objects.create_user(
+                username=email,
+                email=email,
+                password=password,
+                first_name=nama_depan,
+                last_name=nama_belakang
+            )
+
+            return redirect("login")
+
+    return render(request, "rental/signup.html", {
+        "error": error
+    })
+
+def logout_page(request):
+    auth_logout(request)
+    return redirect("login")
 
 
+@login_required(login_url="login")
 def booking(request, car_id):
     car = cars[car_id]
     error = None
@@ -96,6 +169,7 @@ def history(request):
     return render(request, "rental/history.html", {"history": data_booking})
 
 
+@login_required(login_url="login")
 def ai_rekomendasi(request):
     hasil = []
     pesan = None
@@ -134,6 +208,7 @@ def api_cars(request):
 
 
 @csrf_exempt
+@login_required(login_url="login")
 def ai_chat(request):
     if request.method == "POST":
         try:
@@ -182,8 +257,15 @@ Data mobil yang tersedia:
             })
 
         except Exception as e:
+            error_text = str(e)
+
+            if "Insufficient Balance" in error_text or "402" in error_text:
+                return JsonResponse({
+                    "reply": "Maaf, saldo atau kuota API DeepSeek habis. Silakan gunakan token API yang masih aktif."
+                })
+
             return JsonResponse({
-                "reply": "Terjadi error: " + str(e)
+                "reply": "Terjadi error: " + error_text
             })
 
     return JsonResponse({

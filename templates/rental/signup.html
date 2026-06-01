@@ -118,6 +118,16 @@
             margin-bottom: 34px;
         }
 
+        .error-message {
+            background: rgba(255, 80, 80, 0.12);
+            border: 1px solid #ff6b6b;
+            color: #ff8b8b;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
         .name-row {
             display: flex;
             gap: 26px;
@@ -146,6 +156,10 @@
             color: white;
             margin-bottom: 18px;
             font-size: 15px;
+        }
+
+        input:focus {
+            border-color: #0094ff;
         }
 
         .check-row {
@@ -274,30 +288,38 @@
             <h2>Buat Akun Baru</h2>
             <p class="subtitle">Daftar dan nikmati kemudahan sewa mobil</p>
 
-            <form>
+            {% if error %}
+                <div class="error-message">
+                    {{ error }}
+                </div>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+
                 <div class="name-row">
                     <div class="field">
                         <label>NAMA DEPAN</label>
-                        <input type="text">
+                        <input type="text" name="nama_depan" required>
                     </div>
 
                     <div class="field">
                         <label>NAMA BELAKANG</label>
-                        <input type="text">
+                        <input type="text" name="nama_belakang" required>
                     </div>
                 </div>
 
                 <label>EMAIL</label>
-                <input type="email">
+                <input type="email" name="email" required>
 
                 <label>NO. TELPON</label>
-                <input type="text">
+                <input type="text" name="no_telpon" required>
 
                 <label>KATA SANDI</label>
-                <input type="password">
+                <input type="password" name="password" required>
 
                 <div class="check-row">
-                    <input type="checkbox">
+                    <input type="checkbox" name="setuju">
                     <p>
                         Saya menyetujui
                         <a href="#">Syarat & Ketentuan</a>
