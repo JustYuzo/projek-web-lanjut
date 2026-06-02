@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 import os
 import json
 from dotenv import load_dotenv
-from openai import OpenAI
+from google import genai
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -47,14 +47,19 @@ cars = [
 
 load_dotenv()
 
-client = OpenAI(
-    api_key=os.getenv("DEEPSEEK_API_KEY"),
-    base_url="https://api.deepseek.com"
-)
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+client = None
+if GEMINI_API_KEY:
+    client = genai.Client(api_key=GEMINI_API_KEY)
 
 
 def home(request):
     return render(request, "rental/home.html", {"cars": cars})
+
+
+def katalog(request):
+    return render(request, "rental/katalog.html", {"cars": cars})
 
 
 def login_page(request):
@@ -126,6 +131,7 @@ def signup_page(request):
     return render(request, "rental/signup.html", {
         "error": error
     })
+
 
 def logout_page(request):
     auth_logout(request)
@@ -212,6 +218,11 @@ def api_cars(request):
 def ai_chat(request):
     if request.method == "POST":
         try:
+            if not GEMINI_API_KEY or client is None:
+                return JsonResponse({
+                    "reply": "API key Gemini belum ditemukan. Cek file .env dan pastikan GEMINI_API_KEY sudah diisi."
+                })
+
             data = json.loads(request.body)
             user_message = data.get("message", "")
 
@@ -228,29 +239,33 @@ def ai_chat(request):
                     f"status {car['status']}\n"
                 )
 
-            response = client.chat.completions.create(
-                model="deepseek-chat",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": f"""
-Kamu adalah asisten AI untuk website rental mobil.
-Jawab dengan bahasa Indonesia yang ramah, singkat, dan mudah dipahami.
-Bantu pelanggan memilih mobil berdasarkan jumlah orang, budget, kebutuhan, dan kenyamanan.
+            prompt = f"""
+Kamu adalah asisten AI untuk website rental mobil SmartDrive.
+Jawab dengan bahasa Indonesia yang ramah, singkat, jelas, dan mudah dipahami.
+
+Tugas kamu:
+- Membantu pelanggan memilih mobil berdasarkan jumlah orang, budget, kebutuhan, dan kenyamanan.
+- Gunakan hanya data mobil yang tersedia.
+- Jika pelanggan meminta mobil untuk 6 orang atau 7 orang, rekomendasikan mobil kapasitas 7 orang.
+- Jika pelanggan ingin hemat, utamakan mobil dengan harga paling murah.
+- Jangan menjawab terlalu panjang.
 
 Data mobil yang tersedia:
 {daftar_mobil}
+
+Pertanyaan pelanggan:
+{user_message}
 """
-                    },
-                    {
-                        "role": "user",
-                        "content": user_message
-                    }
-                ],
-                stream=False
+
+            response = client.models.generate_content(
+                model="gemini-2.5-flash-lite",
+                contents=prompt
             )
 
-            jawaban = response.choices[0].message.content
+            jawaban = response.text
+
+            if not jawaban:
+                jawaban = "Maaf, AI belum memberikan jawaban. Silakan coba lagi."
 
             return JsonResponse({
                 "reply": jawaban
@@ -258,14 +273,25 @@ Data mobil yang tersedia:
 
         except Exception as e:
             error_text = str(e)
+            print("ERROR GEMINI:", error_text)
 
-            if "Insufficient Balance" in error_text or "402" in error_text:
+            if "API key not valid" in error_text or "API_KEY_INVALID" in error_text or "401" in error_text:
                 return JsonResponse({
-                    "reply": "Maaf, saldo atau kuota API DeepSeek habis. Silakan gunakan token API yang masih aktif."
+                    "reply": "API key Gemini tidak valid. Silakan cek kembali GEMINI_API_KEY di file .env."
+                })
+
+            if "429" in error_text or "quota" in error_text.lower() or "rate" in error_text.lower():
+                return JsonResponse({
+                    "reply": "Kuota atau limit gratis Gemini sedang habis/terbatas. Coba lagi nanti atau gunakan API key lain."
+                })
+
+            if "503" in error_text or "UNAVAILABLE" in error_text or "high demand" in error_text.lower():
+                return JsonResponse({
+                    "reply": "Model Gemini sedang ramai. Silakan coba lagi beberapa saat."
                 })
 
             return JsonResponse({
-                "reply": "Terjadi error: " + error_text
+                "reply": "Terjadi error API Gemini. Cek terminal VS Code untuk detail error-nya."
             })
 
     return JsonResponse({

@@ -1,0 +1,538 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Katalog Mobil - SmartDrive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fb;
+            color: #1e1e1e;
+        }
+
+        .page {
+            width: 100%;
+            min-height: 100vh;
+            background-color: #f4f7fb;
+        }
+
+        .navbar {
+            height: 78px;
+            background-color: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 42px;
+        }
+
+        .brand {
+            font-size: 34px;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+        }
+
+        .brand span {
+            color: #2f6fde;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 34px;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: #2f6fde;
+        }
+
+        .team-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            transform: scale(1.15);
+        }
+
+        .main-content {
+            padding: 38px 52px 70px;
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 36px;
+            color: #1e1e1e;
+        }
+
+        .catalog-layout {
+            display: grid;
+            grid-template-columns: 237px 1fr;
+            gap: 22px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .filter-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 22px 24px;
+        }
+
+        .filter-title {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 13px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .filter-option input {
+            width: 18px;
+            height: 18px;
+            accent-color: #2e6eda;
+            cursor: pointer;
+        }
+
+        .price-range {
+            margin-top: 18px;
+        }
+
+        .range-input {
+            width: 100%;
+            accent-color: #2e6eda;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+
+        .price-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            font-weight: 800;
+            color: #1e1e1e;
+            margin-top: 4px;
+        }
+
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        .car-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 13px;
+            min-height: 260px;
+            transition: 0.2s ease;
+        }
+
+        .car-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+        }
+
+        .car-image-box {
+            height: 112px;
+            background-color: #e6e4ea;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .car-image-box img {
+            width: 95%;
+            height: 95%;
+            object-fit: contain;
+        }
+
+        .car-name {
+            font-size: 13px;
+            font-weight: 800;
+            color: #1e1e1e;
+            margin-bottom: 7px;
+        }
+
+        .car-info {
+            color: #a1969e;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .car-price {
+            color: #a1969e;
+            font-size: 12px;
+            font-weight: 800;
+            margin: 10px 0 12px;
+        }
+
+        .detail-btn {
+            display: block;
+            width: 100%;
+            height: 44px;
+            line-height: 44px;
+            text-align: center;
+            background-color: #2e6eda;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .detail-btn:hover {
+            background-color: #1d58bf;
+        }
+
+        .empty-result {
+            display: none;
+            grid-column: 1 / -1;
+            background: white;
+            border-radius: 15px;
+            padding: 28px;
+            text-align: center;
+            font-weight: 800;
+            color: #8b8f99;
+        }
+
+        @media (max-width: 1100px) {
+            .catalog-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .catalog-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 800px) {
+            .navbar {
+                height: auto;
+                padding: 18px 24px;
+                flex-wrap: wrap;
+                gap: 16px;
+            }
+
+            .brand {
+                font-size: 28px;
+            }
+
+            .nav-menu {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 18px;
+                order: 3;
+            }
+
+            .team-logo {
+                width: 60px;
+                height: 60px;
+            }
+
+            .main-content {
+                padding: 32px 20px 60px;
+            }
+
+            .page-title {
+                font-size: 28px;
+            }
+
+            .sidebar {
+                grid-template-columns: 1fr;
+            }
+
+            .catalog-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="page">
+
+    <nav class="navbar">
+        <a href="{% url 'home' %}" class="brand">
+            <span>Smart</span>Drive
+        </a>
+
+        <div class="nav-menu">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'katalog' %}" class="active">Katalog</a>
+            <a href="{% url 'ai' %}">AI</a>
+            <a href="{% url 'history' %}">Riwayat</a>
+            <a href="{% url 'api_cars' %}">API</a>
+        </div>
+
+        <img src="{% static 'images/logo-tim.png' %}" class="team-logo" alt="Logo Tim">
+    </nav>
+
+    <main class="main-content">
+        <h1 class="page-title">Daftar Armada Tersedia</h1>
+
+        <div class="catalog-layout">
+
+            <aside class="sidebar">
+                <section class="filter-card">
+                    <h2 class="filter-title">Merek Mobil</h2>
+
+                    <label class="filter-option">
+                        <input type="checkbox" class="brand-filter" value="toyota">
+                        <span>Toyota</span>
+                    </label>
+
+                    <label class="filter-option">
+                        <input type="checkbox" class="brand-filter" value="daihatsu">
+                        <span>Daihatsu</span>
+                    </label>
+
+                    <label class="filter-option">
+                        <input type="checkbox" class="brand-filter" value="honda">
+                        <span>Honda</span>
+                    </label>
+
+                    <label class="filter-option">
+                        <input type="checkbox" class="brand-filter" value="mitsubishi">
+                        <span>Mitsubishi</span>
+                    </label>
+                </section>
+
+                <section class="filter-card">
+                    <h2 class="filter-title">Kapasitas</h2>
+
+                    <label class="filter-option">
+                        <input type="checkbox" class="capacity-filter" value="2">
+                        <span>2 Seats</span>
+                    </label>
+
+                    <label class="filter-option">
+                        <input type="checkbox" class="capacity-filter" value="4">
+                        <span>4 Seats</span>
+                    </label>
+
+                    <label class="filter-option">
+                        <input type="checkbox" class="capacity-filter" value="5">
+                        <span>5 Seats</span>
+                    </label>
+
+                    <label class="filter-option">
+                        <input type="checkbox" class="capacity-filter" value="7">
+                        <span>7 Seats</span>
+                    </label>
+                </section>
+
+                <section class="filter-card">
+                    <h2 class="filter-title">Range Harga</h2>
+
+                    <div class="price-range">
+                        <input
+                            type="range"
+                            id="minPrice"
+                            class="range-input"
+                            min="0"
+                            max="1250000"
+                            step="50000"
+                            value="0"
+                        >
+
+                        <input
+                            type="range"
+                            id="maxPrice"
+                            class="range-input"
+                            min="0"
+                            max="1250000"
+                            step="50000"
+                            value="1250000"
+                        >
+
+                        <div class="price-labels">
+                            <span id="minPriceText">Rp 0</span>
+                            <span id="maxPriceText">Rp 1.250.000</span>
+                        </div>
+                    </div>
+                </section>
+            </aside>
+
+            <section class="catalog-grid">
+                {% for car in cars %}
+                <div
+                    class="car-card"
+                    data-brand="{{ car.name|lower }}"
+                    data-capacity="{{ car.capacity|slice:':1' }}"
+                    data-price="{{ car.price }}"
+                >
+                    <div class="car-image-box">
+                        <img src="{% static 'images/mobil-hitam.png' %}" alt="{{ car.name }}">
+                    </div>
+
+                    <div class="car-name">{{ car.name }}</div>
+
+                    <div class="car-info">▣ {{ car.transmission }}</div>
+                    <div class="car-info">👤 {{ car.capacity }}</div>
+
+                    <div class="car-price">Rp {{ car.price }}</div>
+
+                    <a href="{% url 'booking' car.id %}" class="detail-btn">
+                        Detail
+                    </a>
+                </div>
+                {% endfor %}
+
+                {% for car in cars %}
+                <div
+                    class="car-card"
+                    data-brand="{{ car.name|lower }}"
+                    data-capacity="{{ car.capacity|slice:':1' }}"
+                    data-price="{{ car.price }}"
+                >
+                    <div class="car-image-box">
+                        <img src="{% static 'images/mobil-hitam.png' %}" alt="{{ car.name }}">
+                    </div>
+
+                    <div class="car-name">{{ car.name }}</div>
+
+                    <div class="car-info">▣ {{ car.transmission }}</div>
+                    <div class="car-info">👤 {{ car.capacity }}</div>
+
+                    <div class="car-price">Rp {{ car.price }}</div>
+
+                    <a href="{% url 'booking' car.id %}" class="detail-btn">
+                        Detail
+                    </a>
+                </div>
+                {% endfor %}
+
+                <div class="empty-result" id="emptyResult">
+                    Tidak ada mobil yang sesuai dengan filter.
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+</div>
+
+<script>
+    const brandCheckboxes = document.querySelectorAll(".brand-filter");
+    const capacityCheckboxes = document.querySelectorAll(".capacity-filter");
+    const carCards = document.querySelectorAll(".car-card");
+    const emptyResult = document.getElementById("emptyResult");
+
+    const minPriceInput = document.getElementById("minPrice");
+    const maxPriceInput = document.getElementById("maxPrice");
+    const minPriceText = document.getElementById("minPriceText");
+    const maxPriceText = document.getElementById("maxPriceText");
+
+    function formatRupiah(value) {
+        return "Rp " + Number(value).toLocaleString("id-ID");
+    }
+
+    function filterCars() {
+        const selectedBrands = Array.from(brandCheckboxes)
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.value);
+
+        const selectedCapacities = Array.from(capacityCheckboxes)
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.value);
+
+        let minPrice = Number(minPriceInput.value);
+        let maxPrice = Number(maxPriceInput.value);
+
+        if (minPrice > maxPrice) {
+            const temp = minPrice;
+            minPrice = maxPrice;
+            maxPrice = temp;
+        }
+
+        minPriceText.textContent = formatRupiah(minPrice);
+        maxPriceText.textContent = formatRupiah(maxPrice);
+
+        let visibleCount = 0;
+
+        carCards.forEach(card => {
+            const carBrand = card.dataset.brand.toLowerCase();
+            const carCapacity = card.dataset.capacity;
+            const carPrice = Number(card.dataset.price);
+
+            const matchBrand =
+                selectedBrands.length === 0 ||
+                selectedBrands.some(brand => carBrand.includes(brand));
+
+            const matchCapacity =
+                selectedCapacities.length === 0 ||
+                selectedCapacities.includes(carCapacity);
+
+            const matchPrice =
+                carPrice >= minPrice && carPrice <= maxPrice;
+
+            if (matchBrand && matchCapacity && matchPrice) {
+                card.style.display = "block";
+                visibleCount++;
+            } else {
+                card.style.display = "none";
+            }
+        });
+
+        emptyResult.style.display = visibleCount === 0 ? "block" : "none";
+    }
+
+    brandCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener("change", filterCars);
+    });
+
+    capacityCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener("change", filterCars);
+    });
+
+    minPriceInput.addEventListener("input", filterCars);
+    maxPriceInput.addEventListener("input", filterCars);
+
+    filterCars();
+</script>
+
+</body>
+</html>
