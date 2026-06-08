@@ -127,6 +127,13 @@
             align-items: center;
             padding: 70px 120px 45px 120px;
             min-height: calc(100vh - 78px);
+            background: #eef1f5;
+            overflow: hidden;
+        }
+
+        .hero-text {
+            position: relative;
+            z-index: 3;
         }
 
         .hero-text h1 {
@@ -169,20 +176,58 @@
 
         .hero-car {
             width: 100%;
+            min-height: 430px;
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
+            overflow: hidden;
+            border-radius: 24px;
+        }
+
+        .hero-car::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(
+                    rgba(238, 241, 245, 0.68),
+                    rgba(238, 241, 245, 0.68)
+                ),
+                url("{% static 'images/bg-mobil.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            opacity: 0.9;
+            z-index: 1;
+        }
+
+        .hero-car::after {
+            content: "";
+            position: absolute;
+            width: 570px;
+            height: 570px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.55);
+            top: -130px;
+            left: -85px;
+            z-index: 2;
         }
 
         .hero-car img {
-            width: 650px;
+            width: 720px;
             max-width: 100%;
             object-fit: contain;
+            position: relative;
+            z-index: 3;
+            transform: translateX(10px);
+            filter: drop-shadow(0 24px 18px rgba(0, 0, 0, 0.18));
         }
 
         .filter-wrapper {
             padding: 0 145px 70px 145px;
             margin-top: -60px;
+            position: relative;
+            z-index: 5;
         }
 
         .filter-box {
@@ -240,6 +285,10 @@
                 padding: 60px 70px 45px 70px;
             }
 
+            .hero-car img {
+                width: 650px;
+            }
+
             .filter-wrapper {
                 padding-left: 70px;
                 padding-right: 70px;
@@ -251,6 +300,7 @@
                 grid-template-columns: 1fr;
                 padding: 50px 40px;
                 text-align: center;
+                gap: 25px;
             }
 
             .hero-text h1 {
@@ -259,6 +309,23 @@
 
             .hero-buttons {
                 justify-content: center;
+            }
+
+            .hero-car {
+                min-height: 360px;
+            }
+
+            .hero-car::after {
+                width: 480px;
+                height: 480px;
+                top: -120px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .hero-car img {
+                width: 620px;
+                transform: translateX(0);
             }
 
             .filter-wrapper {
@@ -341,6 +408,17 @@
                 flex-direction: column;
             }
 
+            .hero-car {
+                min-height: 300px;
+                border-radius: 18px;
+            }
+
+            .hero-car::after {
+                width: 390px;
+                height: 390px;
+                top: -95px;
+            }
+
             .filter-box {
                 grid-template-columns: 1fr;
             }
@@ -358,6 +436,20 @@
 
             .auth-buttons {
                 justify-content: center;
+            }
+
+            .hero-car {
+                min-height: 250px;
+            }
+
+            .hero-car img {
+                width: 420px;
+            }
+
+            .hero-car::after {
+                width: 320px;
+                height: 320px;
+                top: -80px;
             }
 
             .filter-wrapper {
@@ -419,26 +511,76 @@
 
     <div class="filter-wrapper">
         <div class="filter-box">
-            <input type="date" class="filter-input">
+            <input type="date" id="tanggalSewa" class="filter-input">
 
-            <select class="filter-input">
-                <option>Tipe Mobil</option>
-                <option>Manual</option>
-                <option>Matic</option>
+            <select id="tipeMobil" class="filter-input">
+                <option value="">Tipe Mobil</option>
+                <option value="Manual">Manual</option>
+                <option value="Matic">Matic</option>
             </select>
 
-            <select class="filter-input">
-                <option>Car Size</option>
-                <option>5 Orang</option>
-                <option>7 Orang</option>
+            <select id="carSize" class="filter-input">
+                <option value="">Car Size</option>
+                <option value="5">5 Orang</option>
+                <option value="7">7 Orang</option>
             </select>
 
-            <button class="filter-btn" onclick="window.location.href='{% url 'katalog' %}'">
+            <button class="filter-btn" onclick="cariMobil()">
                 Sewa Sekarang
             </button>
         </div>
     </div>
 
 </div>
+
+<script>
+    const daftarMobil = [
+        {% for car in cars %}
+        {
+            id: "{{ car.id }}",
+            name: "{{ car.name }}",
+            transmission: "{{ car.transmission }}",
+            capacity: "{{ car.capacity }}"
+        },
+        {% endfor %}
+    ];
+
+    function cariMobil() {
+        const tanggal = document.getElementById("tanggalSewa").value;
+        const tipeMobil = document.getElementById("tipeMobil").value;
+        const carSize = document.getElementById("carSize").value;
+
+        if (tanggal === "") {
+            alert("Pilih tanggal sewa terlebih dahulu.");
+            return;
+        }
+
+        if (tipeMobil === "") {
+            alert("Pilih tipe mobil terlebih dahulu.");
+            return;
+        }
+
+        if (carSize === "") {
+            alert("Pilih ukuran mobil terlebih dahulu.");
+            return;
+        }
+
+        const mobilCocok = daftarMobil.find(car => {
+            const kapasitasAngka = car.capacity.split(" ")[0];
+            return car.transmission === tipeMobil && kapasitasAngka === carSize;
+        });
+
+        if (!mobilCocok) {
+            alert("Maaf, tidak ada mobil yang sesuai dengan pilihan kamu.");
+            return;
+        }
+
+        let detailUrl = "{% url 'detail_mobil' 0 %}";
+        detailUrl = detailUrl.replace("/0/", "/" + mobilCocok.id + "/");
+
+        window.location.href = detailUrl + "?tanggal=" + tanggal;
+    }
+</script>
+
 </body>
 </html>
