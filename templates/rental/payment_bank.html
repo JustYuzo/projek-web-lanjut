@@ -1,0 +1,619 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Bank - SmartDrive</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #1f1f1f;
+            color: #222;
+        }
+
+        .page {
+            width: 100%;
+            min-height: 100vh;
+            background: #eef1f5;
+        }
+
+        .navbar {
+            height: 78px;
+            background-color: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 42px;
+        }
+
+        .brand {
+            font-size: 30px;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+        }
+
+        .brand span {
+            color: #2f6fde;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 34px;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .nav-menu a:hover {
+            color: #2f6fde;
+        }
+
+        .team-logo {
+            width: 75px;
+            height: 75px;
+            object-fit: contain;
+        }
+
+        .payment-wrapper {
+            width: 92%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 28px 0 55px;
+            display: grid;
+            grid-template-columns: 1.45fr 0.75fr;
+            gap: 38px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #2f6fde;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 18px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 28px;
+        }
+
+        .label-small {
+            color: #9ca3af;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .total-price {
+            color: #001eff;
+            font-size: 26px;
+            font-weight: 900;
+            margin-bottom: 38px;
+        }
+
+        .box {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .bank-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .bank-card {
+            height: 70px;
+            border: 1px solid #dfe3ea;
+            border-radius: 8px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            font-weight: 900;
+            color: #1d58bf;
+            cursor: pointer;
+            font-family: Arial, sans-serif;
+        }
+
+        .bank-card:hover {
+            border-color: #2f6fde;
+        }
+
+        .bank-card.active {
+            border: 3px solid #2f6fde;
+        }
+
+        .bank-card.mandiri {
+            color: #174ea6;
+            font-size: 22px;
+        }
+
+        .bank-card.bni {
+            color: #007a8a;
+            font-size: 28px;
+        }
+
+        .payment-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .virtual-box {
+            background: #f3f6ff;
+            border-radius: 10px;
+            padding: 18px;
+        }
+
+        .instruction-box {
+            background: #f7f9ff;
+            border: 1px solid #e1e5ef;
+            border-radius: 10px;
+            padding: 18px;
+        }
+
+        .virtual-title,
+        .instruction-title {
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 14px;
+        }
+
+        .virtual-row {
+            margin-bottom: 16px;
+        }
+
+        .virtual-label {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .virtual-value {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            font-weight: 900;
+        }
+
+        .copy-btn {
+            background: white;
+            border: none;
+            color: #2f6fde;
+            border-radius: 4px;
+            padding: 5px 12px;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .copy-btn:hover {
+            background: #e5edff;
+        }
+
+        .instruction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 13px;
+        }
+
+        .step {
+            display: flex;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        .step-number {
+            width: 22px;
+            height: 22px;
+            min-width: 22px;
+            border-radius: 50%;
+            background: #2f6fde;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .timer-box {
+            margin-top: 18px;
+            background: #ffb5a9;
+            color: #e64732;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .save-info {
+            margin-top: 12px;
+            background: #dbeafe;
+            color: #2f6fde;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .summary {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            height: fit-content;
+        }
+
+        .summary-car {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 26px;
+        }
+
+        .summary-image {
+            height: 92px;
+            background: #e6e4ea;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .summary-image img {
+            width: 95%;
+            height: 95%;
+            object-fit: contain;
+        }
+
+        .summary-car h3 {
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .summary-car p {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 700;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+
+        .summary-row span:first-child {
+            color: #8b8f99;
+            font-weight: 700;
+        }
+
+        .summary-row span:last-child {
+            color: #111827;
+            font-weight: 900;
+            text-align: right;
+        }
+
+        .summary-row.total span:last-child {
+            color: #001eff;
+        }
+
+        @media (max-width: 950px) {
+            .payment-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .bank-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .payment-info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .navbar {
+                height: auto;
+                min-height: 78px;
+                flex-wrap: wrap;
+                padding: 16px 20px;
+                gap: 12px;
+            }
+
+            .nav-menu {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .team-logo {
+                width: 60px;
+                height: 60px;
+            }
+
+            .payment-wrapper {
+                width: 94%;
+            }
+
+            .bank-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <nav class="navbar">
+        <a href="{% url 'home' %}" class="brand">
+            <span>Smart</span>Drive
+        </a>
+
+        <div class="nav-menu">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'katalog' %}">Katalog</a>
+            <a href="{% url 'ai' %}">AI</a>
+            <a href="{% url 'history' %}">Riwayat</a>
+        </div>
+
+        <img src="{% static 'images/logo-tim.png' %}" class="team-logo" alt="Logo Tim">
+    </nav>
+
+    <div class="payment-wrapper">
+
+        <div class="left-area">
+
+            <a href="{% url 'payment' car.id %}" class="back-link">← Kembali Ke Pembayaran</a>
+
+            <h1 class="title">Pembayaran dengan Transfer Bank</h1>
+
+            <div class="label-small">Total Pembayaran</div>
+            <div class="total-price">Rp {{ car.price }}</div>
+
+            <div class="box">
+                <h2 class="section-title">Pilih Bank</h2>
+
+                <div class="bank-options">
+                    <button class="bank-card active" type="button" data-bank="BCA" data-va="123456789012">
+                        BCA
+                    </button>
+
+                    <button class="bank-card mandiri" type="button" data-bank="Mandiri" data-va="8808123456789012">
+                        mandiri
+                    </button>
+
+                    <button class="bank-card" type="button" data-bank="BRI" data-va="3301123456789012">
+                        BRI
+                    </button>
+
+                    <button class="bank-card bni" type="button" data-bank="BNI" data-va="7701123456789012">
+                        BNI
+                    </button>
+                </div>
+
+                <div class="payment-info-grid">
+
+                    <div class="virtual-box">
+                        <div class="virtual-title">Transfer ke rekening virtual account berikut</div>
+
+                        <div class="virtual-row">
+                            <div class="virtual-label">Bank</div>
+                            <div class="virtual-value">
+                                <span id="selectedBank">BCA</span>
+                                <button class="copy-btn" type="button" onclick="copyText(document.getElementById('selectedBank').innerText)">
+                                    Salin
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="virtual-row">
+                            <div class="virtual-label">No. Virtual Account</div>
+                            <div class="virtual-value">
+                                <span id="vaNumber">123456789012</span>
+                                <button class="copy-btn" type="button" onclick="copyText(document.getElementById('vaNumber').innerText)">
+                                    Salin
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="virtual-row">
+                            <div class="virtual-label">Nama</div>
+                            <div class="virtual-value">
+                                <span id="accountName">SMARTDRIVE RENTAL</span>
+                                <button class="copy-btn" type="button" onclick="copyText(document.getElementById('accountName').innerText)">
+                                    Salin
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="virtual-row">
+                            <div class="virtual-label">Total Tagihan</div>
+                            <div class="virtual-value">
+                                <span id="totalBill">Rp {{ car.price }}</span>
+                                <button class="copy-btn" type="button" onclick="copyText(document.getElementById('totalBill').innerText)">
+                                    Salin
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="instruction-box">
+                        <div class="instruction-title">Cara Pembayaran</div>
+
+                        <div class="instruction-list">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div id="stepOne">Login ke m-BCA atau mobile banking pilihan kamu.</div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div>Pilih menu transfer ke virtual account.</div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div>Masukkan nomor virtual account yang tersedia di samping.</div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">4</div>
+                                <div>Pilih nominal pembayaran lalu transfer sesuai nominal tersebut.</div>
+                            </div>
+                        </div>
+
+                        <div class="timer-box">
+                            Batas Waktu Pembayaran<br>
+                            <span id="timer">23:59:59</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="save-info">
+                    Simpan nomor virtual ini sebelum melakukan pembayaran.
+                </div>
+            </div>
+
+        </div>
+
+        <div class="summary">
+            <div class="summary-car">
+                <div class="summary-image">
+                    <img src="{% static 'images/mobil-hitam.png' %}" alt="{{ car.name }}">
+                </div>
+
+                <div>
+                    <h3>{{ car.name }}</h3>
+                    <p>Durasi: 1 Hari</p>
+                </div>
+            </div>
+
+            <div class="summary-row">
+                <span>Tanggal Mulai</span>
+                <span>{{ today|date:"d M Y" }}</span>
+            </div>
+
+            <div class="summary-row">
+                <span>Tanggal Selesai</span>
+                <span>{{ today|date:"d M Y" }}</span>
+            </div>
+
+            <div class="summary-row">
+                <span>Lokasi Ambil</span>
+                <span>SmartDrive</span>
+            </div>
+
+            <div class="summary-row">
+                <span>Lokasi Kembali</span>
+                <span>SmartDrive</span>
+            </div>
+
+            <div class="summary-row total">
+                <span>Total Pembayaran</span>
+                <span>Rp {{ car.price }}</span>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    const bankCards = document.querySelectorAll(".bank-card");
+    const selectedBank = document.getElementById("selectedBank");
+    const vaNumber = document.getElementById("vaNumber");
+    const stepOne = document.getElementById("stepOne");
+
+    bankCards.forEach(card => {
+        card.addEventListener("click", function () {
+            bankCards.forEach(item => {
+                item.classList.remove("active");
+            });
+
+            this.classList.add("active");
+
+            const bankName = this.dataset.bank;
+            const bankVA = this.dataset.va;
+
+            selectedBank.innerText = bankName;
+            vaNumber.innerText = bankVA;
+
+            if (bankName === "BCA") {
+                stepOne.innerText = "Login ke m-BCA atau mobile banking pilihan kamu.";
+            } else if (bankName === "Mandiri") {
+                stepOne.innerText = "Login ke Livin' by Mandiri atau mobile banking pilihan kamu.";
+            } else if (bankName === "BRI") {
+                stepOne.innerText = "Login ke BRImo atau mobile banking pilihan kamu.";
+            } else if (bankName === "BNI") {
+                stepOne.innerText = "Login ke BNI Mobile Banking atau mobile banking pilihan kamu.";
+            }
+        });
+    });
+
+    function copyText(text) {
+        navigator.clipboard.writeText(text);
+        alert("Berhasil disalin: " + text);
+    }
+
+    let totalSeconds = 24 * 60 * 60 - 1;
+
+    function updateTimer() {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        document.getElementById("timer").innerText =
+            String(hours).padStart(2, "0") + ":" +
+            String(minutes).padStart(2, "0") + ":" +
+            String(seconds).padStart(2, "0");
+
+        if (totalSeconds > 0) {
+            totalSeconds--;
+        }
+    }
+
+    setInterval(updateTimer, 1000);
+    updateTimer();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,342 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Detail Mobil - SmartDrive</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #eef1f5;
+            color: #222;
+        }
+
+        .page {
+            width: 100%;
+            min-height: 100vh;
+            background: #eef1f5;
+        }
+
+        .navbar {
+            height: 78px;
+            background-color: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 42px;
+        }
+
+        .brand {
+            font-size: 30px;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+        }
+
+        .brand span {
+            color: #2f6fde;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 34px;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .nav-menu a:hover {
+            color: #2f6fde;
+        }
+
+        .team-logo {
+            width: 75px;
+            height: 75px;
+            object-fit: contain;
+        }
+
+        .detail-wrapper {
+            width: 90%;
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 28px 0 55px;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 800;
+            margin: 0 0 22px;
+        }
+
+        .car-image-box {
+            width: 520px;
+            height: 310px;
+            margin: 0 auto 20px;
+            background: #e3e3eb;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .car-image-box img {
+            width: 95%;
+            height: 95%;
+            object-fit: contain;
+        }
+
+        .info-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1.05fr;
+            gap: 22px;
+            align-items: stretch;
+            margin-top: 10px;
+        }
+
+        .info-left {
+            grid-column: span 3;
+        }
+
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            margin-bottom: 18px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px 18px;
+            min-height: 112px;
+        }
+
+        .info-card h3 {
+            margin: 0 0 14px;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .info-card p {
+            margin: 0;
+            color: #8b8f99;
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .description {
+            background: white;
+            border-radius: 10px;
+            padding: 18px;
+        }
+
+        .description h3 {
+            margin: 0 0 8px;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .description p {
+            margin: 0;
+            color: #8b8f99;
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .price-box {
+            background: white;
+            border-radius: 10px;
+            padding: 28px 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 205px;
+        }
+
+        .price-box h3 {
+            margin: 0 0 18px;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .price-box p {
+            margin: 0 0 24px;
+            color: #8b8f99;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .btn-primary {
+            display: block;
+            width: 100%;
+            background-color: #2f6fde;
+            color: white;
+            padding: 14px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .btn-primary:hover {
+            background-color: #1d58bf;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 15px;
+            color: #2f6fde;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 900px) {
+            .info-area {
+                grid-template-columns: 1fr;
+            }
+
+            .info-left {
+                grid-column: span 1;
+            }
+
+            .info-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .car-image-box {
+                width: 100%;
+                height: 280px;
+            }
+
+            .navbar {
+                padding: 0 24px;
+            }
+
+            .nav-menu {
+                gap: 18px;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .navbar {
+                height: auto;
+                min-height: 78px;
+                flex-wrap: wrap;
+                padding: 15px 20px;
+                gap: 12px;
+            }
+
+            .nav-menu {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .team-logo {
+                width: 60px;
+                height: 60px;
+            }
+
+            .title {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <nav class="navbar">
+        <a href="{% url 'home' %}" class="brand">
+            <span>Smart</span>Drive
+        </a>
+
+        <div class="nav-menu">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'katalog' %}">Katalog</a>
+            <a href="{% url 'ai' %}">AI</a>
+            <a href="{% url 'history' %}">Riwayat</a>
+        </div>
+
+        <img src="{% static 'images/logo-tim.png' %}" class="team-logo" alt="Logo Tim">
+    </nav>
+
+    <div class="detail-wrapper">
+
+        <a href="{% url 'katalog' %}" class="back-link">← Kembali ke Katalog</a>
+
+        <h1 class="title">{{ car.name }}</h1>
+
+        <div class="car-image-box">
+            <img src="{% static 'images/mobil-hitam.png' %}" alt="{{ car.name }}">
+        </div>
+
+        <div class="info-area">
+
+            <div class="info-left">
+                <div class="info-cards">
+                    <div class="info-card">
+                        <h3>Kapasitas</h3>
+                        <p>{{ car.capacity }}</p>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>Bahan Bakar</h3>
+                        <p>Gasoline / High-Octane Petrol</p>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>Transmisi</h3>
+                        <p>{{ car.transmission }}</p>
+                    </div>
+                </div>
+
+                <div class="description">
+                    <h3>Deskripsi Singkat Kendaraan:</h3>
+                    <p>
+                        {{ car.name }} merupakan mobil pilihan SmartDrive yang cocok digunakan untuk perjalanan harian,
+                        liburan keluarga, maupun kebutuhan bisnis. Mobil ini memiliki kapasitas {{ car.capacity }},
+                        transmisi {{ car.transmission }}, serta kondisi {{ car.status }} sehingga nyaman dan aman untuk digunakan.
+                    </p>
+                </div>
+            </div>
+
+            <div class="price-box">
+                <h3>Total Harga</h3>
+                <p>Rp {{ car.price }} / hari</p>
+
+                <a href="{% url 'payment' car.id %}" class="btn-primary">
+                    Sewa Sekarang
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

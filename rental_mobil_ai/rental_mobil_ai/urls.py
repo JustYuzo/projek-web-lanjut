@@ -6,4 +6,5 @@ urlpatterns = [
 
     # arahkan ke app rental
     path('', include('rental.urls')),
+    
 ]

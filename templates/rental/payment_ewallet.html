@@ -1,0 +1,484 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment E-Wallet - SmartDrive</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #1f1f1f;
+            color: #222;
+        }
+
+        .page {
+            width: 100%;
+            min-height: 100vh;
+            background: #eef1f5;
+        }
+
+        .navbar {
+            height: 78px;
+            background-color: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 42px;
+        }
+
+        .brand {
+            font-size: 30px;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+        }
+
+        .brand span {
+            color: #2f6fde;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 34px;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .nav-menu a:hover {
+            color: #2f6fde;
+        }
+
+        .team-logo {
+            width: 75px;
+            height: 75px;
+            object-fit: contain;
+        }
+
+        .payment-wrapper {
+            width: 92%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 28px 0 55px;
+            display: grid;
+            grid-template-columns: 1.45fr 0.75fr;
+            gap: 38px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #2f6fde;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 18px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 28px;
+        }
+
+        .label-small {
+            color: #9ca3af;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .total-price {
+            color: #001eff;
+            font-size: 26px;
+            font-weight: 900;
+            margin-bottom: 38px;
+        }
+
+        .box {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .wallet-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .wallet-card {
+            height: 70px;
+            border: 1px solid #dfe3ea;
+            border-radius: 8px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            font-family: Arial, sans-serif;
+            font-weight: 900;
+        }
+
+        .wallet-card:hover {
+            border-color: #2f6fde;
+        }
+
+        .wallet-card.active {
+            border: 3px solid #2f6fde;
+        }
+
+        .wallet-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+        .dana {
+            background: #1597ff;
+        }
+
+        .shopee {
+            background: #ff5a36;
+            border-radius: 6px;
+        }
+
+        .gopay {
+            background: #20a7e2;
+        }
+
+        .wallet-name {
+            font-size: 11px;
+            color: #2f6fde;
+            font-weight: 900;
+        }
+
+        .payment-content {
+            display: grid;
+            grid-template-columns: 1fr 0.8fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+        .instruction-title {
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 18px;
+        }
+
+        .instruction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .step {
+            display: flex;
+            gap: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.5;
+        }
+
+        .step-number {
+            color: #2f6fde;
+            font-weight: 900;
+        }
+
+        .qr-box {
+            width: 220px;
+            height: 220px;
+            background: #e5e5e5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            font-size: 14px;
+            font-weight: 800;
+            text-align: center;
+            margin: 0 auto;
+        }
+
+        .summary {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            height: fit-content;
+        }
+
+        .summary-car {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 26px;
+        }
+
+        .summary-image {
+            height: 92px;
+            background: #e6e4ea;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .summary-image img {
+            width: 95%;
+            height: 95%;
+            object-fit: contain;
+        }
+
+        .summary-car h3 {
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .summary-car p {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 700;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+
+        .summary-row span:first-child {
+            color: #8b8f99;
+            font-weight: 700;
+        }
+
+        .summary-row span:last-child {
+            color: #111827;
+            font-weight: 900;
+            text-align: right;
+        }
+
+        .summary-row.total span:last-child {
+            color: #001eff;
+        }
+
+        @media (max-width: 950px) {
+            .payment-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .payment-content {
+                grid-template-columns: 1fr;
+            }
+
+            .wallet-options {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .navbar {
+                height: auto;
+                min-height: 78px;
+                flex-wrap: wrap;
+                padding: 16px 20px;
+                gap: 12px;
+            }
+
+            .nav-menu {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .team-logo {
+                width: 60px;
+                height: 60px;
+            }
+
+            .payment-wrapper {
+                width: 94%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <nav class="navbar">
+        <a href="{% url 'home' %}" class="brand">
+            <span>Smart</span>Drive
+        </a>
+
+        <div class="nav-menu">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'katalog' %}">Katalog</a>
+            <a href="{% url 'ai' %}">AI</a>
+            <a href="{% url 'history' %}">Riwayat</a>
+        </div>
+
+        <img src="{% static 'images/logo-tim.png' %}" class="team-logo" alt="Logo Tim">
+    </nav>
+
+    <div class="payment-wrapper">
+
+        <div class="left-area">
+
+            <a href="{% url 'payment' car.id %}" class="back-link">← Kembali Ke Pembayaran</a>
+
+            <h1 class="title">Pembayaran dengan E-Wallet</h1>
+
+            <div class="label-small">Total Pembayaran</div>
+            <div class="total-price">Rp {{ car.price }}</div>
+
+            <div class="box">
+                <h2 class="section-title">Pilih E-Wallet</h2>
+
+                <div class="wallet-options">
+                    <button class="wallet-card active" type="button" data-wallet="DANA">
+                        <span class="wallet-icon dana">D</span>
+                        <span class="wallet-name">DANA</span>
+                    </button>
+
+                    <button class="wallet-card" type="button" data-wallet="ShopeePay">
+                        <span class="wallet-icon shopee">S</span>
+                        <span class="wallet-name">ShopeePay</span>
+                    </button>
+
+                    <button class="wallet-card" type="button" data-wallet="GoPay">
+                        <span class="wallet-icon gopay">G</span>
+                        <span class="wallet-name">GoPay</span>
+                    </button>
+                </div>
+
+                <div class="payment-content">
+                    <div>
+                        <div class="instruction-title">Cara Pembayaran</div>
+
+                        <div class="instruction-list">
+                            <div class="step">
+                                <span class="step-number">1.</span>
+                                <span id="stepOpen">Buka aplikasi DANA</span>
+                            </div>
+
+                            <div class="step">
+                                <span class="step-number">2.</span>
+                                <span>Scan QR Code di samping</span>
+                            </div>
+
+                            <div class="step">
+                                <span class="step-number">3.</span>
+                                <span>Pastikan nominal sesuai, lalu konfirmasi pembayaran</span>
+                            </div>
+
+                            <div class="step">
+                                <span class="step-number">4.</span>
+                                <span>Pembayaran akan otomatis terverifikasi</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="qr-box" id="qrBox">
+                        QR DANA
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="summary">
+            <div class="summary-car">
+                <div class="summary-image">
+                    <img src="{% static 'images/mobil-hitam.png' %}" alt="{{ car.name }}">
+                </div>
+
+                <div>
+                    <h3>{{ car.name }}</h3>
+                    <p>Durasi: 1 Hari</p>
+                </div>
+            </div>
+
+            <div class="summary-row">
+                <span>Tanggal Mulai</span>
+                <span>{{ today|date:"d M Y" }}</span>
+            </div>
+
+            <div class="summary-row">
+                <span>Tanggal Selesai</span>
+                <span>{{ today|date:"d M Y" }}</span>
+            </div>
+
+            <div class="summary-row">
+                <span>Lokasi Ambil</span>
+                <span>SmartDrive</span>
+            </div>
+
+            <div class="summary-row">
+                <span>Lokasi Kembali</span>
+                <span>SmartDrive</span>
+            </div>
+
+            <div class="summary-row total">
+                <span>Total Pembayaran</span>
+                <span>Rp {{ car.price }}</span>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    const walletCards = document.querySelectorAll(".wallet-card");
+    const stepOpen = document.getElementById("stepOpen");
+    const qrBox = document.getElementById("qrBox");
+
+    walletCards.forEach(card => {
+        card.addEventListener("click", function () {
+            walletCards.forEach(item => {
+                item.classList.remove("active");
+            });
+
+            this.classList.add("active");
+
+            const walletName = this.dataset.wallet;
+
+            stepOpen.innerText = "Buka aplikasi " + walletName;
+            qrBox.innerText = "QR " + walletName;
+        });
+    });
+</script>
+
+</body>
+</html>

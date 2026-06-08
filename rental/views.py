@@ -55,11 +55,15 @@ if GEMINI_API_KEY:
 
 
 def home(request):
-    return render(request, "rental/home.html", {"cars": cars})
+    return render(request, "rental/home.html", {
+        "cars": cars
+    })
 
 
 def katalog(request):
-    return render(request, "rental/katalog.html", {"cars": cars})
+    return render(request, "rental/katalog.html", {
+        "cars": cars
+    })
 
 
 def login_page(request):
@@ -85,9 +89,11 @@ def login_page(request):
 
             if user is not None:
                 auth_login(request, user)
+
                 next_url = request.GET.get("next")
                 if next_url:
                     return redirect(next_url)
+
                 return redirect("home")
             else:
                 error = "Email atau kata sandi salah."
@@ -138,8 +144,60 @@ def logout_page(request):
     return redirect("login")
 
 
+def detail_mobil(request, car_id):
+    if car_id < 0 or car_id >= len(cars):
+        return redirect("katalog")
+
+    car = cars[car_id]
+
+    return render(request, "rental/detail.html", {
+        "car": car
+    })
+
+
+@login_required(login_url="login")
+def payment(request, car_id):
+    if car_id < 0 or car_id >= len(cars):
+        return redirect("katalog")
+
+    car = cars[car_id]
+
+    return render(request, "rental/payment.html", {
+        "car": car,
+        "today": date.today()
+    })
+
+
+@login_required(login_url="login")
+def payment_bank(request, car_id):
+    if car_id < 0 or car_id >= len(cars):
+        return redirect("katalog")
+
+    car = cars[car_id]
+
+    return render(request, "rental/payment_bank.html", {
+        "car": car,
+        "today": date.today()
+    })
+    
+@login_required(login_url="login")
+def payment_ewallet(request, car_id):
+    if car_id < 0 or car_id >= len(cars):
+        return redirect("katalog")
+
+    car = cars[car_id]
+
+    return render(request, "rental/payment_ewallet.html", {
+        "car": car,
+        "today": date.today()
+    })
+
+
 @login_required(login_url="login")
 def booking(request, car_id):
+    if car_id < 0 or car_id >= len(cars):
+        return redirect("katalog")
+
     car = cars[car_id]
     error = None
     success = None
@@ -160,6 +218,7 @@ def booking(request, car_id):
                 hari=hari,
                 total=total
             )
+
             success = f"Booking berhasil! Total Rp {total:,}"
 
     return render(request, "rental/booking.html", {
@@ -170,9 +229,13 @@ def booking(request, car_id):
     })
 
 
+@login_required(login_url="login")
 def history(request):
     data_booking = Booking.objects.all().order_by("-id")
-    return render(request, "rental/history.html", {"history": data_booking})
+
+    return render(request, "rental/history.html", {
+        "history": data_booking
+    })
 
 
 @login_required(login_url="login")
