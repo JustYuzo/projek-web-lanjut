@@ -1,59 +1,477 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Riwayat Booking</title>
+    <title>Riwayat Transaksi - SmartDrive</title>
 
     <style>
-        body {
+        * {
+            box-sizing: border-box;
             margin: 0;
+            padding: 0;
+        }
+
+        body {
             font-family: Arial, sans-serif;
-            background-color: #0f1117;
+            background: #1f1f1f;
+            color: #111827;
+        }
+
+        .page {
+            width: 100%;
+            min-height: 100vh;
+            background: #eef1f5;
+        }
+
+        .navbar {
+            height: 78px;
+            background-color: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 42px;
+        }
+
+        .brand {
+            font-size: 30px;
+            font-weight: 800;
             color: white;
-        }
-
-        .container {
-            padding: 40px;
-        }
-
-        .history-box {
-            background-color: #1e293b;
-            padding: 20px;
-            border-radius: 14px;
-            margin-bottom: 15px;
-        }
-
-        .btn {
-            padding: 12px 18px;
-            background: #2563eb;
-            color: white;
-            border-radius: 10px;
             text-decoration: none;
+        }
+
+        .brand span {
+            color: #2f6fde;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 34px;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .nav-menu a:hover {
+            color: #2f6fde;
+        }
+
+        .team-logo {
+            width: 75px;
+            height: 75px;
+            object-fit: contain;
+        }
+
+        .history-wrapper {
+            width: 92%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 36px 0 60px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .header-left .small-title {
+            color: #2f6fde;
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .header-left h1 {
+            font-size: 28px;
+            font-weight: 900;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .header-left p {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 600;
+        }
+
+        .btn-primary {
             display: inline-block;
+            background: #2f73df;
+            color: white;
+            text-decoration: none;
+            padding: 13px 20px;
+            border-radius: 11px;
+            font-size: 14px;
+            font-weight: 800;
+            transition: 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background: #1f5fc4;
+            transform: translateY(-1px);
+        }
+
+        .summary-box {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 14px;
+            padding: 18px;
+        }
+
+        .summary-card span {
+            display: block;
+            font-size: 13px;
+            color: #8b8f99;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .summary-card strong {
+            font-size: 22px;
+            color: #111827;
+            font-weight: 900;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .history-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 120px 1fr 230px;
+            gap: 22px;
+            align-items: center;
+            box-shadow: 0 8px 20px rgba(17, 24, 39, 0.06);
+        }
+
+        .car-image {
+            width: 120px;
+            height: 85px;
+            background: #e6e4ea;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .car-image img {
+            width: 95%;
+            height: 95%;
+            object-fit: contain;
+        }
+
+        .booking-info h3 {
+            font-size: 18px;
+            font-weight: 900;
+            margin-bottom: 8px;
+            color: #111827;
+        }
+
+        .booking-info .customer {
+            color: #6b7280;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(160px, 1fr));
+            gap: 12px 22px;
+        }
+
+        .detail-item span {
+            display: block;
+            font-size: 12px;
+            color: #8b8f99;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .detail-item strong {
+            font-size: 14px;
+            color: #111827;
+            font-weight: 900;
+        }
+
+        .payment-side {
+            border-left: 1px solid #e5e7eb;
+            padding-left: 22px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 13px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 900;
+            margin-bottom: 14px;
+        }
+
+        .status-menunggu {
+            background: #fff3cd;
+            color: #b7791f;
+        }
+
+        .status-disetujui {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .status-ditolak {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .total-label {
+            font-size: 12px;
+            color: #8b8f99;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .total-price {
+            font-size: 20px;
+            color: #001eff;
+            font-weight: 900;
+            margin-bottom: 12px;
+        }
+
+        .payment-method {
+            font-size: 13px;
+            color: #111827;
+            font-weight: 800;
+        }
+
+        .empty-box {
+            background: white;
+            border-radius: 16px;
+            padding: 45px 25px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            font-size: 45px;
+            margin-bottom: 12px;
+        }
+
+        .empty-box h2 {
+            font-size: 22px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .empty-box p {
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 600;
             margin-bottom: 20px;
+        }
+
+        @media (max-width: 950px) {
+            .history-card {
+                grid-template-columns: 1fr;
+            }
+
+            .car-image {
+                width: 100%;
+                height: 160px;
+            }
+
+            .payment-side {
+                border-left: none;
+                border-top: 1px solid #e5e7eb;
+                padding-left: 0;
+                padding-top: 18px;
+            }
+
+            .summary-box {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .navbar {
+                height: auto;
+                min-height: 78px;
+                flex-wrap: wrap;
+                padding: 16px 20px;
+                gap: 12px;
+            }
+
+            .nav-menu {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .team-logo {
+                width: 60px;
+                height: 60px;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .history-wrapper {
+                width: 94%;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <h1>📜 Riwayat Booking</h1>
+<div class="page">
 
-    <a href="{% url 'home' %}" class="btn">Kembali ke Home</a>
+    <nav class="navbar">
+        <a href="{% url 'home' %}" class="brand">
+            <span>Smart</span>Drive
+        </a>
 
-    {% if history %}
-        {% for h in history %}
-            <div class="history-box">
-                👤 {{ h.nama }} <br>
-                🚗 {{ h.mobil }} <br>
-                📅 {{ h.tanggal }} <br>
-                ⏳ {{ h.hari }} hari <br>
-                💰 Rp {{ h.total }}
+        <div class="nav-menu">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'katalog' %}">Katalog</a>
+            <a href="{% url 'ai' %}">AI</a>
+            <a href="{% url 'history' %}">Riwayat</a>
+        </div>
+
+        <img src="{% static 'images/logo-tim.png' %}" class="team-logo" alt="Logo Tim">
+    </nav>
+
+    <div class="history-wrapper">
+
+        <div class="page-header">
+            <div class="header-left">
+                <div class="small-title">Riwayat Transaksi</div>
+                <h1>Riwayat Booking Mobil</h1>
+                <p>Lihat daftar pesanan, metode pembayaran, dan status persetujuan dari admin.</p>
             </div>
-        {% endfor %}
-    {% else %}
-        <p>Belum ada booking.</p>
-    {% endif %}
+
+            <a href="{% url 'katalog' %}" class="btn-primary">+ Booking Lagi</a>
+        </div>
+
+        <div class="summary-box">
+            <div class="summary-card">
+                <span>Total Booking</span>
+                <strong>{{ history|length }}</strong>
+            </div>
+
+            <div class="summary-card">
+                <span>Status Pembayaran</span>
+                <strong>Realtime</strong>
+            </div>
+
+            <div class="summary-card">
+                <span>Persetujuan</span>
+                <strong>Admin</strong>
+            </div>
+        </div>
+
+        {% if history %}
+            <div class="history-list">
+
+                {% for booking in history %}
+                    <div class="history-card">
+
+                        <div class="car-image">
+                            <img src="{% static 'images/mobil-hitam.png' %}" alt="{{ booking.mobil }}">
+                        </div>
+
+                        <div class="booking-info">
+                            <h3>{{ booking.mobil }}</h3>
+                            <div class="customer">Penyewa: {{ booking.nama }}</div>
+
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <span>Tanggal Mulai</span>
+                                    <strong>{{ booking.tanggal|date:"d F Y" }}</strong>
+                                </div>
+
+                                <div class="detail-item">
+                                    <span>Durasi Sewa</span>
+                                    <strong>{{ booking.hari }} Hari</strong>
+                                </div>
+
+                                <div class="detail-item">
+                                    <span>Lokasi Ambil</span>
+                                    <strong>SmartDrive</strong>
+                                </div>
+
+                                <div class="detail-item">
+                                    <span>Lokasi Kembali</span>
+                                    <strong>SmartDrive</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="payment-side">
+
+                            {% if booking.status == "disetujui" %}
+                                <div class="status-badge status-disetujui">
+                                    ✓ {{ booking.get_status_display }}
+                                </div>
+                            {% elif booking.status == "ditolak" %}
+                                <div class="status-badge status-ditolak">
+                                    ✕ {{ booking.get_status_display }}
+                                </div>
+                            {% else %}
+                                <div class="status-badge status-menunggu">
+                                    ⏳ {{ booking.get_status_display }}
+                                </div>
+                            {% endif %}
+
+                            <div class="total-label">Total Pembayaran</div>
+                            <div class="total-price">Rp {{ booking.total }}</div>
+
+                            <div class="total-label">Metode Pembayaran</div>
+                            <div class="payment-method">
+                                {{ booking.get_metode_pembayaran_display }}
+                            </div>
+                        </div>
+
+                    </div>
+                {% endfor %}
+
+            </div>
+        {% else %}
+            <div class="empty-box">
+                <div class="empty-icon">🚗</div>
+                <h2>Belum Ada Riwayat Booking</h2>
+                <p>Kamu belum memiliki transaksi rental mobil. Silakan pilih mobil dan lakukan booking terlebih dahulu.</p>
+                <a href="{% url 'katalog' %}" class="btn-primary">Lihat Katalog</a>
+            </div>
+        {% endif %}
+
+    </div>
+
 </div>
 
 </body>

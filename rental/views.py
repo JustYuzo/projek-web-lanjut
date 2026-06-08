@@ -179,7 +179,8 @@ def payment_bank(request, car_id):
         "car": car,
         "today": date.today()
     })
-    
+
+
 @login_required(login_url="login")
 def payment_ewallet(request, car_id):
     if car_id < 0 or car_id >= len(cars):
@@ -191,6 +192,55 @@ def payment_ewallet(request, car_id):
         "car": car,
         "today": date.today()
     })
+
+
+@login_required(login_url="login")
+def konfirmasi_payment(request, car_id, metode):
+    if car_id < 0 or car_id >= len(cars):
+        return redirect("katalog")
+
+    car = cars[car_id]
+
+    if request.method == "POST":
+        nama = request.POST.get("nama", "").strip()
+        tanggal = request.POST.get("tanggal")
+        hari = request.POST.get("hari", 1)
+
+        if nama == "":
+            nama = request.user.get_full_name() or request.user.username
+
+        if not tanggal:
+            tanggal = date.today()
+
+        try:
+            hari = int(hari)
+        except:
+            hari = 1
+
+        total = car["price"] * hari
+
+        try:
+            Booking.objects.create(
+                nama=nama,
+                mobil=car["name"],
+                tanggal=tanggal,
+                hari=hari,
+                total=total,
+                metode_pembayaran=metode,
+                status="menunggu"
+            )
+        except TypeError:
+            Booking.objects.create(
+                nama=nama,
+                mobil=car["name"],
+                tanggal=tanggal,
+                hari=hari,
+                total=total
+            )
+
+        return redirect("history")
+
+    return redirect("payment", car_id=car_id)
 
 
 @login_required(login_url="login")
@@ -211,13 +261,24 @@ def booking(request, car_id):
         if nama == "":
             error = "Nama penyewa wajib diisi."
         else:
-            Booking.objects.create(
-                nama=nama,
-                mobil=car["name"],
-                tanggal=tanggal,
-                hari=hari,
-                total=total
-            )
+            try:
+                Booking.objects.create(
+                    nama=nama,
+                    mobil=car["name"],
+                    tanggal=tanggal,
+                    hari=hari,
+                    total=total,
+                    metode_pembayaran="bank",
+                    status="menunggu"
+                )
+            except TypeError:
+                Booking.objects.create(
+                    nama=nama,
+                    mobil=car["name"],
+                    tanggal=tanggal,
+                    hari=hari,
+                    total=total
+                )
 
             success = f"Booking berhasil! Total Rp {total:,}"
 
