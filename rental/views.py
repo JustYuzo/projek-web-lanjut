@@ -382,7 +382,7 @@ Pertanyaan pelanggan:
 """
 
             response = client.models.generate_content(
-                model="gemini-1.5-flash-8b",
+                model="gemini-2.5-flash",
                 contents=prompt
             )
 
