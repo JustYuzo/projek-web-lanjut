@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Detail Mobil - SmartDrive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
         * {
@@ -73,6 +74,19 @@
             padding: 28px 0 55px;
         }
 
+        .back-link {
+            display: inline-block;
+            margin-bottom: 15px;
+            color: #2f6fde;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
         .title {
             text-align: center;
             font-size: 32px;
@@ -89,14 +103,17 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
 
         .car-image-box img {
-            width: 95%;
-            height: 95%;
+            width: 100%;
+            height: 100%;
             object-fit: contain;
+            display: block;
+            background: #e3e3eb;
         }
-
+        
         .info-area {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr 1.05fr;
@@ -197,19 +214,6 @@
             background-color: #1d58bf;
         }
 
-        .back-link {
-            display: inline-block;
-            margin-bottom: 15px;
-            color: #2f6fde;
-            text-decoration: none;
-            font-weight: 800;
-            font-size: 14px;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-
         @media (max-width: 900px) {
             .info-area {
                 grid-template-columns: 1fr;
@@ -290,7 +294,11 @@
         <h1 class="title">{{ car.name }}</h1>
 
         <div class="car-image-box">
-            <img src="{% static 'images/mobil-hitam.png' %}" alt="{{ car.name }}">
+            {% if car.image %}
+                <img src="{{ car.image.url }}" alt="{{ car.name }}">
+            {% else %}
+                <img src="{% static 'images/mobil-hitam.png' %}" alt="{{ car.name }}">
+            {% endif %}
         </div>
 
         <div class="info-area">
@@ -299,7 +307,7 @@
                 <div class="info-cards">
                     <div class="info-card">
                         <h3>Kapasitas</h3>
-                        <p>{{ car.capacity }}</p>
+                        <p>{{ car.capacity }} Orang</p>
                     </div>
 
                     <div class="info-card">
@@ -317,8 +325,8 @@
                     <h3>Deskripsi Singkat Kendaraan:</h3>
                     <p>
                         {{ car.name }} merupakan mobil pilihan SmartDrive yang cocok digunakan untuk perjalanan harian,
-                        liburan keluarga, maupun kebutuhan bisnis. Mobil ini memiliki kapasitas {{ car.capacity }},
-                        transmisi {{ car.transmission }}, serta kondisi {{ car.status }} sehingga nyaman dan aman untuk digunakan.
+                        liburan keluarga, maupun kebutuhan bisnis. Mobil ini memiliki kapasitas {{ car.capacity }} orang,
+                        transmisi {{ car.transmission }}, serta harga sewa Rp {{ car.price }} per hari.
                     </p>
                 </div>
             </div>

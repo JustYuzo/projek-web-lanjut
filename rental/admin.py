@@ -1,35 +1,41 @@
 from django.contrib import admin
-from .models import Booking
+from .models import Car, Booking
+
+
+@admin.register(Car)
+class CarAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'brand', 'transmission', 'capacity', 'price')
+    list_filter = ('brand', 'transmission', 'capacity')
+    search_fields = ('name', 'brand')
 
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
     list_display = (
-        "nama",
-        "mobil",
-        "tanggal",
-        "hari",
-        "total",
-        "metode_pembayaran",
-        "status",
-        "created_at",
+        'id',
+        'user',
+        'nama',
+        'mobil',
+        'tanggal',
+        'hari',
+        'total',
+        'metode_pembayaran',
+        'bank_pembayaran',
+        'status',
+        'created_at',
     )
 
     list_filter = (
-        "status",
-        "metode_pembayaran",
-        "tanggal",
+        'status',
+        'metode_pembayaran',
+        'bank_pembayaran',
+        'created_at',
     )
 
     search_fields = (
-        "nama",
-        "mobil",
+        'nama',
+        'mobil',
+        'user__username',
     )
 
-    list_editable = (
-        "status",
-    )
-
-    ordering = (
-        "-created_at",
-    )
+    list_editable = ('status',)

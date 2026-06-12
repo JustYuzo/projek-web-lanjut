@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from datetime import date
 from .models import Booking
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Car, Booking
+from datetime import date
 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -60,9 +63,19 @@ def home(request):
     })
 
 
+from .models import Car
+
 def katalog(request):
-    return render(request, "rental/katalog.html", {
-        "cars": cars
+    cars = Car.objects.all()
+    return render(request, 'rental/katalog.html', {
+        'cars': cars
+    })
+    
+def detail_mobil(request, car_id):
+    car = get_object_or_404(Car, id=car_id)
+
+    return render(request, 'rental/detail.html', {
+        'car': car
     })
 
 
@@ -145,52 +158,54 @@ def logout_page(request):
 
 
 def detail_mobil(request, car_id):
-    if car_id < 0 or car_id >= len(cars):
-        return redirect("katalog")
+    car = get_object_or_404(Car, id=car_id)
 
-    car = cars[car_id]
-
-    return render(request, "rental/detail.html", {
-        "car": car
+    return render(request, 'rental/detail.html', {
+        'car': car
     })
 
 
 @login_required(login_url="login")
 def payment(request, car_id):
-    if car_id < 0 or car_id >= len(cars):
-        return redirect("katalog")
+    car = get_object_or_404(Car, id=car_id)
 
-    car = cars[car_id]
+    durasi = 1
+    total = car.price * durasi
+    today = date.today()
 
-    return render(request, "rental/payment.html", {
-        "car": car,
-        "today": date.today()
+    return render(request, 'rental/payment.html', {
+        'car': car,
+        'durasi': durasi,
+        'total': total,
+        'today': today,
     })
-
-
+    
+    
 @login_required(login_url="login")
 def payment_bank(request, car_id):
-    if car_id < 0 or car_id >= len(cars):
-        return redirect("katalog")
+    car = get_object_or_404(Car, id=car_id)
 
-    car = cars[car_id]
+    durasi = 1
+    total = car.price * durasi
 
-    return render(request, "rental/payment_bank.html", {
-        "car": car,
-        "today": date.today()
+    return render(request, 'rental/payment_bank.html', {
+        'car': car,
+        'durasi': durasi,
+        'total': total
     })
 
 
 @login_required(login_url="login")
 def payment_ewallet(request, car_id):
-    if car_id < 0 or car_id >= len(cars):
-        return redirect("katalog")
+    car = get_object_or_404(Car, id=car_id)
 
-    car = cars[car_id]
+    durasi = 1
+    total = car.price * durasi
 
-    return render(request, "rental/payment_ewallet.html", {
-        "car": car,
-        "today": date.today()
+    return render(request, 'rental/payment_ewallet.html', {
+        'car': car,
+        'durasi': durasi,
+        'total': total
     })
 
 

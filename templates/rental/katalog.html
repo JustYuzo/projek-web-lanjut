@@ -232,6 +232,17 @@
             color: #8b8f99;
         }
 
+        .empty-db {
+            display: block;
+            grid-column: 1 / -1;
+            background: white;
+            border-radius: 15px;
+            padding: 28px;
+            text-align: center;
+            font-weight: 800;
+            color: #8b8f99;
+        }
+
         @media (max-width: 1100px) {
             .catalog-layout {
                 grid-template-columns: 1fr;
@@ -400,18 +411,22 @@
                 {% for car in cars %}
                 <div
                     class="car-card"
-                    data-brand="{{ car.name|lower }}"
-                    data-capacity="{{ car.capacity|slice:':1' }}"
+                    data-brand="{{ car.brand|lower }}"
+                    data-capacity="{{ car.capacity }}"
                     data-price="{{ car.price }}"
                 >
                     <div class="car-image-box">
-                        <img src="{% static 'images/mobil-hitam.png' %}" alt="{{ car.name }}">
+                        {% if car.image %}
+                            <img src="{{ car.image.url }}" alt="{{ car.name }}">
+                        {% else %}
+                            <img src="{% static 'images/mobil-hitam.png' %}" alt="{{ car.name }}">
+                        {% endif %}
                     </div>
 
                     <div class="car-name">{{ car.name }}</div>
 
                     <div class="car-info">▣ {{ car.transmission }}</div>
-                    <div class="car-info">👤 {{ car.capacity }}</div>
+                    <div class="car-info">👤 {{ car.capacity }} Orang</div>
 
                     <div class="car-price">Rp {{ car.price }}</div>
 
@@ -419,29 +434,9 @@
                         Detail
                     </a>
                 </div>
-                {% endfor %}
-
-                {% for car in cars %}
-                <div
-                    class="car-card"
-                    data-brand="{{ car.name|lower }}"
-                    data-capacity="{{ car.capacity|slice:':1' }}"
-                    data-price="{{ car.price }}"
-                >
-                    <div class="car-image-box">
-                        <img src="{% static 'images/mobil-hitam.png' %}" alt="{{ car.name }}">
-                    </div>
-
-                    <div class="car-name">{{ car.name }}</div>
-
-                    <div class="car-info">▣ {{ car.transmission }}</div>
-                    <div class="car-info">👤 {{ car.capacity }}</div>
-
-                    <div class="car-price">Rp {{ car.price }}</div>
-
-                    <a href="{% url 'detail_mobil' car.id %}" class="detail-btn">
-                        Detail
-                    </a>
+                {% empty %}
+                <div class="empty-db">
+                    Belum ada data mobil. Tambahkan mobil melalui Django Admin.
                 </div>
                 {% endfor %}
 
@@ -517,7 +512,7 @@
             }
         });
 
-        emptyResult.style.display = visibleCount === 0 ? "block" : "none";
+        emptyResult.style.display = visibleCount === 0 && carCards.length > 0 ? "block" : "none";
     }
 
     brandCheckboxes.forEach(checkbox => {

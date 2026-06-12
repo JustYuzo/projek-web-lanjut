@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Payment - SmartDrive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
         * {
@@ -110,12 +111,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
 
         .car-image-box img {
-            width: 95%;
-            height: 95%;
+            width: 100%;
+            height: 100%;
             object-fit: contain;
+            display: block;
         }
 
         .car-name {
@@ -175,6 +178,10 @@
             gap: 18px;
         }
 
+        .upload-input {
+            display: none;
+        }
+
         .upload-btn {
             width: 100%;
             height: 46px;
@@ -185,6 +192,9 @@
             font-size: 14px;
             font-weight: 800;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .upload-btn:hover {
@@ -367,7 +377,11 @@
 
             <div class="box car-box">
                 <div class="car-image-box">
-                    <img src="{% static 'images/mobil-hitam.png' %}" alt="{{ car.name }}">
+                    {% if car.image %}
+                        <img src="{{ car.image.url }}" alt="{{ car.name }}">
+                    {% else %}
+                        <img src="{% static 'images/mobil-hitam.png' %}" alt="{{ car.name }}">
+                    {% endif %}
                 </div>
 
                 <div>
@@ -378,14 +392,14 @@
                 <div class="price-detail">
                     <div>Rp {{ car.price }}</div>
                     <div class="line">Rp 0</div>
-                    <strong>Rp {{ car.price }}</strong>
+                    <strong>Rp {{ total }}</strong>
                 </div>
             </div>
 
             <div class="box">
                 <div class="form-title">Data Penyewa</div>
 
-                <form id="paymentForm" method="POST" action="{% url 'booking' car.id %}" enctype="multipart/form-data">
+                <form id="paymentForm" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
 
                     <label>Nama</label>
@@ -399,12 +413,14 @@
 
                         <div>
                             <label>KTP</label>
-                            <button type="button" class="upload-btn">Upload KTP</button>
+                            <label for="ktpFile" class="upload-btn">Upload KTP</label>
+                            <input type="file" id="ktpFile" name="ktp" class="upload-input" accept="image/*,.pdf">
                         </div>
                     </div>
 
                     <input type="hidden" name="tanggal" value="{{ today|date:'Y-m-d' }}">
-                    <input type="hidden" name="hari" value="1">
+                    <input type="hidden" name="hari" value="{{ durasi }}">
+                    <input type="hidden" name="total" value="{{ total }}">
 
                     <div class="box" style="padding:0; box-shadow:none; margin-top:5px;">
                         <div class="form-title">Payment Method</div>
@@ -468,12 +484,12 @@
 
             <div class="summary-row">
                 <span>Durasi</span>
-                <span>1 Hari</span>
+                <span>{{ durasi }} Hari</span>
             </div>
 
             <div class="summary-row">
                 <span>Total</span>
-                <span>Rp {{ car.price }}</span>
+                <span>Rp {{ total }}</span>
             </div>
 
             <div class="info-box">
