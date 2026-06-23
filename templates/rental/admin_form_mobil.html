@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }} - SmartDrive</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef1f5;
+            color: #1e1e1e;
+        }
+
+        .navbar {
+            height: 78px;
+            background: #111827;
+            display: flex;
+            align-items: center;
+            padding: 0 42px;
+        }
+
+        .brand {
+            font-size: 34px;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+            margin-right: auto;
+        }
+
+        .brand span {
+            color: #2f6fde;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 38px 0 60px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            height: 46px;
+            border: 1px solid #dfe3ea;
+            border-radius: 10px;
+            padding: 0 14px;
+            margin-bottom: 18px;
+            font-size: 14px;
+        }
+
+        input[type="file"].form-input {
+            padding: 12px;
+            height: auto;
+        }
+
+        .preview-box {
+            width: 220px;
+            height: 140px;
+            background: #e6e4ea;
+            border-radius: 14px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .save-btn,
+        .back-btn {
+            border: none;
+            text-decoration: none;
+            padding: 14px 22px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .save-btn {
+            background: #2f6fde;
+            color: white;
+        }
+
+        .back-btn {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .errorlist {
+            color: #dc2626;
+            font-weight: 700;
+            margin-bottom: 10px;
+            list-style: none;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="{% url 'home' %}" class="brand">
+        <span>Smart</span>Drive
+    </a>
+</nav>
+
+<div class="container">
+    <div class="card">
+        <h1>{{ title }}</h1>
+        <p class="subtitle">Isi data mobil dengan benar. Kapasitas adalah jumlah orang, harga adalah harga sewa per hari.</p>
+
+        {% if car and car.image %}
+        <div class="preview-box">
+            <img src="{{ car.image.url }}" alt="{{ car.name }}">
+        </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {{ form.non_field_errors }}
+
+            <label>Nama Mobil</label>
+            {{ form.name }}
+
+            <label>Brand</label>
+            {{ form.brand }}
+
+            <label>Transmisi</label>
+            {{ form.transmission }}
+
+            <label>Kapasitas</label>
+            {{ form.capacity }}
+
+            <label>Harga</label>
+            {{ form.price }}
+
+            <label>Gambar Mobil</label>
+            {{ form.image }}
+
+            <div class="btn-row">
+                <button type="submit" class="save-btn">{{ button_text }}</button>
+                <a href="{% url 'admin_mobil' %}" class="back-btn">Kembali</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

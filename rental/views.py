@@ -1,51 +1,19 @@
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
 from datetime import date
-from .models import Booking
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Car, Booking
-from datetime import date
-
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from django.contrib.auth.decorators import login_required
-
 import os
 import json
+
 from dotenv import load_dotenv
 from google import genai
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.csrf import csrf_exempt
 
-
-cars = [
-    {
-        "id": 0,
-        "name": "Toyota Avanza",
-        "price": 350000,
-        "capacity": "7 Orang",
-        "transmission": "Manual",
-        "status": "Tersedia",
-        "image": "🚙",
-    },
-    {
-        "id": 1,
-        "name": "Honda Brio",
-        "price": 300000,
-        "capacity": "5 Orang",
-        "transmission": "Matic",
-        "status": "Tersedia",
-        "image": "🚗",
-    },
-    {
-        "id": 2,
-        "name": "Toyota Innova",
-        "price": 500000,
-        "capacity": "7 Orang",
-        "transmission": "Matic",
-        "status": "Tersedia",
-        "image": "🚘",
-    },
-]
+from .models import Car, Booking
+from .forms import CarForm
 
 
 load_dotenv()
@@ -57,30 +25,55 @@ if GEMINI_API_KEY:
     client = genai.Client(api_key=GEMINI_API_KEY)
 
 
+def is_admin(user):
+    return user.is_authenticated and user.is_staff
+
+
+def get_cars_for_ai():
+    cars_data = []
+
+    for car in Car.objects.all().order_by("id"):
+        cars_data.append({
+            "id": car.id,
+            "name": car.name,
+            "price": car.price,
+            "capacity": f"{car.capacity} Orang",
+            "transmission": car.transmission,
+            "status": "Tersedia",
+            "brand": car.brand,
+        })
+
+    return cars_data
+
+
 def home(request):
+    cars = Car.objects.all().order_by("id")
+
     return render(request, "rental/home.html", {
         "cars": cars
     })
 
 
-from .models import Car
-
 def katalog(request):
-    cars = Car.objects.all()
-    return render(request, 'rental/katalog.html', {
-        'cars': cars
+    cars = Car.objects.all().order_by("id")
+
+    return render(request, "rental/katalog.html", {
+        "cars": cars
     })
-    
+
+
 def detail_mobil(request, car_id):
     car = get_object_or_404(Car, id=car_id)
 
-    return render(request, 'rental/detail.html', {
-        'car': car
+    return render(request, "rental/detail.html", {
+        "car": car
     })
 
 
 def login_page(request):
     if request.user.is_authenticated:
+        if request.user.is_staff or request.user.is_superuser:
+            return redirect("admin_mobil")
         return redirect("home")
 
     error = None
@@ -106,6 +99,9 @@ def login_page(request):
                 next_url = request.GET.get("next")
                 if next_url:
                     return redirect(next_url)
+
+                if user.is_staff or user.is_superuser:
+                    return redirect("admin_mobil")
 
                 return redirect("home")
             else:
@@ -157,174 +153,264 @@ def logout_page(request):
     return redirect("login")
 
 
-def detail_mobil(request, car_id):
-    car = get_object_or_404(Car, id=car_id)
-
-    return render(request, 'rental/detail.html', {
-        'car': car
-    })
-
-
 @login_required(login_url="login")
 def payment(request, car_id):
+    if request.user.is_staff or request.user.is_superuser:
+        return redirect("admin_mobil")
+
     car = get_object_or_404(Car, id=car_id)
 
     durasi = 1
     total = car.price * durasi
     today = date.today()
 
-    return render(request, 'rental/payment.html', {
-        'car': car,
-        'durasi': durasi,
-        'total': total,
-        'today': today,
+    return render(request, "rental/payment.html", {
+        "car": car,
+        "durasi": durasi,
+        "total": total,
+        "today": today,
     })
-    
-    
+
+
 @login_required(login_url="login")
 def payment_bank(request, car_id):
+    if request.user.is_staff or request.user.is_superuser:
+        return redirect("admin_mobil")
+
     car = get_object_or_404(Car, id=car_id)
 
     durasi = 1
     total = car.price * durasi
+    today = date.today()
 
-    return render(request, 'rental/payment_bank.html', {
-        'car': car,
-        'durasi': durasi,
-        'total': total
+    return render(request, "rental/payment_bank.html", {
+        "car": car,
+        "durasi": durasi,
+        "total": total,
+        "today": today,
     })
 
 
 @login_required(login_url="login")
 def payment_ewallet(request, car_id):
+    if request.user.is_staff or request.user.is_superuser:
+        return redirect("admin_mobil")
+
     car = get_object_or_404(Car, id=car_id)
 
     durasi = 1
     total = car.price * durasi
+    today = date.today()
 
-    return render(request, 'rental/payment_ewallet.html', {
-        'car': car,
-        'durasi': durasi,
-        'total': total
+    return render(request, "rental/payment_ewallet.html", {
+        "car": car,
+        "durasi": durasi,
+        "total": total,
+        "today": today,
     })
+
+@login_required(login_url="login")
+def booking(request, car_id):
+    if request.user.is_staff or request.user.is_superuser:
+        return redirect("admin_mobil")
+
+    car = get_object_or_404(Car, id=car_id)
+
+    if request.method == "POST":
+        nama = request.POST.get("nama", "").strip()
+        hari = request.POST.get("hari", 1)
+        tanggal = request.POST.get("tanggal") or date.today()
+        payment_method = request.POST.get("payment_method")
+
+        if nama == "":
+            nama = request.user.get_full_name() or request.user.username
+
+        try:
+            hari = int(hari)
+        except ValueError:
+            hari = 1
+
+        total = car.price * hari
+
+        Booking.objects.create(
+            user=request.user,
+            car=car,
+            nama=nama,
+            mobil=car.name,
+            tanggal=tanggal,
+            hari=hari,
+            total=total,
+            metode_pembayaran=payment_method,
+            status="menunggu"
+        )
+
+        if payment_method == "Transfer Bank":
+            return redirect("payment_bank", car_id=car.id)
+
+        if payment_method == "E-Wallet":
+            return redirect("payment_ewallet", car_id=car.id)
+
+        return redirect("history")
+
+    return redirect("payment", car_id=car.id)
 
 
 @login_required(login_url="login")
 def konfirmasi_payment(request, car_id, metode):
-    if car_id < 0 or car_id >= len(cars):
-        return redirect("katalog")
-
-    car = cars[car_id]
+    car = get_object_or_404(Car, id=car_id)
 
     if request.method == "POST":
         nama = request.POST.get("nama", "").strip()
-        tanggal = request.POST.get("tanggal")
+        tanggal = request.POST.get("tanggal") or date.today()
         hari = request.POST.get("hari", 1)
 
         if nama == "":
             nama = request.user.get_full_name() or request.user.username
 
-        if not tanggal:
-            tanggal = date.today()
-
         try:
             hari = int(hari)
-        except:
+        except ValueError:
             hari = 1
 
-        total = car["price"] * hari
+        total = car.price * hari
 
-        try:
-            Booking.objects.create(
-                nama=nama,
-                mobil=car["name"],
-                tanggal=tanggal,
-                hari=hari,
-                total=total,
-                metode_pembayaran=metode,
-                status="menunggu"
-            )
-        except TypeError:
-            Booking.objects.create(
-                nama=nama,
-                mobil=car["name"],
-                tanggal=tanggal,
-                hari=hari,
-                total=total
-            )
+        Booking.objects.create(
+            user=request.user,
+            car=car,
+            nama=nama,
+            mobil=car.name,
+            tanggal=tanggal,
+            hari=hari,
+            total=total,
+            metode_pembayaran=metode,
+            status="menunggu"
+        )
 
         return redirect("history")
 
-    return redirect("payment", car_id=car_id)
-
-
-@login_required(login_url="login")
-def booking(request, car_id):
-    if car_id < 0 or car_id >= len(cars):
-        return redirect("katalog")
-
-    car = cars[car_id]
-    error = None
-    success = None
-
-    if request.method == "POST":
-        nama = request.POST.get("nama", "").strip()
-        tanggal = request.POST.get("tanggal")
-        hari = int(request.POST.get("hari", 1))
-        total = car["price"] * hari
-
-        if nama == "":
-            error = "Nama penyewa wajib diisi."
-        else:
-            try:
-                Booking.objects.create(
-                    nama=nama,
-                    mobil=car["name"],
-                    tanggal=tanggal,
-                    hari=hari,
-                    total=total,
-                    metode_pembayaran="bank",
-                    status="menunggu"
-                )
-            except TypeError:
-                Booking.objects.create(
-                    nama=nama,
-                    mobil=car["name"],
-                    tanggal=tanggal,
-                    hari=hari,
-                    total=total
-                )
-
-            success = f"Booking berhasil! Total Rp {total:,}"
-
-    return render(request, "rental/booking.html", {
-        "car": car,
-        "error": error,
-        "success": success,
-        "today": date.today()
-    })
+    return redirect("payment", car_id=car.id)
 
 
 @login_required(login_url="login")
 def history(request):
-    data_booking = Booking.objects.all().order_by("-id")
+    bookings = Booking.objects.filter(user=request.user).order_by("-created_at")
 
     return render(request, "rental/history.html", {
-        "history": data_booking
+        "bookings": bookings,
+        "total_booking": bookings.count(),
     })
+
+
+@login_required(login_url="login")
+@user_passes_test(is_admin, login_url="home")
+def admin_mobil(request):
+    cars = Car.objects.all().order_by("-id")
+
+    return render(request, "rental/admin_mobil.html", {
+        "cars": cars
+    })
+
+
+@login_required(login_url="login")
+@user_passes_test(is_admin, login_url="home")
+def admin_tambah_mobil(request):
+    if request.method == "POST":
+        form = CarForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            form.save()
+            return redirect("admin_mobil")
+    else:
+        form = CarForm()
+
+    return render(request, "rental/admin_form_mobil.html", {
+        "form": form,
+        "title": "Tambah Mobil",
+        "button_text": "Simpan Mobil"
+    })
+
+
+@login_required(login_url="login")
+@user_passes_test(is_admin, login_url="home")
+def admin_edit_mobil(request, car_id):
+    car = get_object_or_404(Car, id=car_id)
+
+    if request.method == "POST":
+        form = CarForm(request.POST, request.FILES, instance=car)
+
+        if form.is_valid():
+            form.save()
+            return redirect("admin_mobil")
+    else:
+        form = CarForm(instance=car)
+
+    return render(request, "rental/admin_form_mobil.html", {
+        "form": form,
+        "car": car,
+        "title": "Edit Mobil",
+        "button_text": "Update Mobil"
+    })
+
+
+@login_required(login_url="login")
+@user_passes_test(is_admin, login_url="home")
+def admin_hapus_mobil(request, car_id):
+    car = get_object_or_404(Car, id=car_id)
+
+    if request.method == "POST":
+        car.delete()
+        return redirect("admin_mobil")
+
+    return render(request, "rental/admin_hapus_mobil.html", {
+        "car": car
+    })
+
+
+@login_required(login_url="login")
+@user_passes_test(is_admin, login_url="home")
+def admin_booking(request):
+    bookings = Booking.objects.all().order_by("-created_at")
+
+    return render(request, "rental/admin_booking.html", {
+        "bookings": bookings
+    })
+
+
+@login_required(login_url="login")
+@user_passes_test(is_admin, login_url="home")
+def admin_update_status(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id)
+
+    if request.method == "POST":
+        status = request.POST.get("status")
+
+        if status in ["menunggu", "diproses", "selesai", "ditolak"]:
+            booking.status = status
+            booking.save()
+
+    return redirect("admin_booking")
 
 
 @login_required(login_url="login")
 def ai_rekomendasi(request):
     hasil = []
     pesan = None
+    cars_data = get_cars_for_ai()
 
     if request.method == "POST":
-        jumlah_orang = int(request.POST.get("jumlah_orang", 1))
-        budget = int(request.POST.get("budget", 100000))
+        try:
+            jumlah_orang = int(request.POST.get("jumlah_orang", 1))
+        except ValueError:
+            jumlah_orang = 1
+
+        try:
+            budget = int(request.POST.get("budget", 100000))
+        except ValueError:
+            budget = 100000
+
         kebutuhan = request.POST.get("kebutuhan")
 
-        for car in cars:
+        for car in cars_data:
             kapasitas = int(car["capacity"].split()[0])
 
             if kapasitas >= jumlah_orang and car["price"] <= budget:
@@ -345,10 +431,23 @@ def ai_rekomendasi(request):
 
 
 def api_cars(request):
+    cars_data = []
+
+    for car in Car.objects.all().order_by("id"):
+        cars_data.append({
+            "id": car.id,
+            "name": car.name,
+            "brand": car.brand,
+            "price": car.price,
+            "capacity": car.capacity,
+            "transmission": car.transmission,
+            "image": car.image.url if car.image else None,
+        })
+
     return JsonResponse({
         "status": "success",
         "message": "Data mobil berhasil diambil",
-        "data": cars
+        "data": cars_data
     })
 
 
@@ -370,10 +469,13 @@ def ai_chat(request):
                     "reply": "Pesan tidak boleh kosong."
                 })
 
+            cars_data = get_cars_for_ai()
+
             daftar_mobil = ""
-            for car in cars:
+            for car in cars_data:
                 daftar_mobil += (
-                    f"- {car['name']}, harga Rp {car['price']:,}/hari, "
+                    f"- {car['name']}, brand {car['brand']}, "
+                    f"harga Rp {car['price']:,}/hari, "
                     f"kapasitas {car['capacity']}, transmisi {car['transmission']}, "
                     f"status {car['status']}\n"
                 )

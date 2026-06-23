@@ -1,5 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
+from PIL import Image
+from rembg import remove
+from io import BytesIO
+from django.core.files.base import ContentFile
+import os
 
 
 class Car(models.Model):
@@ -10,6 +15,37 @@ class Car(models.Model):
     price = models.IntegerField()
     image = models.ImageField(upload_to='cars/', blank=True, null=True)
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if self.image:
+            image_path = self.image.path
+
+            try:
+                with open(image_path, 'rb') as input_file:
+                    input_data = input_file.read()
+
+                output_data = remove(input_data)
+
+                img = Image.open(BytesIO(output_data)).convert("RGBA")
+
+                buffer = BytesIO()
+                img.save(buffer, format="PNG")
+
+                file_name = os.path.splitext(os.path.basename(self.image.name))[0]
+                new_file_name = f"{file_name}_removebg.png"
+
+                self.image.save(
+                    f"cars/{new_file_name}",
+                    ContentFile(buffer.getvalue()),
+                    save=False
+                )
+
+                super().save(update_fields=["image"])
+
+            except Exception as e:
+                print("Gagal remove background:", e)
+
     def __str__(self):
         return self.name
 
@@ -17,11 +53,13 @@ class Car(models.Model):
 class Booking(models.Model):
     STATUS_CHOICES = [
         ('menunggu', 'Menunggu Konfirmasi'),
-        ('disetujui', 'Pembayaran Disetujui'),
-        ('ditolak', 'Pembayaran Ditolak'),
+        ('diproses', 'Sedang Diproses'),
+        ('selesai', 'Berhasil'),
+        ('ditolak', 'Ditolak'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    car = models.ForeignKey(Car, on_delete=models.SET_NULL, null=True, blank=True)
     nama = models.CharField(max_length=100)
     mobil = models.CharField(max_length=100)
     tanggal = models.DateField()

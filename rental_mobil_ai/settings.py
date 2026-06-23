@@ -5,8 +5,8 @@ from dotenv import load_dotenv
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 SECRET_KEY = 'django-insecure-dj&i#=+nbpa(fxw*#)ul6j51r5q+g_w@a0zda5pb#)j66l3*$i'
+LOGIN_REDIRECT_URL = '/admin-mobil/'
 
 DEBUG = True
 

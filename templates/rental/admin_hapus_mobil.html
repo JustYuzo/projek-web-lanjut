@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Hapus Mobil - SmartDrive</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #eef1f5;
+            color: #1e1e1e;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 620px;
+            margin: 0 auto;
+            padding: 80px 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+        }
+
+        h1 {
+            font-size: 30px;
+            font-weight: 800;
+            margin-bottom: 14px;
+        }
+
+        p {
+            color: #6b7280;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .btn-row {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .delete-btn,
+        .back-btn {
+            border: none;
+            text-decoration: none;
+            padding: 14px 22px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        .back-btn {
+            background: #e5e7eb;
+            color: #111827;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <h1>Hapus Mobil?</h1>
+        <p>Apakah kamu yakin ingin menghapus mobil <b>{{ car.name }}</b>?</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="btn-row">
+                <button type="submit" class="delete-btn">Ya, Hapus</button>
+                <a href="{% url 'admin_mobil' %}" class="back-btn">Batal</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

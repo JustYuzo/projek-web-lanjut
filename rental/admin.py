@@ -14,13 +14,13 @@ class BookingAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'user',
+        'car',
         'nama',
         'mobil',
         'tanggal',
         'hari',
         'total',
         'metode_pembayaran',
-        'bank_pembayaran',
         'status',
         'created_at',
     )
@@ -28,7 +28,6 @@ class BookingAdmin(admin.ModelAdmin):
     list_filter = (
         'status',
         'metode_pembayaran',
-        'bank_pembayaran',
         'created_at',
     )
 

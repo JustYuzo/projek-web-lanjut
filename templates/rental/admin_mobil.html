@@ -1,0 +1,256 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Mobil - SmartDrive</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef1f5;
+            color: #1e1e1e;
+        }
+
+        .navbar {
+            height: 78px;
+            background: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 42px;
+        }
+
+        .brand {
+            font-size: 34px;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+        }
+
+        .brand span {
+            color: #2f6fde;
+        }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-area span {
+            color: white;
+            font-size: 13px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .logout-btn {
+            background: #2f6fde;
+            color: white;
+            text-decoration: none;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 800;
+            min-width: 92px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logout-btn:hover {
+            background: #1d58bf;
+        }
+
+        .team-logo {
+            width: 76px;
+            height: 76px;
+            object-fit: contain;
+            margin-left: 18px;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 1150px;
+            margin: 0 auto;
+            padding: 38px 0 60px;
+        }
+
+        .top-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 26px;
+        }
+
+        .title h1 {
+            font-size: 34px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .title p {
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .add-btn {
+            background: #2f6fde;
+            color: white;
+            text-decoration: none;
+            padding: 14px 22px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 14px;
+            color: #6b7280;
+            font-size: 13px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        td {
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            border-bottom: 1px solid #f1f1f1;
+            vertical-align: middle;
+        }
+
+        .car-img {
+            width: 90px;
+            height: 58px;
+            background: #e6e4ea;
+            border-radius: 10px;
+            object-fit: contain;
+            padding: 4px;
+        }
+
+        .action {
+            display: flex;
+            gap: 8px;
+        }
+
+        .edit-btn,
+        .delete-btn {
+            text-decoration: none;
+            padding: 9px 13px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .edit-btn {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .delete-btn {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 35px;
+            color: #6b7280;
+            font-weight: 800;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="brand">
+        <span>Smart</span>Drive
+    </div>
+
+    <div class="user-area">
+        <span>Halo, {{ user.username }}</span>
+        <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+        <img src="{% static 'images/logo-tim.png' %}" class="team-logo" alt="Logo Tim">
+    </div>
+</nav>
+
+<div class="container">
+    <div class="top-area">
+        <div class="title">
+            <h1>Kelola Mobil</h1>
+            <p>Admin dapat menambahkan, mengedit, dan menghapus data mobil.</p>
+        </div>
+
+        <a href="{% url 'admin_tambah_mobil' %}" class="add-btn">+ Tambah Mobil</a>
+        <a href="{% url 'admin_booking' %}" class="add-btn">Kelola Booking</a>
+    </div>
+
+    <div class="table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Gambar</th>
+                    <th>Nama</th>
+                    <th>Brand</th>
+                    <th>Transmisi</th>
+                    <th>Kapasitas</th>
+                    <th>Harga</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for car in cars %}
+                <tr>
+                    <td>
+                        {% if car.image %}
+                            <img src="{{ car.image.url }}" class="car-img" alt="{{ car.name }}">
+                        {% else %}
+                            <img src="{% static 'images/mobil-hitam.png' %}" class="car-img" alt="{{ car.name }}">
+                        {% endif %}
+                    </td>
+                    <td>{{ car.name }}</td>
+                    <td>{{ car.brand }}</td>
+                    <td>{{ car.transmission }}</td>
+                    <td>{{ car.capacity }} Orang</td>
+                    <td>Rp {{ car.price }}</td>
+                    <td>
+                        <div class="action">
+                            <a href="{% url 'admin_edit_mobil' car.id %}" class="edit-btn">Edit</a>
+                            <a href="{% url 'admin_hapus_mobil' car.id %}" class="delete-btn">Hapus</a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="empty">Belum ada data mobil.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

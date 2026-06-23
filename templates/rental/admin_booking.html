@@ -1,0 +1,397 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Booking - SmartDrive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef1f5;
+            color: #1e1e1e;
+        }
+
+        .page {
+            width: 100%;
+            min-height: 100vh;
+            background: #eef1f5;
+        }
+
+        .navbar {
+            height: 78px;
+            background: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 42px;
+        }
+
+        .brand {
+            font-size: 34px;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+        }
+
+        .brand span {
+            color: #2f6fde;
+        }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-area span {
+            color: white;
+            font-size: 13px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .logout-btn {
+            background: #2f6fde;
+            color: white;
+            text-decoration: none;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 800;
+            min-width: 92px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logout-btn:hover {
+            background: #1d58bf;
+        }
+
+        .team-logo {
+            width: 76px;
+            height: 76px;
+            object-fit: contain;
+            margin-left: 18px;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 1250px;
+            margin: 0 auto;
+            padding: 38px 0 60px;
+        }
+
+        .top-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 26px;
+        }
+
+        .title h1 {
+            font-size: 34px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .title p {
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .top-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .top-btn {
+            background: #2f6fde;
+            color: white;
+            text-decoration: none;
+            padding: 14px 22px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .top-btn:hover {
+            background: #1d58bf;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1050px;
+        }
+
+        th {
+            text-align: left;
+            padding: 14px;
+            color: #6b7280;
+            font-size: 13px;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            border-bottom: 1px solid #f1f1f1;
+            vertical-align: middle;
+        }
+
+        .car-img {
+            width: 90px;
+            height: 58px;
+            background: #e6e4ea;
+            border-radius: 10px;
+            object-fit: contain;
+            padding: 4px;
+        }
+
+        .status-text {
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .status-menunggu {
+            color: #b98200;
+        }
+
+        .status-diproses {
+            color: #1d4ed8;
+        }
+
+        .status-selesai {
+            color: #15803d;
+        }
+
+        .status-ditolak {
+            color: #dc2626;
+        }
+
+        .status-form {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-select {
+            height: 42px;
+            border: 1px solid #dfe3ea;
+            border-radius: 8px;
+            padding: 0 10px;
+            font-weight: 800;
+            outline: none;
+            background: white;
+            min-width: 175px;
+        }
+
+        .status-select:focus {
+            border-color: #2f6fde;
+        }
+
+        .save-btn {
+            height: 42px;
+            border: none;
+            background: #2f6fde;
+            color: white;
+            padding: 0 16px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .save-btn:hover {
+            background: #1d58bf;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 35px;
+            color: #6b7280;
+            font-weight: 800;
+        }
+
+        @media (max-width: 800px) {
+            .navbar {
+                height: auto;
+                padding: 18px 24px;
+                flex-wrap: wrap;
+                gap: 16px;
+            }
+
+            .brand {
+                font-size: 28px;
+            }
+
+            .user-area {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .team-logo {
+                width: 60px;
+                height: 60px;
+                margin-left: 8px;
+            }
+
+            .top-area {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .top-buttons {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="page">
+
+    <nav class="navbar">
+        <div class="brand">
+            <span>Smart</span>Drive
+        </div>
+
+        <div class="user-area">
+            <span>Halo, {{ user.username }}</span>
+            <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+            <img src="{% static 'images/logo-tim.png' %}" class="team-logo" alt="Logo Tim">
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <div class="top-area">
+            <div class="title">
+                <h1>Kelola Booking</h1>
+                <p>Admin dapat mengubah status pesanan user.</p>
+            </div>
+
+            <div class="top-buttons">
+                <a href="{% url 'admin_mobil' %}" class="top-btn">Kelola Mobil</a>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Gambar</th>
+                        <th>Mobil</th>
+                        <th>Penyewa</th>
+                        <th>Tanggal</th>
+                        <th>Durasi</th>
+                        <th>Total</th>
+                        <th>Metode</th>
+                        <th>Status Saat Ini</th>
+                        <th>Ubah Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td>
+                            {% if booking.car and booking.car.image %}
+                                <img src="{{ booking.car.image.url }}" class="car-img" alt="{{ booking.mobil }}">
+                            {% else %}
+                                <img src="{% static 'images/mobil-hitam.png' %}" class="car-img" alt="{{ booking.mobil }}">
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if booking.car %}
+                                {{ booking.car.name }}
+                            {% else %}
+                                {{ booking.mobil }}
+                            {% endif %}
+                        </td>
+
+                        <td>{{ booking.nama }}</td>
+                        <td>{{ booking.tanggal|date:"d M Y" }}</td>
+                        <td>{{ booking.hari }} Hari</td>
+                        <td>Rp {{ booking.total }}</td>
+                        <td>{{ booking.metode_pembayaran|default:"-" }}</td>
+
+                        <td>
+                            {% if booking.status == "menunggu" %}
+                                <span class="status-text status-menunggu">Menunggu Konfirmasi</span>
+                            {% elif booking.status == "diproses" %}
+                                <span class="status-text status-diproses">Sedang Diproses</span>
+                            {% elif booking.status == "selesai" %}
+                                <span class="status-text status-selesai">Berhasil</span>
+                            {% elif booking.status == "ditolak" %}
+                                <span class="status-text status-ditolak">Ditolak</span>
+                            {% else %}
+                                <span class="status-text status-menunggu">{{ booking.status }}</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <form method="POST" action="{% url 'admin_update_status' booking.id %}" class="status-form">
+                                {% csrf_token %}
+
+                                <select name="status" class="status-select">
+                                    <option value="menunggu" {% if booking.status == "menunggu" %}selected{% endif %}>
+                                        Menunggu Konfirmasi
+                                    </option>
+
+                                    <option value="diproses" {% if booking.status == "diproses" %}selected{% endif %}>
+                                        Sedang Diproses
+                                    </option>
+
+                                    <option value="selesai" {% if booking.status == "selesai" %}selected{% endif %}>
+                                        Berhasil
+                                    </option>
+
+                                    <option value="ditolak" {% if booking.status == "ditolak" %}selected{% endif %}>
+                                        Ditolak
+                                    </option>
+                                </select>
+
+                                <button type="submit" class="save-btn">Simpan</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="empty">
+                            Belum ada booking masuk.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>

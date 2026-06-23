@@ -4,18 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Riwayat Transaksi - SmartDrive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
         }
 
         body {
+            margin: 0;
             font-family: Arial, sans-serif;
-            background: #1f1f1f;
-            color: #111827;
+            background: #eef1f5;
+            color: #1e1e1e;
         }
 
         .page {
@@ -57,296 +57,258 @@
             font-weight: 700;
         }
 
-        .nav-menu a:hover {
+        .nav-menu a:hover,
+        .nav-menu a.active {
             color: #2f6fde;
         }
 
         .team-logo {
-            width: 75px;
-            height: 75px;
+            width: 70px;
+            height: 70px;
             object-fit: contain;
         }
 
-        .history-wrapper {
+        .container {
             width: 92%;
-            max-width: 1200px;
+            max-width: 1150px;
             margin: 0 auto;
-            padding: 36px 0 60px;
+            padding: 35px 0 50px;
         }
 
-        .page-header {
+        .small-title {
+            color: #2f6fde;
+            font-size: 15px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .main-title {
+            font-size: 34px;
+            font-weight: 800;
+            margin: 0 0 10px;
+        }
+
+        .subtitle {
+            color: #5f6b7a;
+            font-size: 14px;
+            margin-bottom: 26px;
+        }
+
+        .top-row {
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
-            gap: 20px;
-            margin-bottom: 28px;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 22px;
         }
 
-        .header-left .small-title {
-            color: #2f6fde;
-            font-size: 14px;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .header-left h1 {
-            font-size: 28px;
-            font-weight: 900;
-            color: #111827;
-            margin-bottom: 8px;
-        }
-
-        .header-left p {
-            font-size: 14px;
-            color: #6b7280;
-            font-weight: 600;
-        }
-
-        .btn-primary {
-            display: inline-block;
-            background: #2f73df;
+        .booking-btn {
+            background: #2f6fde;
             color: white;
             text-decoration: none;
-            padding: 13px 20px;
-            border-radius: 11px;
-            font-size: 14px;
+            padding: 14px 22px;
+            border-radius: 12px;
             font-weight: 800;
-            transition: 0.2s ease;
+            font-size: 14px;
         }
 
-        .btn-primary:hover {
-            background: #1f5fc4;
-            transform: translateY(-1px);
+        .booking-btn:hover {
+            background: #1d58bf;
         }
 
-        .summary-box {
+        .stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 18px;
-            margin-bottom: 24px;
+            margin-bottom: 26px;
         }
 
-        .summary-card {
+        .stat-card {
             background: white;
             border-radius: 14px;
-            padding: 18px;
+            padding: 18px 20px;
         }
 
-        .summary-card span {
-            display: block;
-            font-size: 13px;
+        .stat-card .label {
             color: #8b8f99;
+            font-size: 13px;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
-        .summary-card strong {
-            font-size: 22px;
-            color: #111827;
-            font-weight: 900;
+        .stat-card .value {
+            font-size: 24px;
+            font-weight: 800;
         }
 
         .history-list {
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 22px;
         }
 
         .history-card {
             background: white;
-            border-radius: 16px;
-            padding: 20px;
+            border-radius: 18px;
+            padding: 24px;
             display: grid;
-            grid-template-columns: 120px 1fr 230px;
+            grid-template-columns: 130px 1.2fr 1fr 230px;
             gap: 22px;
             align-items: center;
-            box-shadow: 0 8px 20px rgba(17, 24, 39, 0.06);
         }
 
-        .car-image {
-            width: 120px;
-            height: 85px;
-            background: #e6e4ea;
-            border-radius: 12px;
+        .car-image-box {
+            width: 130px;
+            height: 90px;
+            background: #ececf2;
+            border-radius: 14px;
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .car-image img {
-            width: 95%;
-            height: 95%;
+        .car-image-box img {
+            width: 100%;
+            height: 100%;
             object-fit: contain;
+            display: block;
         }
 
-        .booking-info h3 {
-            font-size: 18px;
-            font-weight: 900;
+        .car-title {
+            font-size: 20px;
+            font-weight: 800;
             margin-bottom: 8px;
-            color: #111827;
         }
 
-        .booking-info .customer {
-            color: #6b7280;
-            font-size: 13px;
-            font-weight: 700;
+        .tenant-name {
+            color: #5f6b7a;
+            font-size: 14px;
             margin-bottom: 16px;
         }
 
         .detail-grid {
             display: grid;
-            grid-template-columns: repeat(2, minmax(160px, 1fr));
-            gap: 12px 22px;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 26px;
         }
 
-        .detail-item span {
-            display: block;
-            font-size: 12px;
+        .detail-item .label {
             color: #8b8f99;
-            font-weight: 700;
+            font-size: 12px;
             margin-bottom: 4px;
         }
 
-        .detail-item strong {
+        .detail-item .value {
             font-size: 14px;
-            color: #111827;
-            font-weight: 900;
+            font-weight: 800;
         }
 
-        .payment-side {
-            border-left: 1px solid #e5e7eb;
-            padding-left: 22px;
+        .right-side {
+            border-left: 1px solid #e6e8ee;
+            padding-left: 24px;
         }
 
         .status-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 13px;
+            display: inline-block;
+            padding: 10px 16px;
             border-radius: 999px;
-            font-size: 12px;
-            font-weight: 900;
-            margin-bottom: 14px;
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 16px;
         }
 
         .status-menunggu {
-            background: #fff3cd;
-            color: #b7791f;
+            background: #fcefcf;
+            color: #b98200;
         }
 
-        .status-disetujui {
+        .status-diproses {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .status-selesai {
             background: #dcfce7;
             color: #15803d;
         }
 
         .status-ditolak {
             background: #fee2e2;
-            color: #b91c1c;
+            color: #dc2626;
         }
 
-        .total-label {
-            font-size: 12px;
+        .price-label,
+        .method-label {
             color: #8b8f99;
-            font-weight: 700;
-            margin-bottom: 5px;
+            font-size: 12px;
+            margin-bottom: 4px;
         }
 
         .total-price {
-            font-size: 20px;
-            color: #001eff;
-            font-weight: 900;
-            margin-bottom: 12px;
+            font-size: 18px;
+            font-weight: 800;
+            color: #1246ff;
+            margin-bottom: 14px;
         }
 
-        .payment-method {
-            font-size: 13px;
-            color: #111827;
+        .method-value {
+            font-size: 14px;
             font-weight: 800;
         }
 
         .empty-box {
             background: white;
             border-radius: 16px;
-            padding: 45px 25px;
+            padding: 40px 20px;
             text-align: center;
+            color: #7c8594;
+            font-weight: 700;
         }
 
-        .empty-icon {
-            font-size: 45px;
-            margin-bottom: 12px;
-        }
+        @media (max-width: 1000px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
 
-        .empty-box h2 {
-            font-size: 22px;
-            font-weight: 900;
-            margin-bottom: 8px;
-        }
-
-        .empty-box p {
-            color: #6b7280;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        @media (max-width: 950px) {
             .history-card {
                 grid-template-columns: 1fr;
             }
 
-            .car-image {
-                width: 100%;
-                height: 160px;
-            }
-
-            .payment-side {
+            .right-side {
                 border-left: none;
-                border-top: 1px solid #e5e7eb;
+                border-top: 1px solid #e6e8ee;
                 padding-left: 0;
-                padding-top: 18px;
-            }
-
-            .summary-box {
-                grid-template-columns: 1fr;
-            }
-
-            .page-header {
-                flex-direction: column;
-                align-items: flex-start;
+                padding-top: 20px;
             }
         }
 
-        @media (max-width: 650px) {
+        @media (max-width: 700px) {
             .navbar {
                 height: auto;
-                min-height: 78px;
+                padding: 18px 20px;
                 flex-wrap: wrap;
-                padding: 16px 20px;
-                gap: 12px;
+                gap: 14px;
             }
 
             .nav-menu {
                 width: 100%;
                 justify-content: center;
                 flex-wrap: wrap;
+                gap: 18px;
             }
 
-            .team-logo {
-                width: 60px;
-                height: 60px;
+            .top-row {
+                flex-direction: column;
+                align-items: flex-start;
             }
 
             .detail-grid {
                 grid-template-columns: 1fr;
             }
-
-            .history-wrapper {
-                width: 94%;
-            }
         }
     </style>
 </head>
-
 <body>
 
 <div class="page">
@@ -360,118 +322,123 @@
             <a href="{% url 'home' %}">Home</a>
             <a href="{% url 'katalog' %}">Katalog</a>
             <a href="{% url 'ai' %}">AI</a>
-            <a href="{% url 'history' %}">Riwayat</a>
+            <a href="{% url 'history' %}" class="active">Riwayat</a>
         </div>
 
         <img src="{% static 'images/logo-tim.png' %}" class="team-logo" alt="Logo Tim">
     </nav>
 
-    <div class="history-wrapper">
-
-        <div class="page-header">
-            <div class="header-left">
-                <div class="small-title">Riwayat Transaksi</div>
-                <h1>Riwayat Booking Mobil</h1>
-                <p>Lihat daftar pesanan, metode pembayaran, dan status persetujuan dari admin.</p>
-            </div>
-
-            <a href="{% url 'katalog' %}" class="btn-primary">+ Booking Lagi</a>
+    <div class="container">
+        <div class="small-title">Riwayat Transaksi</div>
+        <h1 class="main-title">Riwayat Booking Mobil</h1>
+        <div class="subtitle">
+            Lihat daftar pesanan, metode pembayaran, dan status persetujuan dari admin.
         </div>
 
-        <div class="summary-box">
-            <div class="summary-card">
-                <span>Total Booking</span>
-                <strong>{{ history|length }}</strong>
+        <div class="top-row">
+            <div></div>
+            <a href="{% url 'katalog' %}" class="booking-btn">+ Booking Lagi</a>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="label">Total Booking</div>
+                <div class="value">{{ total_booking }}</div>
             </div>
 
-            <div class="summary-card">
-                <span>Status Pembayaran</span>
-                <strong>Realtime</strong>
+            <div class="stat-card">
+                <div class="label">Status Pembayaran</div>
+                <div class="value">Realtime</div>
             </div>
 
-            <div class="summary-card">
-                <span>Persetujuan</span>
-                <strong>Admin</strong>
+            <div class="stat-card">
+                <div class="label">Persetujuan</div>
+                <div class="value">Admin</div>
             </div>
         </div>
 
-        {% if history %}
-            <div class="history-list">
+        <div class="history-list">
+            {% for booking in bookings %}
+            <div class="history-card">
 
-                {% for booking in history %}
-                    <div class="history-card">
+                <div class="car-image-box">
+                    {% if booking.car and booking.car.image %}
+                        <img src="{{ booking.car.image.url }}" alt="{{ booking.mobil }}">
+                    {% else %}
+                        <img src="{% static 'images/mobil-hitam.png' %}" alt="{{ booking.mobil }}">
+                    {% endif %}
+                </div>
 
-                        <div class="car-image">
-                            <img src="{% static 'images/mobil-hitam.png' %}" alt="{{ booking.mobil }}">
-                        </div>
-
-                        <div class="booking-info">
-                            <h3>{{ booking.mobil }}</h3>
-                            <div class="customer">Penyewa: {{ booking.nama }}</div>
-
-                            <div class="detail-grid">
-                                <div class="detail-item">
-                                    <span>Tanggal Mulai</span>
-                                    <strong>{{ booking.tanggal|date:"d F Y" }}</strong>
-                                </div>
-
-                                <div class="detail-item">
-                                    <span>Durasi Sewa</span>
-                                    <strong>{{ booking.hari }} Hari</strong>
-                                </div>
-
-                                <div class="detail-item">
-                                    <span>Lokasi Ambil</span>
-                                    <strong>SmartDrive</strong>
-                                </div>
-
-                                <div class="detail-item">
-                                    <span>Lokasi Kembali</span>
-                                    <strong>SmartDrive</strong>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="payment-side">
-
-                            {% if booking.status == "disetujui" %}
-                                <div class="status-badge status-disetujui">
-                                    ✓ {{ booking.get_status_display }}
-                                </div>
-                            {% elif booking.status == "ditolak" %}
-                                <div class="status-badge status-ditolak">
-                                    ✕ {{ booking.get_status_display }}
-                                </div>
-                            {% else %}
-                                <div class="status-badge status-menunggu">
-                                    ⏳ {{ booking.get_status_display }}
-                                </div>
-                            {% endif %}
-
-                            <div class="total-label">Total Pembayaran</div>
-                            <div class="total-price">Rp {{ booking.total }}</div>
-
-                            <div class="total-label">Metode Pembayaran</div>
-                            <div class="payment-method">
-                                {{ booking.get_metode_pembayaran_display }}
-                            </div>
-                        </div>
-
+                <div>
+                    <div class="car-title">
+                        {% if booking.car %}
+                            {{ booking.car.name }}
+                        {% else %}
+                            {{ booking.mobil }}
+                        {% endif %}
                     </div>
-                {% endfor %}
+
+                    <div class="tenant-name">Penyewa: {{ booking.nama }}</div>
+
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="label">Tanggal Mulai</div>
+                            <div class="value">{{ booking.tanggal|date:"d F Y" }}</div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="label">Durasi Sewa</div>
+                            <div class="value">{{ booking.hari }} Hari</div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="label">Lokasi Ambil</div>
+                            <div class="value">SmartDrive</div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="label">Lokasi Kembali</div>
+                            <div class="value">SmartDrive</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div></div>
+
+                <div class="right-side">
+                    {% if booking.status == 'menunggu' %}
+                        <div class="status-badge status-menunggu">⏳ Menunggu Konfirmasi</div>
+                    {% elif booking.status == 'diproses' %}
+                        <div class="status-badge status-diproses">🔄 Sedang Diproses</div>
+                    {% elif booking.status == 'selesai' %}
+                        <div class="status-badge status-selesai">✅ Berhasil</div>
+                    {% elif booking.status == 'ditolak' %}
+                        <div class="status-badge status-ditolak">❌ Ditolak</div>
+                    {% else %}
+                        <div class="status-badge status-menunggu">{{ booking.status }}</div>
+                    {% endif %}
+
+                    <div class="price-label">Total Pembayaran</div>
+                    <div class="total-price">Rp {{ booking.total }}</div>
+
+                    <div class="method-label">Metode Pembayaran</div>
+                    <div class="method-value">
+                        {% if booking.metode_pembayaran %}
+                            {{ booking.metode_pembayaran }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </div>
+                </div>
 
             </div>
-        {% else %}
+            {% empty %}
             <div class="empty-box">
-                <div class="empty-icon">🚗</div>
-                <h2>Belum Ada Riwayat Booking</h2>
-                <p>Kamu belum memiliki transaksi rental mobil. Silakan pilih mobil dan lakukan booking terlebih dahulu.</p>
-                <a href="{% url 'katalog' %}" class="btn-primary">Lihat Katalog</a>
+                Belum ada riwayat booking. Silakan pesan mobil terlebih dahulu.
             </div>
-        {% endif %}
-
+            {% endfor %}
+        </div>
     </div>
-
 </div>
 
 </body>
