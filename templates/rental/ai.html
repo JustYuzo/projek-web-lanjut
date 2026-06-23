@@ -1,95 +1,251 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>AI Rental Mobil - Gemini</title>
+    <title>AI Rental Mobil - SmartDrive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f3f6ff;
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef1f5;
+            color: #222;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        .navbar {
+            height: 78px;
+            background-color: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 42px;
+            overflow: visible;
+        }
+
+        .brand {
+            font-size: 34px;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .brand span {
+            color: #2f6fde;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 34px;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: #2f6fde;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-info {
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .login-btn {
+            color: white;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 9px 16px;
+            border-radius: 7px;
+        }
+
+        .login-btn:hover {
+            color: #2f6fde;
+        }
+
+        .signup-btn,
+        .logout-btn {
+            background-color: #2f6fde;
+            color: white;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 9px 20px;
+            border-radius: 7px;
+            border: none;
+            display: inline-block;
+        }
+
+        .signup-btn:hover,
+        .logout-btn:hover {
+            background-color: #1d58bf;
+        }
+
+        .team-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            transform: scale(1.15);
+        }
+
+        /* ================= CONTENT ================= */
+
         .container {
             width: 900px;
-            margin: 40px auto;
+            max-width: 92%;
+            margin: 40px auto 70px;
         }
 
         h1 {
             text-align: center;
-            color: #2563eb;
+            color: #2f6fde;
+            font-size: 38px;
+            font-weight: 800;
+            margin-bottom: 28px;
         }
 
         .box {
             background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            margin-bottom: 25px;
+            padding: 28px;
+            border-radius: 18px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+            margin-bottom: 28px;
+        }
+
+        .box h2 {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            color: #111;
         }
 
         label {
-            font-weight: bold;
+            font-size: 15px;
+            font-weight: 800;
+            display: block;
+            margin-bottom: 8px;
         }
 
-        input, select {
+        input,
+        select {
             width: 100%;
-            padding: 12px;
-            margin-top: 8px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
+            height: 52px;
+            padding: 0 14px;
+            margin-bottom: 18px;
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            outline: none;
+            font-size: 14px;
+            font-weight: 600;
+            background: white;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #2f6fde;
         }
 
         button {
-            background: #2563eb;
+            background: #2f6fde;
             color: white;
             border: none;
-            padding: 12px 18px;
-            border-radius: 8px;
+            padding: 14px 22px;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 800;
+            font-size: 14px;
         }
 
         button:hover {
-            background: #1d4ed8;
+            background: #1d58bf;
         }
 
         .card {
             background: #f9fafb;
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 10px;
+            border: 1px solid #e5e7eb;
+            padding: 18px;
+            border-radius: 12px;
+            margin-top: 12px;
+        }
+
+        .card h3 {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        .error-text {
+            color: #dc2626;
+            margin-top: 15px;
+            font-weight: 700;
         }
 
         .chat-box {
             height: 350px;
             overflow-y: auto;
-            border: 1px solid #ddd;
+            border: 1px solid #e5e7eb;
             padding: 15px;
-            border-radius: 10px;
+            border-radius: 12px;
             background: #fafafa;
             margin-bottom: 15px;
         }
 
         .user {
-            background: #2563eb;
+            background: #2f6fde;
             color: white;
-            padding: 10px;
-            border-radius: 10px;
+            padding: 12px;
+            border-radius: 12px;
             margin: 8px 0;
             text-align: right;
+            font-weight: 600;
         }
 
         .bot {
             background: #e5e7eb;
             color: #111;
-            padding: 10px;
-            border-radius: 10px;
+            padding: 12px;
+            border-radius: 12px;
             margin: 8px 0;
+            font-weight: 600;
+            line-height: 1.5;
         }
 
         .chat-input {
@@ -99,20 +255,86 @@
 
         .chat-input input {
             margin: 0;
+            flex: 1;
         }
 
-        .back {
-            display: inline-block;
-            margin-bottom: 20px;
-            text-decoration: none;
-            color: #2563eb;
-            font-weight: bold;
+        .chat-input button {
+            min-width: 100px;
         }
 
-        @media (max-width: 950px) {
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 900px) {
+            .navbar {
+                height: auto;
+                min-height: 78px;
+                padding: 16px 20px;
+                flex-wrap: wrap;
+                gap: 14px;
+            }
+
+            .brand {
+                font-size: 26px;
+            }
+
+            .nav-menu {
+                order: 3;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 18px;
+            }
+
+            .nav-right {
+                gap: 10px;
+            }
+
+            .auth-buttons {
+                gap: 6px;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+
+            .login-btn {
+                padding: 7px 8px;
+            }
+
+            .signup-btn,
+            .logout-btn {
+                padding: 7px 10px;
+            }
+
+            .team-logo {
+                width: 60px;
+                height: 60px;
+                transform: scale(1.1);
+            }
+        }
+
+        @media (max-width: 600px) {
             .container {
-                width: 92%;
-                margin: 30px auto;
+                margin: 30px auto 50px;
+            }
+
+            h1 {
+                font-size: 30px;
+            }
+
+            .box {
+                padding: 20px;
+            }
+
+            .box h2 {
+                font-size: 22px;
+            }
+
+            .chat-input {
+                flex-direction: column;
+            }
+
+            .chat-input button {
+                width: 100%;
             }
         }
     </style>
@@ -120,9 +342,36 @@
 
 <body>
 
-<div class="container">
+<nav class="navbar">
+    <a href="{% url 'home' %}" class="brand">
+        <span>Smart</span>Drive
+    </a>
 
-    <a href="/" class="back">← Kembali ke Beranda</a>
+    <div class="nav-menu">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'katalog' %}">Katalog</a>
+        <a href="{% url 'ai' %}" class="active">AI</a>
+        <a href="{% url 'history' %}">Riwayat</a>
+    </div>
+
+    <div class="nav-right">
+        <div class="auth-buttons">
+            {% if user.is_authenticated %}
+                <span class="user-info">
+                    Halo, {{ user.first_name|default:user.username }}
+                </span>
+                <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="login-btn">Login</a>
+                <a href="{% url 'signup' %}" class="signup-btn">Sign Up</a>
+            {% endif %}
+        </div>
+
+        <img src="{% static 'images/logo-tim.png' %}" class="team-logo" alt="Logo Tim">
+    </div>
+</nav>
+
+<div class="container">
 
     <h1>AI Rental Mobil</h1>
 
@@ -149,15 +398,15 @@
         </form>
 
         {% if pesan %}
-            <p style="color:red; margin-top:15px;">{{ pesan }}</p>
+            <p class="error-text">{{ pesan }}</p>
         {% endif %}
 
         {% if hasil %}
-            <h3>Hasil Rekomendasi:</h3>
+            <h2 style="margin-top: 28px;">Hasil Rekomendasi</h2>
 
             {% for car in hasil %}
                 <div class="card">
-                    <h3>{{ car.image }} {{ car.name }}</h3>
+                    <h3>{{ car.name }}</h3>
                     <p>Harga: Rp {{ car.price }} / hari</p>
                     <p>Kapasitas: {{ car.capacity }}</p>
                     <p>Transmisi: {{ car.transmission }}</p>
@@ -178,7 +427,7 @@
 
         <div class="chat-input">
             <input type="text" id="message" placeholder="Contoh: Saya mau sewa mobil untuk keluarga 6 orang">
-            <button onclick="sendMessage()">Kirim</button>
+            <button type="button" onclick="sendMessage()">Kirim</button>
         </div>
     </div>
 

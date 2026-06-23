@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime, timedelta
 import os
 import json
 
@@ -85,13 +85,25 @@ def login_page(request):
         if email == "" or password == "":
             error = "Email dan kata sandi wajib diisi."
         else:
-            try:
-                user_obj = User.objects.get(email=email)
-                username = user_obj.username
-            except User.DoesNotExist:
-                username = email
+            user = None
+            users_by_email = User.objects.filter(email=email)
 
-            user = authenticate(request, username=username, password=password)
+            if users_by_email.exists():
+                for user_obj in users_by_email:
+                    user = authenticate(
+                        request,
+                        username=user_obj.username,
+                        password=password
+                    )
+
+                    if user is not None:
+                        break
+            else:
+                user = authenticate(
+                    request,
+                    username=email,
+                    password=password
+                )
 
             if user is not None:
                 auth_login(request, user)
@@ -153,6 +165,73 @@ def logout_page(request):
     return redirect("login")
 
 
+def format_tanggal_indonesia(tanggal_date):
+    bulan = [
+        "Jan", "Feb", "Mar", "Apr", "Mei", "Jun",
+        "Jul", "Agu", "Sep", "Okt", "Nov", "Des"
+    ]
+
+    return f"{tanggal_date.day:02d} {bulan[tanggal_date.month - 1]} {tanggal_date.year}"
+
+
+def hitung_payment_data(car, tanggal_mulai_input=None, hari=None, total=None, nama=None, user=None):
+    if not tanggal_mulai_input:
+        tanggal_mulai_input = date.today().strftime("%Y-%m-%d")
+
+    try:
+        durasi = int(hari)
+    except (TypeError, ValueError):
+        durasi = 1
+
+    if durasi < 1:
+        durasi = 1
+
+    try:
+        total_final = int(total)
+    except (TypeError, ValueError):
+        total_final = car.price * durasi
+
+    try:
+        tanggal_mulai_date = datetime.strptime(tanggal_mulai_input, "%Y-%m-%d").date()
+    except ValueError:
+        tanggal_mulai_date = date.today()
+        tanggal_mulai_input = tanggal_mulai_date.strftime("%Y-%m-%d")
+
+    tanggal_selesai_date = tanggal_mulai_date + timedelta(days=durasi - 1)
+
+    nama_final = nama
+    if not nama_final and user is not None:
+        nama_final = user.get_full_name() or user.username
+
+    return {
+        "nama": nama_final or "",
+        "tanggal_mulai_input": tanggal_mulai_input,
+        "tanggal_mulai_text": format_tanggal_indonesia(tanggal_mulai_date),
+        "tanggal_selesai_text": format_tanggal_indonesia(tanggal_selesai_date),
+        "durasi": durasi,
+        "total": total_final,
+    }
+
+
+def get_payment_context(request, car):
+    session_data = request.session.get(f"payment_data_{car.id}", {})
+
+    payment_data = hitung_payment_data(
+        car=car,
+        tanggal_mulai_input=session_data.get("tanggal"),
+        hari=session_data.get("hari"),
+        total=session_data.get("total"),
+        nama=session_data.get("nama"),
+        user=request.user,
+    )
+
+    return {
+        "car": car,
+        "today": date.today(),
+        **payment_data,
+    }
+
+
 @login_required(login_url="login")
 def payment(request, car_id):
     if request.user.is_staff or request.user.is_superuser:
@@ -160,54 +239,21 @@ def payment(request, car_id):
 
     car = get_object_or_404(Car, id=car_id)
 
-    durasi = 1
-    total = car.price * durasi
-    today = date.today()
+    # Saat user kembali ke halaman payment, pakai data awal 1 hari.
+    payment_data = hitung_payment_data(
+        car=car,
+        tanggal_mulai_input=date.today().strftime("%Y-%m-%d"),
+        hari=1,
+        total=car.price,
+        user=request.user,
+    )
 
     return render(request, "rental/payment.html", {
         "car": car,
-        "durasi": durasi,
-        "total": total,
-        "today": today,
+        "today": date.today(),
+        **payment_data,
     })
 
-
-@login_required(login_url="login")
-def payment_bank(request, car_id):
-    if request.user.is_staff or request.user.is_superuser:
-        return redirect("admin_mobil")
-
-    car = get_object_or_404(Car, id=car_id)
-
-    durasi = 1
-    total = car.price * durasi
-    today = date.today()
-
-    return render(request, "rental/payment_bank.html", {
-        "car": car,
-        "durasi": durasi,
-        "total": total,
-        "today": today,
-    })
-
-
-@login_required(login_url="login")
-def payment_ewallet(request, car_id):
-    if request.user.is_staff or request.user.is_superuser:
-        return redirect("admin_mobil")
-
-    car = get_object_or_404(Car, id=car_id)
-
-    durasi = 1
-    total = car.price * durasi
-    today = date.today()
-
-    return render(request, "rental/payment_ewallet.html", {
-        "car": car,
-        "durasi": durasi,
-        "total": total,
-        "today": today,
-    })
 
 @login_required(login_url="login")
 def booking(request, car_id):
@@ -218,73 +264,108 @@ def booking(request, car_id):
 
     if request.method == "POST":
         nama = request.POST.get("nama", "").strip()
+        tanggal = request.POST.get("tanggal") or date.today().strftime("%Y-%m-%d")
         hari = request.POST.get("hari", 1)
-        tanggal = request.POST.get("tanggal") or date.today()
-        payment_method = request.POST.get("payment_method")
+        total = request.POST.get("total")
+        payment_method = request.POST.get("payment_method", "Transfer Bank")
 
         if nama == "":
             nama = request.user.get_full_name() or request.user.username
 
-        try:
-            hari = int(hari)
-        except ValueError:
-            hari = 1
-
-        total = car.price * hari
-
-        Booking.objects.create(
-            user=request.user,
+        payment_data = hitung_payment_data(
             car=car,
-            nama=nama,
-            mobil=car.name,
-            tanggal=tanggal,
+            tanggal_mulai_input=tanggal,
             hari=hari,
             total=total,
-            metode_pembayaran=payment_method,
-            status="menunggu"
+            nama=nama,
+            user=request.user,
         )
 
-        if payment_method == "Transfer Bank":
-            return redirect("payment_bank", car_id=car.id)
+        request.session[f"payment_data_{car.id}"] = {
+            "nama": payment_data["nama"],
+            "tanggal": payment_data["tanggal_mulai_input"],
+            "hari": payment_data["durasi"],
+            "total": payment_data["total"],
+            "payment_method": payment_method,
+        }
+
+        request.session.modified = True
 
         if payment_method == "E-Wallet":
             return redirect("payment_ewallet", car_id=car.id)
 
-        return redirect("history")
+        return redirect("payment_bank", car_id=car.id)
 
     return redirect("payment", car_id=car.id)
 
 
 @login_required(login_url="login")
+def payment_bank(request, car_id):
+    if request.user.is_staff or request.user.is_superuser:
+        return redirect("admin_mobil")
+
+    car = get_object_or_404(Car, id=car_id)
+    context = get_payment_context(request, car)
+
+    return render(request, "rental/payment_bank.html", context)
+
+
+@login_required(login_url="login")
+def payment_ewallet(request, car_id):
+    if request.user.is_staff or request.user.is_superuser:
+        return redirect("admin_mobil")
+
+    car = get_object_or_404(Car, id=car_id)
+    context = get_payment_context(request, car)
+
+    return render(request, "rental/payment_ewallet.html", context)
+
+
+@login_required(login_url="login")
 def konfirmasi_payment(request, car_id, metode):
+    if request.user.is_staff or request.user.is_superuser:
+        return redirect("admin_mobil")
+
     car = get_object_or_404(Car, id=car_id)
 
     if request.method == "POST":
-        nama = request.POST.get("nama", "").strip()
-        tanggal = request.POST.get("tanggal") or date.today()
-        hari = request.POST.get("hari", 1)
+        session_data = request.session.get(f"payment_data_{car.id}", {})
 
-        if nama == "":
-            nama = request.user.get_full_name() or request.user.username
+        nama = request.POST.get("nama") or session_data.get("nama") or request.user.get_full_name() or request.user.username
+        tanggal = request.POST.get("tanggal") or session_data.get("tanggal") or date.today().strftime("%Y-%m-%d")
+        hari = request.POST.get("hari") or session_data.get("hari") or 1
+        total = request.POST.get("total") or session_data.get("total")
 
-        try:
-            hari = int(hari)
-        except ValueError:
-            hari = 1
+        payment_data = hitung_payment_data(
+            car=car,
+            tanggal_mulai_input=tanggal,
+            hari=hari,
+            total=total,
+            nama=nama,
+            user=request.user,
+        )
 
-        total = car.price * hari
+        if metode == "bank":
+            metode_pembayaran = "Transfer Bank"
+        elif metode == "ewallet":
+            metode_pembayaran = "E-Wallet"
+        else:
+            metode_pembayaran = metode
 
         Booking.objects.create(
             user=request.user,
             car=car,
-            nama=nama,
+            nama=payment_data["nama"],
             mobil=car.name,
-            tanggal=tanggal,
-            hari=hari,
-            total=total,
-            metode_pembayaran=metode,
+            tanggal=payment_data["tanggal_mulai_input"],
+            hari=payment_data["durasi"],
+            total=payment_data["total"],
+            metode_pembayaran=metode_pembayaran,
             status="menunggu"
         )
+
+        request.session.pop(f"payment_data_{car.id}", None)
+        request.session.modified = True
 
         return redirect("history")
 

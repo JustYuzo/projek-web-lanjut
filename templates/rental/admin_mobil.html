@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin Mobil - SmartDrive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
         * {
             box-sizing: border-box;
@@ -14,16 +16,17 @@
         body {
             font-family: Arial, sans-serif;
             background: #eef1f5;
-            color: #1e1e1e;
+            color: #222;
         }
 
         .navbar {
             height: 78px;
-            background: #111827;
+            background-color: #111827;
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 42px;
+            overflow: visible;
         }
 
         .brand {
@@ -31,6 +34,7 @@
             font-weight: 800;
             color: white;
             text-decoration: none;
+            white-space: nowrap;
         }
 
         .brand span {
@@ -40,45 +44,42 @@
         .user-area {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 18px;
         }
 
         .user-area span {
             color: white;
-            font-size: 13px;
-            font-weight: 800;
+            font-size: 12px;
+            font-weight: 700;
             white-space: nowrap;
         }
 
         .logout-btn {
-            background: #2f6fde;
+            background-color: #2f6fde;
             color: white;
             text-decoration: none;
-            padding: 14px 24px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 800;
-            min-width: 92px;
-            height: 46px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 9px 20px;
+            border-radius: 7px;
+            border: none;
+            display: inline-block;
         }
 
         .logout-btn:hover {
-            background: #1d58bf;
+            background-color: #1d58bf;
         }
 
         .team-logo {
-            width: 76px;
-            height: 76px;
+            width: 80px;
+            height: 80px;
             object-fit: contain;
-            margin-left: 18px;
+            transform: scale(1.15);
         }
 
         .container {
             width: 92%;
-            max-width: 1150px;
+            max-width: 1500px;
             margin: 0 auto;
             padding: 38px 0 60px;
         }
@@ -86,58 +87,79 @@
         .top-area {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 26px;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: 28px;
         }
 
         .title h1 {
-            font-size: 34px;
+            font-size: 42px;
             font-weight: 800;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            color: #222;
         }
 
         .title p {
             color: #6b7280;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
         }
 
+        .top-buttons {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
         .add-btn {
-            background: #2f6fde;
+            background-color: #2f6fde;
             color: white;
             text-decoration: none;
-            padding: 14px 22px;
+            padding: 16px 26px;
             border-radius: 10px;
             font-weight: 800;
             font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 170px;
+        }
+
+        .add-btn:hover {
+            background-color: #1d58bf;
         }
 
         .table-card {
             background: white;
             border-radius: 18px;
-            padding: 22px;
+            padding: 22px 28px;
             box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+            overflow-x: auto;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 950px;
         }
 
         th {
             text-align: left;
-            padding: 14px;
+            padding: 16px 14px;
             color: #6b7280;
             font-size: 13px;
+            font-weight: 800;
             border-bottom: 1px solid #e5e7eb;
         }
 
         td {
-            padding: 14px;
+            padding: 16px 14px;
             font-size: 14px;
             font-weight: 700;
             border-bottom: 1px solid #f1f1f1;
             vertical-align: middle;
+            color: #222;
         }
 
         .car-img {
@@ -152,6 +174,7 @@
         .action {
             display: flex;
             gap: 8px;
+            align-items: center;
         }
 
         .edit-btn,
@@ -161,6 +184,8 @@
             border-radius: 8px;
             font-size: 12px;
             font-weight: 800;
+            border: none;
+            cursor: pointer;
         }
 
         .edit-btn {
@@ -168,9 +193,17 @@
             color: #1d4ed8;
         }
 
+        .edit-btn:hover {
+            background: #cfe0ff;
+        }
+
         .delete-btn {
             background: #fee2e2;
             color: #dc2626;
+        }
+
+        .delete-btn:hover {
+            background: #ffd6d6;
         }
 
         .empty {
@@ -179,17 +212,70 @@
             color: #6b7280;
             font-weight: 800;
         }
+
+        @media (max-width: 900px) {
+            .navbar {
+                height: auto;
+                min-height: 78px;
+                padding: 16px 20px;
+                flex-wrap: wrap;
+                gap: 14px;
+            }
+
+            .brand {
+                font-size: 26px;
+            }
+
+            .user-area {
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .team-logo {
+                width: 60px;
+                height: 60px;
+                transform: scale(1.1);
+            }
+
+            .top-area {
+                flex-direction: column;
+            }
+
+            .title h1 {
+                font-size: 34px;
+            }
+
+            .top-buttons {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .navbar {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .user-area {
+                justify-content: center;
+            }
+
+            .add-btn {
+                width: 100%;
+            }
+        }
     </style>
 </head>
+
 <body>
 
 <nav class="navbar">
-    <div class="brand">
+    <a href="{% url 'admin_mobil' %}" class="brand">
         <span>Smart</span>Drive
-    </div>
+    </a>
 
     <div class="user-area">
-        <span>Halo, {{ user.username }}</span>
+        <span>Halo, admin</span>
         <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
         <img src="{% static 'images/logo-tim.png' %}" class="team-logo" alt="Logo Tim">
     </div>
@@ -202,8 +288,10 @@
             <p>Admin dapat menambahkan, mengedit, dan menghapus data mobil.</p>
         </div>
 
-        <a href="{% url 'admin_tambah_mobil' %}" class="add-btn">+ Tambah Mobil</a>
-        <a href="{% url 'admin_booking' %}" class="add-btn">Kelola Booking</a>
+        <div class="top-buttons">
+            <a href="{% url 'admin_tambah_mobil' %}" class="add-btn">+ Tambah Mobil</a>
+            <a href="{% url 'admin_booking' %}" class="add-btn">Kelola Booking</a>
+        </div>
     </div>
 
     <div class="table-card">
@@ -230,11 +318,13 @@
                             <img src="{% static 'images/mobil-hitam.png' %}" class="car-img" alt="{{ car.name }}">
                         {% endif %}
                     </td>
+
                     <td>{{ car.name }}</td>
                     <td>{{ car.brand }}</td>
                     <td>{{ car.transmission }}</td>
                     <td>{{ car.capacity }} Orang</td>
                     <td>Rp {{ car.price }}</td>
+
                     <td>
                         <div class="action">
                             <a href="{% url 'admin_edit_mobil' car.id %}" class="edit-btn">Edit</a>

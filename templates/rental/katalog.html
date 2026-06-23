@@ -26,13 +26,16 @@
             background-color: #f4f7fb;
         }
 
-        /* NAVBAR SAMA SEPERTI HALAMAN HOME */
+        /* ================= NAVBAR SAMA SEPERTI HOME ================= */
+
         .navbar {
             height: 78px;
             background-color: #111827;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             padding: 0 42px;
+            overflow: visible;
         }
 
         .brand {
@@ -40,7 +43,7 @@
             font-weight: 800;
             color: white;
             text-decoration: none;
-            margin-right: auto;
+            white-space: nowrap;
         }
 
         .brand span {
@@ -49,10 +52,8 @@
 
         .nav-menu {
             display: flex;
-            align-items: center;
             gap: 34px;
-            margin-left: auto;
-            margin-right: 55px;
+            align-items: center;
         }
 
         .nav-menu a {
@@ -67,44 +68,64 @@
             color: #2f6fde;
         }
 
-        .user-area {
+        .nav-right {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 18px;
         }
 
-        .user-area span {
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-info {
             color: white;
-            font-size: 13px;
-            font-weight: 800;
+            font-size: 12px;
+            font-weight: 700;
             white-space: nowrap;
         }
 
+        .login-btn {
+            color: white;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 9px 16px;
+            border-radius: 7px;
+        }
+
+        .login-btn:hover {
+            color: #2f6fde;
+        }
+
+        .signup-btn,
         .logout-btn {
             background-color: #2f6fde;
             color: white;
             text-decoration: none;
-            padding: 14px 24px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 800;
-            min-width: 92px;
-            height: 46px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 9px 20px;
+            border-radius: 7px;
+            border: none;
+            display: inline-block;
         }
 
+        .signup-btn:hover,
         .logout-btn:hover {
             background-color: #1d58bf;
         }
 
         .team-logo {
-            width: 76px;
-            height: 76px;
+            width: 80px;
+            height: 80px;
             object-fit: contain;
-            margin-left: 18px;
+            transform: scale(1.15);
         }
+
+        /* ================= CONTENT ================= */
 
         .main-content {
             padding: 38px 52px 70px;
@@ -181,10 +202,13 @@
             margin-top: 4px;
         }
 
+        /* ================= CATALOG CARD ================= */
+
         .catalog-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 18px;
+            align-items: start;
         }
 
         .car-card {
@@ -209,11 +233,12 @@
             justify-content: center;
             overflow: hidden;
             margin-bottom: 12px;
+            padding: 6px;
         }
 
         .car-image-box img {
-            width: 95%;
-            height: 95%;
+            width: 100%;
+            height: 100%;
             object-fit: contain;
             display: block;
         }
@@ -257,8 +282,8 @@
             background-color: #1d58bf;
         }
 
-        .empty-result {
-            display: none;
+        .empty-result,
+        .empty-db {
             grid-column: 1 / -1;
             background: white;
             border-radius: 15px;
@@ -268,16 +293,15 @@
             color: #8b8f99;
         }
 
+        .empty-result {
+            display: none;
+        }
+
         .empty-db {
             display: block;
-            grid-column: 1 / -1;
-            background: white;
-            border-radius: 15px;
-            padding: 28px;
-            text-align: center;
-            font-weight: 800;
-            color: #8b8f99;
         }
+
+        /* ================= RESPONSIVE ================= */
 
         @media (max-width: 1100px) {
             .catalog-layout {
@@ -297,33 +321,48 @@
         @media (max-width: 900px) {
             .navbar {
                 height: auto;
-                padding: 18px 24px;
+                min-height: 78px;
+                padding: 16px 20px;
                 flex-wrap: wrap;
-                gap: 16px;
+                gap: 14px;
             }
 
             .brand {
-                font-size: 28px;
-                margin-right: 0;
+                font-size: 26px;
             }
 
             .nav-menu {
+                order: 3;
                 width: 100%;
+                display: flex;
                 justify-content: center;
                 flex-wrap: wrap;
                 gap: 18px;
-                margin: 0;
-                order: 3;
             }
 
-            .user-area {
-                margin-left: auto;
+            .nav-right {
+                gap: 10px;
+            }
+
+            .auth-buttons {
+                gap: 6px;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+
+            .login-btn {
+                padding: 7px 8px;
+            }
+
+            .signup-btn,
+            .logout-btn {
+                padding: 7px 10px;
             }
 
             .team-logo {
                 width: 60px;
                 height: 60px;
-                margin-left: 8px;
+                transform: scale(1.1);
             }
         }
 
@@ -343,6 +382,25 @@
             .catalog-grid {
                 grid-template-columns: 1fr;
             }
+
+            .user-info {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .navbar {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .nav-right {
+                flex-direction: column;
+            }
+
+            .auth-buttons {
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -360,16 +418,20 @@
             <a href="{% url 'katalog' %}" class="active">Katalog</a>
             <a href="{% url 'ai' %}">AI</a>
             <a href="{% url 'history' %}">Riwayat</a>
-            <a href="{% url 'api_cars' %}">API</a>
         </div>
 
-        <div class="user-area">
-            {% if user.is_authenticated %}
-                <span>Halo, {{ user.username }}</span>
-                <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
-            {% else %}
-                <a href="{% url 'login' %}" class="logout-btn">Login</a>
-            {% endif %}
+        <div class="nav-right">
+            <div class="auth-buttons">
+                {% if user.is_authenticated %}
+                    <span class="user-info">
+                        Halo, {{ user.first_name|default:user.username }}
+                    </span>
+                    <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="login-btn">Login</a>
+                    <a href="{% url 'signup' %}" class="signup-btn">Sign Up</a>
+                {% endif %}
+            </div>
 
             <img src="{% static 'images/logo-tim.png' %}" class="team-logo" alt="Logo Tim">
         </div>
@@ -524,6 +586,19 @@
         return "Rp " + Number(value).toLocaleString("id-ID");
     }
 
+    function applyQueryFilter() {
+        const params = new URLSearchParams(window.location.search);
+        const capacity = params.get("capacity");
+
+        if (capacity) {
+            capacityCheckboxes.forEach(checkbox => {
+                if (checkbox.value === capacity) {
+                    checkbox.checked = true;
+                }
+            });
+        }
+    }
+
     function filterCars() {
         const selectedBrands = Array.from(brandCheckboxes)
             .filter(checkbox => checkbox.checked)
@@ -571,7 +646,8 @@
             }
         });
 
-        emptyResult.style.display = visibleCount === 0 && carCards.length > 0 ? "block" : "none";
+        emptyResult.style.display =
+            visibleCount === 0 && carCards.length > 0 ? "block" : "none";
     }
 
     brandCheckboxes.forEach(checkbox => {
@@ -585,6 +661,7 @@
     minPriceInput.addEventListener("input", filterCars);
     maxPriceInput.addEventListener("input", filterCars);
 
+    applyQueryFilter();
     filterCars();
 </script>
 

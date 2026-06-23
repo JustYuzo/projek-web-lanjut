@@ -318,12 +318,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
+            padding: 6px;
         }
 
         .summary-image img {
-            width: 95%;
-            height: 95%;
+            width: 100%;
+            height: 100%;
             object-fit: contain;
+            display: block;
         }
 
         .summary-car h3 {
@@ -434,7 +437,7 @@
             <h1 class="title">Pembayaran dengan Transfer Bank</h1>
 
             <div class="label-small">Total Pembayaran</div>
-            <div class="total-price">Rp {{ car.price }}</div>
+            <div class="total-price">Rp {{ total|default:car.price }}</div>
 
             <div class="box">
                 <h2 class="section-title">Pilih Bank</h2>
@@ -495,7 +498,7 @@
                         <div class="virtual-row">
                             <div class="virtual-label">Total Tagihan</div>
                             <div class="virtual-value">
-                                <span id="totalBill">Rp {{ car.price }}</span>
+                                <span id="totalBill">Rp {{ total|default:car.price }}</span>
                                 <button class="copy-btn" type="button" onclick="copyText(document.getElementById('totalBill').innerText)">
                                     Salin
                                 </button>
@@ -543,9 +546,10 @@
                 <form method="POST" action="{% url 'konfirmasi_payment' car.id 'bank' %}">
                     {% csrf_token %}
 
-                    <input type="hidden" name="nama" value="{{ request.user.get_full_name|default:request.user.username }}">
-                    <input type="hidden" name="tanggal" value="{{ today|date:'Y-m-d' }}">
-                    <input type="hidden" name="hari" value="1">
+                    <input type="hidden" name="nama" value="{{ nama }}">
+                    <input type="hidden" name="tanggal" value="{{ tanggal_mulai_input }}">
+                    <input type="hidden" name="hari" value="{{ durasi|default:1 }}">
+                    <input type="hidden" name="total" value="{{ total|default:car.price }}">
 
                     <button type="submit" class="btn-konfirmasi-payment">
                         Konfirmasi Pembayaran
@@ -562,23 +566,27 @@
         <div class="summary">
             <div class="summary-car">
                 <div class="summary-image">
-                    <img src="{% static 'images/mobil-hitam.png' %}" alt="{{ car.name }}">
+                    {% if car.image %}
+                        <img src="{{ car.image.url }}" alt="{{ car.name }}">
+                    {% else %}
+                        <img src="{% static 'images/mobil-hitam.png' %}" alt="{{ car.name }}">
+                    {% endif %}
                 </div>
 
                 <div>
                     <h3>{{ car.name }}</h3>
-                    <p>Durasi: 1 Hari</p>
+                    <p>Durasi: {{ durasi|default:1 }} Hari</p>
                 </div>
             </div>
 
             <div class="summary-row">
                 <span>Tanggal Mulai</span>
-                <span>{{ today|date:"d M Y" }}</span>
+                <span>{{ tanggal_mulai_text|default:today|date:"d M Y" }}</span>
             </div>
 
             <div class="summary-row">
                 <span>Tanggal Selesai</span>
-                <span>{{ today|date:"d M Y" }}</span>
+                <span>{{ tanggal_selesai_text|default:today|date:"d M Y" }}</span>
             </div>
 
             <div class="summary-row">
@@ -593,7 +601,7 @@
 
             <div class="summary-row total">
                 <span>Total Pembayaran</span>
-                <span>Rp {{ car.price }}</span>
+                <span>Rp {{ total|default:car.price }}</span>
             </div>
         </div>
 

@@ -28,6 +28,8 @@
             background-color: #eef1f5;
         }
 
+        /* ================= NAVBAR ================= */
+
         .navbar {
             height: 78px;
             background-color: #111827;
@@ -121,19 +123,23 @@
             transform: scale(1.15);
         }
 
+        /* ================= HERO ================= */
+
         .hero {
             display: grid;
             grid-template-columns: 1fr 1.35fr;
             align-items: center;
-            padding: 70px 120px 45px 120px;
-            min-height: calc(100vh - 78px);
+            gap: 70px;
+            padding: 80px 120px 70px 120px;
+            min-height: 610px;
             background: #eef1f5;
-            overflow: hidden;
+            overflow: visible;
         }
 
         .hero-text {
             position: relative;
             z-index: 3;
+            padding-top: 10px;
         }
 
         .hero-text h1 {
@@ -176,6 +182,7 @@
 
         .hero-car {
             width: 100%;
+            height: 430px;
             min-height: 430px;
             display: flex;
             justify-content: center;
@@ -183,6 +190,7 @@
             position: relative;
             overflow: hidden;
             border-radius: 24px;
+            margin-bottom: 0;
         }
 
         .hero-car::before {
@@ -204,51 +212,54 @@
         .hero-car::after {
             content: "";
             position: absolute;
-            width: 570px;
-            height: 570px;
+            width: 560px;
+            height: 560px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.55);
-            top: -130px;
-            left: -85px;
+            top: -135px;
+            left: -95px;
             z-index: 2;
         }
 
         .hero-car img {
-            width: 720px;
-            max-width: 100%;
+            width: 660px;
+            max-width: 94%;
             object-fit: contain;
             position: relative;
             z-index: 3;
-            transform: translateX(10px);
+            transform: translateX(8px);
             filter: drop-shadow(0 24px 18px rgba(0, 0, 0, 0.18));
         }
 
+        /* ================= FILTER BOX ================= */
+
         .filter-wrapper {
-            padding: 0 145px 70px 145px;
-            margin-top: -60px;
+            padding: 0 145px 80px 145px;
+            margin-top: 0;
             position: relative;
             z-index: 5;
         }
 
         .filter-box {
             background-color: white;
-            border-radius: 14px;
-            padding: 10px;
+            border-radius: 16px;
+            padding: 12px;
             display: grid;
             grid-template-columns: 1.1fr 1fr 1fr 0.6fr;
-            gap: 10px;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+            gap: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
         }
 
         .filter-input {
-            height: 42px;
+            height: 54px;
             border: 1px solid #e5e7eb;
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 0 18px;
             color: #777;
-            font-weight: 600;
+            font-weight: 700;
             background-color: #fff;
             outline: none;
+            font-size: 14px;
         }
 
         .filter-input:focus {
@@ -256,16 +267,36 @@
         }
 
         .filter-btn {
+            height: 54px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             background-color: #2f6fde;
             color: white;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
+            font-size: 14px;
         }
 
         .filter-btn:hover {
             background-color: #1d58bf;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1200px) {
+            .hero {
+                padding: 70px 80px 65px 80px;
+                gap: 55px;
+            }
+
+            .hero-car img {
+                width: 620px;
+            }
+
+            .filter-wrapper {
+                padding-left: 80px;
+                padding-right: 80px;
+            }
         }
 
         @media (max-width: 1100px) {
@@ -282,11 +313,16 @@
             }
 
             .hero {
-                padding: 60px 70px 45px 70px;
+                padding: 60px 70px 60px 70px;
+            }
+
+            .hero-car {
+                height: 400px;
+                min-height: 400px;
             }
 
             .hero-car img {
-                width: 650px;
+                width: 590px;
             }
 
             .filter-wrapper {
@@ -298,9 +334,10 @@
         @media (max-width: 1000px) {
             .hero {
                 grid-template-columns: 1fr;
-                padding: 50px 40px;
+                padding: 55px 40px 45px 40px;
                 text-align: center;
-                gap: 25px;
+                gap: 35px;
+                min-height: auto;
             }
 
             .hero-text h1 {
@@ -312,7 +349,8 @@
             }
 
             .hero-car {
-                min-height: 360px;
+                height: 380px;
+                min-height: 380px;
             }
 
             .hero-car::after {
@@ -324,14 +362,13 @@
             }
 
             .hero-car img {
-                width: 620px;
+                width: 580px;
                 transform: translateX(0);
             }
 
             .filter-wrapper {
                 padding-left: 40px;
                 padding-right: 40px;
-                margin-top: 0;
             }
 
             .nav-menu {
@@ -396,20 +433,30 @@
             }
 
             .hero {
-                min-height: auto;
-                padding: 50px 25px 35px 25px;
+                padding: 50px 25px 40px 25px;
             }
 
             .hero-text h1 {
                 font-size: 34px;
             }
 
+            .hero-text p {
+                font-size: 14px;
+            }
+
             .hero-buttons {
                 flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-primary {
+                width: 220px;
+                text-align: center;
             }
 
             .hero-car {
-                min-height: 300px;
+                height: 310px;
+                min-height: 310px;
                 border-radius: 18px;
             }
 
@@ -419,8 +466,23 @@
                 top: -95px;
             }
 
+            .hero-car img {
+                width: 480px;
+            }
+
+            .filter-wrapper {
+                padding-left: 25px;
+                padding-right: 25px;
+            }
+
             .filter-box {
                 grid-template-columns: 1fr;
+                padding: 14px;
+            }
+
+            .filter-input,
+            .filter-btn {
+                height: 52px;
             }
         }
 
@@ -438,12 +500,17 @@
                 justify-content: center;
             }
 
+            .hero {
+                padding: 42px 20px 35px 20px;
+            }
+
             .hero-car {
-                min-height: 250px;
+                height: 260px;
+                min-height: 260px;
             }
 
             .hero-car img {
-                width: 420px;
+                width: 410px;
             }
 
             .hero-car::after {
@@ -455,6 +522,7 @@
             .filter-wrapper {
                 padding-left: 20px;
                 padding-right: 20px;
+                padding-bottom: 60px;
             }
         }
     </style>
@@ -473,7 +541,6 @@
             <a href="{% url 'katalog' %}">Katalog</a>
             <a href="{% url 'ai' %}">AI</a>
             <a href="{% url 'history' %}">Riwayat</a>
-            <a href="{% url 'api_cars' %}">API</a>
         </div>
 
         <div class="nav-right">
@@ -525,7 +592,7 @@
                 <option value="7">7 Orang</option>
             </select>
 
-            <button class="filter-btn" onclick="cariMobil()">
+            <button type="button" class="filter-btn" onclick="cariMobil()">
                 Sewa Sekarang
             </button>
         </div>
@@ -534,17 +601,6 @@
 </div>
 
 <script>
-    const daftarMobil = [
-        {% for car in cars %}
-        {
-            id: "{{ car.id }}",
-            name: "{{ car.name }}",
-            transmission: "{{ car.transmission }}",
-            capacity: "{{ car.capacity }}"
-        },
-        {% endfor %}
-    ];
-
     function cariMobil() {
         const tanggal = document.getElementById("tanggalSewa").value;
         const tipeMobil = document.getElementById("tipeMobil").value;
@@ -565,20 +621,13 @@
             return;
         }
 
-        const mobilCocok = daftarMobil.find(car => {
-            const kapasitasAngka = car.capacity.split(" ")[0];
-            return car.transmission === tipeMobil && kapasitasAngka === carSize;
-        });
+        const katalogUrl = "{% url 'katalog' %}";
+        const finalUrl = katalogUrl
+            + "?tanggal=" + encodeURIComponent(tanggal)
+            + "&transmission=" + encodeURIComponent(tipeMobil)
+            + "&capacity=" + encodeURIComponent(carSize);
 
-        if (!mobilCocok) {
-            alert("Maaf, tidak ada mobil yang sesuai dengan pilihan kamu.");
-            return;
-        }
-
-        let detailUrl = "{% url 'detail_mobil' 0 %}";
-        detailUrl = detailUrl.replace("/0/", "/" + mobilCocok.id + "/");
-
-        window.location.href = detailUrl + "?tanggal=" + tanggal;
+        window.location.href = finalUrl;
     }
 </script>
 

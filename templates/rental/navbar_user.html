@@ -1,0 +1,192 @@
+{% load static %}
+
+<style>
+    .navbar {
+        height: 78px;
+        background-color: #111827;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 42px;
+        overflow: visible;
+    }
+
+    .brand {
+        font-size: 34px;
+        font-weight: 800;
+        color: white;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .brand span {
+        color: #2f6fde;
+    }
+
+    .nav-menu {
+        display: flex;
+        gap: 34px;
+        align-items: center;
+    }
+
+    .nav-menu a {
+        color: white;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .nav-menu a:hover,
+    .nav-menu a.active {
+        color: #2f6fde;
+    }
+
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .auth-buttons {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .user-info {
+        color: white;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .login-btn {
+        color: white;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 9px 16px;
+        border-radius: 7px;
+    }
+
+    .login-btn:hover {
+        color: #2f6fde;
+    }
+
+    .signup-btn,
+    .logout-btn {
+        background-color: #2f6fde;
+        color: white;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 9px 20px;
+        border-radius: 7px;
+        border: none;
+        display: inline-block;
+    }
+
+    .signup-btn:hover,
+    .logout-btn:hover {
+        background-color: #1d58bf;
+    }
+
+    .team-logo {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        transform: scale(1.15);
+    }
+
+    @media (max-width: 900px) {
+        .navbar {
+            height: auto;
+            min-height: 78px;
+            padding: 16px 20px;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .brand {
+            font-size: 26px;
+        }
+
+        .nav-menu {
+            order: 3;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 18px;
+        }
+
+        .nav-right {
+            gap: 10px;
+        }
+
+        .auth-buttons {
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .login-btn {
+            padding: 7px 8px;
+        }
+
+        .signup-btn,
+        .logout-btn {
+            padding: 7px 10px;
+        }
+
+        .team-logo {
+            width: 60px;
+            height: 60px;
+            transform: scale(1.1);
+        }
+    }
+
+    @media (max-width: 500px) {
+        .navbar {
+            justify-content: center;
+            text-align: center;
+        }
+
+        .nav-right {
+            flex-direction: column;
+        }
+
+        .auth-buttons {
+            justify-content: center;
+        }
+    }
+</style>
+
+<nav class="navbar">
+    <a href="{% url 'home' %}" class="brand">
+        <span>Smart</span>Drive
+    </a>
+
+    <div class="nav-menu">
+        <a href="{% url 'home' %}" {% if active_page == "home" %}class="active"{% endif %}>Home</a>
+        <a href="{% url 'katalog' %}" {% if active_page == "katalog" %}class="active"{% endif %}>Katalog</a>
+        <a href="{% url 'ai' %}" {% if active_page == "ai" %}class="active"{% endif %}>AI</a>
+        <a href="{% url 'history' %}" {% if active_page == "history" %}class="active"{% endif %}>Riwayat</a>
+    </div>
+
+    <div class="nav-right">
+        <div class="auth-buttons">
+            {% if user.is_authenticated %}
+                <span class="user-info">
+                    Halo, {{ user.first_name|default:user.username }}
+                </span>
+                <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="login-btn">Login</a>
+                <a href="{% url 'signup' %}" class="signup-btn">Sign Up</a>
+            {% endif %}
+        </div>
+
+        <img src="{% static 'images/logo-tim.png' %}" class="team-logo" alt="Logo Tim">
+    </div>
+</nav>

@@ -178,6 +178,15 @@
             gap: 18px;
         }
 
+        .date-helper {
+            margin-top: -8px;
+            margin-bottom: 16px;
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1.5;
+        }
+
         .upload-input {
             display: none;
         }
@@ -195,10 +204,71 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-bottom: 8px;
         }
 
         .upload-btn:hover {
             background: #1d58bf;
+        }
+
+        .ktp-status {
+            font-size: 12px;
+            font-weight: 700;
+            color: #dc2626;
+            line-height: 1.4;
+            margin-top: 4px;
+        }
+
+        .ktp-status.success {
+            color: #15803d;
+        }
+
+        .ktp-status.error {
+            color: #dc2626;
+        }
+
+        .lihat-ktp-btn {
+            display: none;
+            width: 100%;
+            height: 42px;
+            margin-top: 10px;
+            background: #eef4ff;
+            color: #2f6fde;
+            border: 1px solid #cfe0ff;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .lihat-ktp-btn:hover {
+            background: #dcecff;
+        }
+
+        .ktp-preview-box {
+            display: none;
+            margin-top: 10px;
+            background: #f5f8ff;
+            border: 1px solid #dbeafe;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .preview-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: #2f6fde;
+            margin-bottom: 8px;
+        }
+
+        .ktp-preview-box img {
+            width: 100%;
+            height: 170px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            display: block;
         }
 
         .method-grid {
@@ -392,7 +462,7 @@
                 <div class="price-detail">
                     <div>Rp {{ car.price }}</div>
                     <div class="line">Rp 0</div>
-                    <strong>Rp {{ total }}</strong>
+                    <strong>Rp <span id="totalDisplay">{{ car.price }}</span></strong>
                 </div>
             </div>
 
@@ -407,20 +477,71 @@
 
                     <div class="form-row">
                         <div>
+                            <label>Tanggal Mulai</label>
+                            <input
+                                type="date"
+                                id="tanggalMulaiInput"
+                                value="{{ today|date:'Y-m-d' }}"
+                                min="{{ today|date:'Y-m-d' }}"
+                                required
+                            >
+                        </div>
+
+                        <div>
+                            <label>Tanggal Selesai</label>
+                            <input
+                                type="date"
+                                id="tanggalSelesaiInput"
+                                value="{{ today|date:'Y-m-d' }}"
+                                min="{{ today|date:'Y-m-d' }}"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="date-helper">
+                        Pilih tanggal mulai dan tanggal selesai. Durasi dan total harga akan dihitung otomatis.
+                    </div>
+
+                    <div class="form-row">
+                        <div>
                             <label>NO HP</label>
                             <input type="text" name="no_hp" placeholder="No Handphone" required>
                         </div>
 
                         <div>
                             <label>KTP</label>
-                            <label for="ktpFile" class="upload-btn">Upload KTP</label>
-                            <input type="file" id="ktpFile" name="ktp" class="upload-input" accept="image/*,.pdf">
+
+                            <label for="ktpFile" class="upload-btn" id="uploadKtpLabel">
+                                Upload KTP
+                            </label>
+
+                            <input
+                                type="file"
+                                id="ktpFile"
+                                name="ktp"
+                                class="upload-input"
+                                accept="image/*"
+                            >
+
+                            <div id="ktpStatus" class="ktp-status error">
+                                Belum ada file KTP yang diupload.
+                            </div>
+
+                            <button type="button" id="lihatKtpBtn" class="lihat-ktp-btn" onclick="toggleKtpPreview()">
+                                Lihat Pratinjau KTP
+                            </button>
+
+                            <div id="ktpPreviewBox" class="ktp-preview-box">
+                                <div class="preview-title">Pratinjau KTP</div>
+                                <img id="ktpPreview" src="" alt="Pratinjau KTP">
+                            </div>
                         </div>
                     </div>
 
-                    <input type="hidden" name="tanggal" value="{{ today|date:'Y-m-d' }}">
-                    <input type="hidden" name="hari" value="{{ durasi }}">
-                    <input type="hidden" name="total" value="{{ total }}">
+                    <input type="hidden" name="tanggal" id="tanggalInput" value="{{ today|date:'Y-m-d' }}">
+                    <input type="hidden" name="hari" id="hariInput" value="1">
+                    <input type="hidden" name="total" id="totalInput" value="{{ car.price }}">
 
                     <div class="box" style="padding:0; box-shadow:none; margin-top:5px;">
                         <div class="form-title">Payment Method</div>
@@ -464,12 +585,12 @@
 
             <div class="summary-row">
                 <span>Tanggal Mulai</span>
-                <span>{{ today|date:"d M Y" }}</span>
+                <span id="tanggalMulaiText">{{ today|date:"d M Y" }}</span>
             </div>
 
             <div class="summary-row">
                 <span>Tanggal Selesai</span>
-                <span>{{ today|date:"d M Y" }}</span>
+                <span id="tanggalSelesaiText">{{ today|date:"d M Y" }}</span>
             </div>
 
             <div class="summary-row">
@@ -484,12 +605,12 @@
 
             <div class="summary-row">
                 <span>Durasi</span>
-                <span>{{ durasi }} Hari</span>
+                <span><span id="summaryDurasi">1</span> Hari</span>
             </div>
 
             <div class="summary-row">
                 <span>Total</span>
-                <span>Rp {{ total }}</span>
+                <span>Rp <span id="summaryTotal">{{ car.price }}</span></span>
             </div>
 
             <div class="info-box">
@@ -506,11 +627,185 @@
 </div>
 
 <script>
+    const ktpFile = document.getElementById("ktpFile");
+    const ktpStatus = document.getElementById("ktpStatus");
+    const uploadKtpLabel = document.getElementById("uploadKtpLabel");
+    const ktpPreviewBox = document.getElementById("ktpPreviewBox");
+    const ktpPreview = document.getElementById("ktpPreview");
+    const lihatKtpBtn = document.getElementById("lihatKtpBtn");
+
+    const tanggalMulaiInput = document.getElementById("tanggalMulaiInput");
+    const tanggalSelesaiInput = document.getElementById("tanggalSelesaiInput");
+
+    const tanggalInput = document.getElementById("tanggalInput");
+    const hariInput = document.getElementById("hariInput");
+    const totalInput = document.getElementById("totalInput");
+
+    const totalDisplay = document.getElementById("totalDisplay");
+    const summaryTotal = document.getElementById("summaryTotal");
+    const summaryDurasi = document.getElementById("summaryDurasi");
+    const tanggalMulaiText = document.getElementById("tanggalMulaiText");
+    const tanggalSelesaiText = document.getElementById("tanggalSelesaiText");
+
+    const hargaPerHari = Number("{{ car.price }}");
+
+    let ktpPreviewVisible = false;
+
+    function parseLocalDate(dateString) {
+        const parts = dateString.split("-");
+        return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    }
+
+    function formatRupiahAngka(value) {
+        return Number(value).toLocaleString("id-ID");
+    }
+
+    function formatTanggalIndonesia(date) {
+        return date.toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        });
+    }
+
+    function hitungSelisihHari(tanggalMulai, tanggalSelesai) {
+        const satuHari = 24 * 60 * 60 * 1000;
+        const selisih = tanggalSelesai.getTime() - tanggalMulai.getTime();
+        return Math.floor(selisih / satuHari) + 1;
+    }
+
+    function updateHarga() {
+        if (!tanggalMulaiInput.value) {
+            tanggalMulaiInput.value = "{{ today|date:'Y-m-d' }}";
+        }
+
+        if (!tanggalSelesaiInput.value) {
+            tanggalSelesaiInput.value = tanggalMulaiInput.value;
+        }
+
+        tanggalSelesaiInput.min = tanggalMulaiInput.value;
+
+        let tanggalMulai = parseLocalDate(tanggalMulaiInput.value);
+        let tanggalSelesai = parseLocalDate(tanggalSelesaiInput.value);
+
+        if (tanggalSelesai < tanggalMulai) {
+            tanggalSelesaiInput.value = tanggalMulaiInput.value;
+            tanggalSelesai = parseLocalDate(tanggalSelesaiInput.value);
+        }
+
+        const durasi = hitungSelisihHari(tanggalMulai, tanggalSelesai);
+        const total = hargaPerHari * durasi;
+
+        tanggalInput.value = tanggalMulaiInput.value;
+        hariInput.value = durasi;
+        totalInput.value = total;
+
+        totalDisplay.textContent = formatRupiahAngka(total);
+        summaryTotal.textContent = formatRupiahAngka(total);
+        summaryDurasi.textContent = durasi;
+
+        tanggalMulaiText.textContent = formatTanggalIndonesia(tanggalMulai);
+        tanggalSelesaiText.textContent = formatTanggalIndonesia(tanggalSelesai);
+    }
+
+    tanggalMulaiInput.addEventListener("change", updateHarga);
+    tanggalSelesaiInput.addEventListener("change", updateHarga);
+    updateHarga();
+
+    ktpFile.addEventListener("change", function () {
+        if (ktpFile.files.length > 0) {
+            const file = ktpFile.files[0];
+            const fileName = file.name;
+
+            if (!file.type.startsWith("image/")) {
+                alert("File harus berupa gambar KTP.");
+
+                ktpFile.value = "";
+                ktpStatus.textContent = "File harus berupa gambar KTP.";
+                ktpStatus.classList.remove("success");
+                ktpStatus.classList.add("error");
+
+                uploadKtpLabel.textContent = "Upload KTP";
+                lihatKtpBtn.style.display = "none";
+                ktpPreview.src = "";
+                ktpPreviewBox.style.display = "none";
+                ktpPreviewVisible = false;
+
+                return;
+            }
+
+            ktpStatus.textContent = "File KTP berhasil diupload: " + fileName;
+            ktpStatus.classList.remove("error");
+            ktpStatus.classList.add("success");
+
+            uploadKtpLabel.textContent = "Ganti File KTP";
+
+            const previewUrl = URL.createObjectURL(file);
+            ktpPreview.src = previewUrl;
+
+            ktpPreviewBox.style.display = "none";
+            ktpPreviewVisible = false;
+
+            lihatKtpBtn.style.display = "block";
+            lihatKtpBtn.textContent = "Lihat Pratinjau KTP";
+        } else {
+            ktpStatus.textContent = "Belum ada file KTP yang diupload.";
+            ktpStatus.classList.remove("success");
+            ktpStatus.classList.add("error");
+
+            uploadKtpLabel.textContent = "Upload KTP";
+            lihatKtpBtn.style.display = "none";
+
+            ktpPreview.src = "";
+            ktpPreviewBox.style.display = "none";
+            ktpPreviewVisible = false;
+        }
+    });
+
+    function toggleKtpPreview() {
+        if (ktpFile.files.length === 0) {
+            alert("Upload KTP terlebih dahulu.");
+            return;
+        }
+
+        ktpPreviewVisible = !ktpPreviewVisible;
+
+        if (ktpPreviewVisible) {
+            ktpPreviewBox.style.display = "block";
+            lihatKtpBtn.textContent = "Sembunyikan Pratinjau KTP";
+        } else {
+            ktpPreviewBox.style.display = "none";
+            lihatKtpBtn.textContent = "Lihat Pratinjau KTP";
+        }
+    }
+
     function goToPayment() {
         const form = document.getElementById("paymentForm");
 
+        updateHarga();
+
         if (!form.checkValidity()) {
             form.reportValidity();
+            return;
+        }
+
+        if (ktpFile.files.length === 0) {
+            alert("Upload KTP terlebih dahulu sebelum melanjutkan pembayaran.");
+
+            ktpStatus.textContent = "KTP wajib diupload sebelum transaksi dilanjutkan.";
+            ktpStatus.classList.remove("success");
+            ktpStatus.classList.add("error");
+
+            ktpPreview.src = "";
+            ktpPreviewBox.style.display = "none";
+            lihatKtpBtn.style.display = "none";
+            ktpPreviewVisible = false;
+
+            uploadKtpLabel.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+
             return;
         }
 
