@@ -158,6 +158,28 @@
             font-size: 28px;
         }
 
+        .bank-card img {
+            max-width: 105px;
+            max-height: 34px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .bank-card .bank-fallback {
+            display: none;
+            font-size: 20px;
+            font-weight: 900;
+            color: #1d58bf;
+        }
+
+        .bank-card.bni .bank-fallback {
+            color: #007a8a;
+        }
+
+        .bank-card.mandiri .bank-fallback {
+            color: #174ea6;
+        }
+
         .payment-info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -442,23 +464,27 @@
             <div class="box">
                 <h2 class="section-title">Pilih Bank</h2>
 
-                <div class="bank-options">
-                    <button class="bank-card active" type="button" data-bank="BCA" data-va="123456789012">
-                        BCA
-                    </button>
+            <div class="bank-options">
+                <button class="bank-card active" type="button" data-bank="BCA" data-va="123456789012">
+                    <img src="{% static 'images/bca.png' %}" alt="BCA" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                    <span class="bank-fallback">BCA</span>
+                </button>
 
-                    <button class="bank-card mandiri" type="button" data-bank="Mandiri" data-va="8808123456789012">
-                        mandiri
-                    </button>
+                <button class="bank-card mandiri" type="button" data-bank="Mandiri" data-va="8808123456789012">
+                    <img src="{% static 'images/mandiri.png' %}" alt="Mandiri" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                    <span class="bank-fallback">Mandiri</span>
+                </button>
 
-                    <button class="bank-card" type="button" data-bank="BRI" data-va="3301123456789012">
-                        BRI
-                    </button>
+                <button class="bank-card" type="button" data-bank="BRI" data-va="3301123456789012">
+                    <img src="{% static 'images/bri.png' %}" alt="BRI" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                    <span class="bank-fallback">BRI</span>
+                </button>
 
-                    <button class="bank-card bni" type="button" data-bank="BNI" data-va="7701123456789012">
-                        BNI
-                    </button>
-                </div>
+                <button class="bank-card bni" type="button" data-bank="BNI" data-va="7701123456789012">
+                    <img src="{% static 'images/bni.png' %}" alt="BNI" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                    <span class="bank-fallback">BNI</span>
+                </button>
+            </div>
 
                 <div class="payment-info-grid">
 

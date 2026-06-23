@@ -179,6 +179,20 @@
             font-weight: 900;
         }
 
+        .wallet-card img {
+            max-width: 100px;
+            max-height: 34px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .wallet-fallback {
+            display: none;
+            font-size: 13px;
+            font-weight: 900;
+            color: #2f6fde;
+        }
+
         .payment-content {
             display: grid;
             grid-template-columns: 1fr 0.8fr;
@@ -407,22 +421,22 @@
             <div class="box">
                 <h2 class="section-title">Pilih E-Wallet</h2>
 
-                <div class="wallet-options">
-                    <button class="wallet-card active" type="button" data-wallet="DANA">
-                        <span class="wallet-icon dana">D</span>
-                        <span class="wallet-name">DANA</span>
-                    </button>
+            <div class="wallet-options">
+                <button class="wallet-card active" type="button" data-wallet="DANA">
+                    <img src="{% static 'images/dana.png' %}" alt="DANA" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                    <span class="wallet-fallback">DANA</span>
+                </button>
 
-                    <button class="wallet-card" type="button" data-wallet="ShopeePay">
-                        <span class="wallet-icon shopee">S</span>
-                        <span class="wallet-name">ShopeePay</span>
-                    </button>
+                <button class="wallet-card" type="button" data-wallet="OVO">
+                    <img src="{% static 'images/ovo.png' %}" alt="OVO" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                    <span class="wallet-fallback">OVO</span>
+                </button>
 
-                    <button class="wallet-card" type="button" data-wallet="GoPay">
-                        <span class="wallet-icon gopay">G</span>
-                        <span class="wallet-name">GoPay</span>
-                    </button>
-                </div>
+                <button class="wallet-card" type="button" data-wallet="GoPay">
+                    <img src="{% static 'images/gopay.png' %}" alt="GoPay" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                    <span class="wallet-fallback">GOPAY</span>
+                </button>
+            </div>
 
                 <div class="payment-content">
                     <div>

@@ -283,7 +283,7 @@
             padding: 14px;
             display: flex;
             gap: 10px;
-            min-height: 105px;
+            min-height: 128px;
             cursor: pointer;
             transition: 0.2s ease;
         }
@@ -315,13 +315,61 @@
             margin-bottom: 12px;
         }
 
-        .bank-list {
-            font-size: 13px;
-            font-weight: 800;
-            color: #2f6fde;
+        .payment-logos {
             display: flex;
-            gap: 8px;
+            align-items: center;
             flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 2px;
+        }
+
+        .logo-box {
+            height: 34px;
+            min-width: 58px;
+            padding: 6px 9px;
+            border-radius: 8px;
+            background: #ffffff;
+            border: 1px solid #dbe3f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-box img {
+            max-width: 72px;
+            max-height: 23px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .logo-fallback {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 0.3px;
+            color: #2f6fde;
+            white-space: nowrap;
+        }
+
+        .logo-bca .logo-fallback,
+        .logo-bri .logo-fallback,
+        .logo-bni .logo-fallback {
+            color: #155bd5;
+        }
+
+        .logo-mandiri .logo-fallback {
+            color: #f7a600;
+        }
+
+        .logo-dana .logo-fallback,
+        .logo-gopay .logo-fallback {
+            color: #1689df;
+        }
+
+        .logo-ovo .logo-fallback {
+            color: #5a2ca0;
         }
 
         .summary {
@@ -552,11 +600,27 @@
                                 <div>
                                     <div class="method-title">Transfer Bank</div>
                                     <div class="method-desc">Lakukan pembayaran melalui transfer bank</div>
-                                    <div class="bank-list">
-                                        <span>BCA</span>
-                                        <span>BRI</span>
-                                        <span>Mandiri</span>
-                                        <span>BNI</span>
+
+                                    <div class="payment-logos">
+                                        <span class="logo-box logo-bca">
+                                            <img src="{% static 'images/bca.png' %}" alt="BCA" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                            <span class="logo-fallback">BCA</span>
+                                        </span>
+
+                                        <span class="logo-box logo-bri">
+                                            <img src="{% static 'images/bri.png' %}" alt="BRI" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                            <span class="logo-fallback">BRI</span>
+                                        </span>
+
+                                        <span class="logo-box logo-mandiri">
+                                            <img src="{% static 'images/mandiri.png' %}" alt="Mandiri" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                            <span class="logo-fallback">Mandiri</span>
+                                        </span>
+
+                                        <span class="logo-box logo-bni">
+                                            <img src="{% static 'images/bni.png' %}" alt="BNI" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                            <span class="logo-fallback">BNI</span>
+                                        </span>
                                     </div>
                                 </div>
                             </label>
@@ -566,10 +630,22 @@
                                 <div>
                                     <div class="method-title">E-wallet</div>
                                     <div class="method-desc">Bayar cepat dan praktis menggunakan e-wallet</div>
-                                    <div class="bank-list">
-                                        <span>DANA</span>
-                                        <span>OVO</span>
-                                        <span>GOPAY</span>
+
+                                    <div class="payment-logos">
+                                        <span class="logo-box logo-dana">
+                                            <img src="{% static 'images/dana.png' %}" alt="DANA" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                            <span class="logo-fallback">DANA</span>
+                                        </span>
+
+                                        <span class="logo-box logo-ovo">
+                                            <img src="{% static 'images/ovo.png' %}" alt="OVO" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                            <span class="logo-fallback">OVO</span>
+                                        </span>
+
+                                        <span class="logo-box logo-gopay">
+                                            <img src="{% static 'images/gopay.png' %}" alt="GOPAY" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                            <span class="logo-fallback">GOPAY</span>
+                                        </span>
                                     </div>
                                 </div>
                             </label>
