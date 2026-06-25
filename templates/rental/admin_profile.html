@@ -3,7 +3,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Mobil - SmartDrive</title>
+    <title>Kelola Profil User - SmartDrive</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
@@ -108,7 +108,6 @@
         .top-buttons {
             display: flex;
             align-items: center;
-            justify-content: flex-end;
             gap: 14px;
             flex-wrap: wrap;
         }
@@ -125,10 +124,76 @@
             align-items: center;
             justify-content: center;
             min-width: 170px;
+            border: none;
+            cursor: pointer;
         }
 
         .add-btn:hover {
             background-color: #1d58bf;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 18px;
+            margin-bottom: 26px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 18px;
+            padding: 22px 24px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+        }
+
+        .stat-card h3 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #2f6fde;
+            margin-bottom: 8px;
+        }
+
+        .stat-card p {
+            color: #6b7280;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .filter-card {
+            background: white;
+            border-radius: 18px;
+            padding: 22px 28px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+            margin-bottom: 24px;
+        }
+
+        .filter-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: #222;
+            margin-bottom: 14px;
+        }
+
+        .filter-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            background: #eef1f5;
+            color: #4b5563;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #2f6fde;
+            color: white;
         }
 
         .message {
@@ -140,42 +205,14 @@
             font-weight: 800;
             color: #222;
             box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
-            border-left: 6px solid #2f6fde;
-            transition: opacity 0.45s ease, transform 0.45s ease, margin 0.45s ease, padding 0.45s ease;
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.45s ease, transform 0.45s ease;
         }
 
-        .message.success {
-            border-left-color: #16a34a;
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .message.error {
-            border-left-color: #dc2626;
-            background: #fee2e2;
-            color: #dc2626;
-        }
-
-        .message.warning {
-            border-left-color: #f59e0b;
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .message.info {
-            border-left-color: #2f6fde;
-            background: #dbeafe;
-            color: #1d4ed8;
-        }
-
-        .message.hide {
+        .message.hide-message {
             opacity: 0;
-            transform: translateY(-8px);
-            margin: 0;
-            padding-top: 0;
-            padding-bottom: 0;
-            height: 0;
-            overflow: hidden;
+            transform: translateY(-10px);
         }
 
         .table-card {
@@ -199,7 +236,6 @@
             font-size: 13px;
             font-weight: 800;
             border-bottom: 1px solid #e5e7eb;
-            white-space: nowrap;
         }
 
         td {
@@ -211,16 +247,42 @@
             color: #222;
         }
 
-        .car-img {
-            width: 90px;
+        .profile-img {
+            width: 58px;
             height: 58px;
             background: #e6e4ea;
-            border-radius: 10px;
-            object-fit: contain;
-            padding: 4px;
+            border-radius: 12px;
+            object-fit: cover;
+            padding: 3px;
         }
 
-        .stock-badge {
+        .profile-placeholder {
+            width: 58px;
+            height: 58px;
+            background: #e6e4ea;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2f6fde;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .user-info strong {
+            display: block;
+            color: #222;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .user-info small {
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .status-badge {
             display: inline-block;
             padding: 8px 12px;
             border-radius: 8px;
@@ -229,12 +291,38 @@
             white-space: nowrap;
         }
 
-        .stock-available {
+        .status-belum_lengkap {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .status-menunggu {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-terverifikasi {
             background: #dcfce7;
             color: #166534;
         }
 
-        .stock-empty {
+        .status-ditolak {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .data-badge {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            background: #dbeafe;
+            color: #1d4ed8;
+            white-space: nowrap;
+        }
+
+        .data-badge.not-complete {
             background: #fee2e2;
             color: #dc2626;
         }
@@ -281,14 +369,9 @@
             font-weight: 800;
         }
 
-        @media (max-width: 1000px) {
-            .top-area {
-                flex-direction: column;
-            }
-
-            .top-buttons {
-                justify-content: flex-start;
-                width: 100%;
+        @media (max-width: 1100px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
@@ -316,8 +399,20 @@
                 transform: scale(1.1);
             }
 
+            .top-area {
+                flex-direction: column;
+            }
+
             .title h1 {
                 font-size: 34px;
+            }
+
+            .top-buttons {
+                width: 100%;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -355,79 +450,131 @@
 <div class="container">
     <div class="top-area">
         <div class="title">
-            <h1>Kelola Mobil</h1>
-            <p>Admin dapat menambahkan, mengedit, menghapus data mobil, dan memantau stok unit yang tersedia.</p>
+            <h1>Kelola Profil User</h1>
+            <p>Admin dapat melihat, memeriksa, dan memverifikasi data profil pengguna.</p>
         </div>
 
         <div class="top-buttons">
-            <a href="{% url 'admin_tambah_mobil' %}" class="add-btn">+ Tambah Mobil</a>
+            <a href="{% url 'admin_mobil' %}" class="add-btn">Kelola Mobil</a>
             <a href="{% url 'admin_booking' %}" class="add-btn">Kelola Booking</a>
-            <a href="{% url 'admin_profile' %}" class="add-btn">Kelola Profil</a>
         </div>
     </div>
 
     {% if messages %}
         {% for message in messages %}
-            <div class="message {{ message.tags }}">
+            <div class="message">
                 {{ message }}
             </div>
         {% endfor %}
     {% endif %}
 
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>{{ total_profile }}</h3>
+            <p>Total Profil</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>{{ total_belum_lengkap }}</h3>
+            <p>Belum Lengkap</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>{{ total_menunggu }}</h3>
+            <p>Menunggu</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>{{ total_terverifikasi }}</h3>
+            <p>Terverifikasi</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>{{ total_ditolak }}</h3>
+            <p>Ditolak</p>
+        </div>
+    </div>
+
+    <div class="filter-card">
+        <div class="filter-title">Filter Status Profil</div>
+
+        <div class="filter-list">
+            <a href="{% url 'admin_profile' %}" class="filter-btn {% if not status %}active{% endif %}">
+                Semua
+            </a>
+
+            {% for value, label in status_choices %}
+                <a href="{% url 'admin_profile' %}?status={{ value }}" class="filter-btn {% if status == value %}active{% endif %}">
+                    {{ label }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
     <div class="table-card">
         <table>
             <thead>
                 <tr>
-                    <th>Gambar</th>
-                    <th>Nama</th>
-                    <th>Brand</th>
-                    <th>Transmisi</th>
-                    <th>Kapasitas</th>
-                    <th>Harga</th>
-                    <th>Stok</th>
+                    <th>Foto</th>
+                    <th>User</th>
+                    <th>Nama Lengkap</th>
+                    <th>No HP</th>
+                    <th>NIK / KTP</th>
+                    <th>SIM A</th>
+                    <th>Data</th>
+                    <th>Status</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
 
             <tbody>
-                {% for car in cars %}
+                {% for profile in profiles %}
                 <tr>
                     <td>
-                        {% if car.image %}
-                            <img src="{{ car.image.url }}" class="car-img" alt="{{ car.name }}">
+                        {% if profile.foto_profil %}
+                            <img src="{{ profile.foto_profil.url }}" class="profile-img" alt="{{ profile.nama_lengkap }}">
                         {% else %}
-                            <img src="{% static 'images/mobil-hitam.png' %}" class="car-img" alt="{{ car.name }}">
+                            <div class="profile-placeholder">
+                                {{ profile.user.username|slice:":1"|upper }}
+                            </div>
                         {% endif %}
                     </td>
 
-                    <td>{{ car.name }}</td>
-                    <td>{{ car.brand }}</td>
-                    <td>{{ car.transmission }}</td>
-                    <td>{{ car.capacity }} Orang</td>
-                    <td>Rp {{ car.price }}</td>
+                    <td>
+                        <div class="user-info">
+                            <strong>{{ profile.user.username }}</strong>
+                            <small>{{ profile.user.email|default:"Email belum tersedia" }}</small>
+                        </div>
+                    </td>
+
+                    <td>{{ profile.nama_lengkap|default:"-" }}</td>
+                    <td>{{ profile.no_hp|default:"-" }}</td>
+                    <td>{{ profile.nik_ktp|default:"-" }}</td>
+                    <td>{{ profile.nomor_sim_a|default:"-" }}</td>
 
                     <td>
-                        {% if car.stock > 0 %}
-                            <span class="stock-badge stock-available">
-                                Tersedia {{ car.stock }} Unit
-                            </span>
+                        {% if profile.data_lengkap %}
+                            <span class="data-badge">Lengkap</span>
                         {% else %}
-                            <span class="stock-badge stock-empty">
-                                Stok Habis
-                            </span>
+                            <span class="data-badge not-complete">Belum Lengkap</span>
                         {% endif %}
+                    </td>
+
+                    <td>
+                        <span class="status-badge status-{{ profile.status_verifikasi }}">
+                            {{ profile.get_status_verifikasi_display }}
+                        </span>
                     </td>
 
                     <td>
                         <div class="action">
-                            <a href="{% url 'admin_edit_mobil' car.id %}" class="edit-btn">Edit</a>
-                            <a href="{% url 'admin_hapus_mobil' car.id %}" class="delete-btn">Hapus</a>
+                            <a href="{% url 'admin_profile_detail' profile.id %}" class="edit-btn">Detail</a>
                         </div>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="8" class="empty">Belum ada data mobil.</td>
+                    <td colspan="9" class="empty">Belum ada data profil user.</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -435,19 +582,22 @@
     </div>
 </div>
 
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const messages = document.querySelectorAll(".message");
 
-        messages.forEach(function (message) {
+        if (messages.length > 0) {
             setTimeout(function () {
-                message.classList.add("hide");
+                messages.forEach(function (message) {
+                    message.classList.add("hide-message");
 
-                setTimeout(function () {
-                    message.remove();
-                }, 500);
+                    setTimeout(function () {
+                        message.remove();
+                    }, 500);
+                });
             }, 10000);
-        });
+        }
     });
 </script>
 

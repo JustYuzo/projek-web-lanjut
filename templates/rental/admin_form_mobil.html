@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ title }} - SmartDrive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
         * {
             box-sizing: border-box;
@@ -14,15 +16,17 @@
         body {
             font-family: Arial, sans-serif;
             background: #eef1f5;
-            color: #1e1e1e;
+            color: #222;
         }
 
         .navbar {
             height: 78px;
-            background: #111827;
+            background-color: #111827;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             padding: 0 42px;
+            overflow: visible;
         }
 
         .brand {
@@ -30,163 +34,566 @@
             font-weight: 800;
             color: white;
             text-decoration: none;
-            margin-right: auto;
+            white-space: nowrap;
         }
 
         .brand span {
             color: #2f6fde;
         }
 
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .user-area span {
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .logout-btn {
+            background-color: #2f6fde;
+            color: white;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 9px 20px;
+            border-radius: 7px;
+            border: none;
+            display: inline-block;
+        }
+
+        .logout-btn:hover {
+            background-color: #1d58bf;
+        }
+
+        .team-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            transform: scale(1.15);
+        }
+
         .container {
             width: 92%;
-            max-width: 760px;
+            max-width: 1500px;
             margin: 0 auto;
             padding: 38px 0 60px;
         }
 
-        .card {
-            background: white;
-            border-radius: 18px;
-            padding: 28px;
-            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+        .top-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: 28px;
         }
 
-        h1 {
-            font-size: 32px;
+        .title h1 {
+            font-size: 42px;
             font-weight: 800;
+            margin-bottom: 10px;
+            color: #222;
+        }
+
+        .title p {
+            color: #6b7280;
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 1.6;
+        }
+
+        .top-buttons {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .add-btn {
+            background-color: #2f6fde;
+            color: white;
+            text-decoration: none;
+            padding: 16px 26px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 170px;
+        }
+
+        .add-btn:hover {
+            background-color: #1d58bf;
+        }
+
+        .message {
+            background: white;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 18px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #222;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+            border-left: 6px solid #2f6fde;
+            transition: opacity 0.45s ease, transform 0.45s ease, margin 0.45s ease, padding 0.45s ease;
+        }
+
+        .message.success {
+            border-left-color: #16a34a;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .message.error {
+            border-left-color: #dc2626;
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .message.warning {
+            border-left-color: #f59e0b;
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .message.info {
+            border-left-color: #2f6fde;
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .message.hide {
+            opacity: 0;
+            transform: translateY(-8px);
+            margin: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            height: 0;
+            overflow: hidden;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 18px;
+            padding: 34px 38px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+            max-width: 920px;
+            margin: 0 auto;
+        }
+
+        .form-header {
+            margin-bottom: 28px;
+        }
+
+        .form-header h2 {
+            font-size: 34px;
+            font-weight: 800;
+            color: #222;
+            margin-bottom: 10px;
+        }
+
+        .form-header p {
+            color: #6b7280;
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 1.6;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
             margin-bottom: 8px;
         }
 
-        .subtitle {
-            color: #6b7280;
-            font-weight: 600;
-            margin-bottom: 24px;
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
         }
 
         label {
             display: block;
             font-size: 14px;
             font-weight: 800;
+            color: #222;
             margin-bottom: 8px;
         }
 
-        .form-input {
+        input[type="text"],
+        input[type="number"],
+        input[type="file"],
+        select,
+        textarea,
+        .form-control {
             width: 100%;
-            height: 46px;
-            border: 1px solid #dfe3ea;
+            padding: 14px 15px;
+            border: 1px solid #d1d5db;
             border-radius: 10px;
-            padding: 0 14px;
-            margin-bottom: 18px;
             font-size: 14px;
+            font-weight: 700;
+            color: #222;
+            background: white;
+            outline: none;
         }
 
-        input[type="file"].form-input {
+        input[type="file"] {
             padding: 12px;
-            height: auto;
+            cursor: pointer;
+            background: #f8fafc;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus,
+        .form-control:focus {
+            border-color: #2f6fde;
+            box-shadow: 0 0 0 3px rgba(47, 111, 222, 0.12);
+        }
+
+        .help-text {
+            margin-top: 7px;
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .stock-note {
+            margin-top: 10px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            padding: 13px 15px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 800;
+            line-height: 1.5;
         }
 
         .preview-box {
-            width: 220px;
-            height: 140px;
-            background: #e6e4ea;
-            border-radius: 14px;
-            margin-bottom: 18px;
+            margin-top: 12px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #eef1f5;
+            padding: 14px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            gap: 14px;
         }
 
-        .preview-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .btn-row {
-            display: flex;
-            gap: 12px;
-            margin-top: 10px;
-        }
-
-        .save-btn,
-        .back-btn {
-            border: none;
-            text-decoration: none;
-            padding: 14px 22px;
+        .preview-img {
+            width: 120px;
+            height: 78px;
+            background: #e6e4ea;
             border-radius: 10px;
-            font-size: 14px;
+            object-fit: contain;
+            padding: 4px;
+        }
+
+        .preview-info strong {
+            display: block;
+            font-size: 13px;
             font-weight: 800;
-            cursor: pointer;
+            margin-bottom: 5px;
+            color: #222;
+        }
+
+        .preview-info span {
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .errorlist {
+            color: #dc2626;
+            padding-left: 18px;
+            margin-top: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1.5;
+        }
+
+        .non-field-errors {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 14px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            margin-top: 26px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
         }
 
         .save-btn {
-            background: #2f6fde;
+            background-color: #2f6fde;
             color: white;
+            text-decoration: none;
+            padding: 16px 28px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            min-width: 170px;
+        }
+
+        .save-btn:hover {
+            background-color: #1d58bf;
         }
 
         .back-btn {
             background: #e5e7eb;
             color: #111827;
+            text-decoration: none;
+            padding: 16px 28px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            min-width: 140px;
+            text-align: center;
         }
 
-        .errorlist {
-            color: #dc2626;
-            font-weight: 700;
-            margin-bottom: 10px;
-            list-style: none;
+        .back-btn:hover {
+            background: #d1d5db;
+        }
+
+        @media (max-width: 900px) {
+            .navbar {
+                height: auto;
+                min-height: 78px;
+                padding: 16px 20px;
+                flex-wrap: wrap;
+                gap: 14px;
+            }
+
+            .brand {
+                font-size: 26px;
+            }
+
+            .user-area {
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .team-logo {
+                width: 60px;
+                height: 60px;
+                transform: scale(1.1);
+            }
+
+            .top-area {
+                flex-direction: column;
+            }
+
+            .title h1 {
+                font-size: 34px;
+            }
+
+            .form-card {
+                padding: 28px 24px;
+            }
+
+            .form-header h2 {
+                font-size: 30px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .navbar {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .user-area {
+                justify-content: center;
+            }
+
+            .add-btn,
+            .save-btn,
+            .back-btn {
+                width: 100%;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .preview-box {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .preview-img {
+                width: 100%;
+                height: 120px;
+            }
         }
     </style>
 </head>
+
 <body>
 
 <nav class="navbar">
-    <a href="{% url 'home' %}" class="brand">
+    <a href="{% url 'admin_mobil' %}" class="brand">
         <span>Smart</span>Drive
     </a>
+
+    <div class="user-area">
+        <span>Halo, admin</span>
+        <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+        <img src="{% static 'images/logo-tim.png' %}" class="team-logo" alt="Logo Tim">
+    </div>
 </nav>
 
 <div class="container">
-    <div class="card">
-        <h1>{{ title }}</h1>
-        <p class="subtitle">Isi data mobil dengan benar. Kapasitas adalah jumlah orang, harga adalah harga sewa per hari.</p>
 
-        {% if car and car.image %}
-        <div class="preview-box">
-            <img src="{{ car.image.url }}" alt="{{ car.name }}">
+    <div class="top-area">
+        <div class="title">
+            <h1>{{ title }}</h1>
+            <p>Isi data mobil dengan benar. Kapasitas adalah jumlah orang, harga adalah harga sewa per hari, dan stok adalah jumlah unit mobil yang tersedia.</p>
         </div>
+
+        <div class="top-buttons">
+            <a href="{% url 'admin_mobil' %}" class="add-btn">Kelola Mobil</a>
+            <a href="{% url 'admin_booking' %}" class="add-btn">Kelola Booking</a>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="form-card">
+        <div class="form-header">
+            <h2>{{ title }}</h2>
+            <p>Lengkapi informasi mobil yang akan ditampilkan pada katalog SmartDrive.</p>
+        </div>
+
+        {% if form.non_field_errors %}
+            <div class="non-field-errors">
+                {{ form.non_field_errors }}
+            </div>
         {% endif %}
 
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
 
-            {{ form.non_field_errors }}
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="{{ form.name.id_for_label }}">Nama Mobil</label>
+                    {{ form.name }}
+                    {{ form.name.errors }}
+                    <div class="help-text">Contoh: Toyota Avanza Veloz</div>
+                </div>
 
-            <label>Nama Mobil</label>
-            {{ form.name }}
+                <div class="form-group">
+                    <label for="{{ form.brand.id_for_label }}">Brand</label>
+                    {{ form.brand }}
+                    {{ form.brand.errors }}
+                    <div class="help-text">Contoh: Toyota, Honda, Mitsubishi</div>
+                </div>
 
-            <label>Brand</label>
-            {{ form.brand }}
+                <div class="form-group">
+                    <label for="{{ form.transmission.id_for_label }}">Transmisi</label>
+                    {{ form.transmission }}
+                    {{ form.transmission.errors }}
+                    <div class="help-text">Contoh: Matic atau Manual</div>
+                </div>
 
-            <label>Transmisi</label>
-            {{ form.transmission }}
+                <div class="form-group">
+                    <label for="{{ form.capacity.id_for_label }}">Kapasitas</label>
+                    {{ form.capacity }}
+                    {{ form.capacity.errors }}
+                    <div class="help-text">Isi angka saja. Contoh: 7</div>
+                </div>
 
-            <label>Kapasitas</label>
-            {{ form.capacity }}
+                <div class="form-group">
+                    <label for="{{ form.price.id_for_label }}">Harga Sewa per Hari</label>
+                    {{ form.price }}
+                    {{ form.price.errors }}
+                    <div class="help-text">Isi angka saja. Contoh: 350000</div>
+                </div>
 
-            <label>Harga</label>
-            {{ form.price }}
+                <div class="form-group">
+                    <label for="{{ form.stock.id_for_label }}">Stok Mobil</label>
+                    {{ form.stock }}
+                    {{ form.stock.errors }}
+                    <div class="help-text">Isi jumlah unit mobil. Contoh: 3</div>
+                </div>
 
-            <label>Gambar Mobil</label>
-            {{ form.image }}
+                <div class="form-group full">
+                    <label for="{{ form.image.id_for_label }}">Gambar Mobil</label>
+                    {{ form.image }}
+                    {{ form.image.errors }}
+                    <div class="help-text">Gunakan gambar mobil yang jelas agar tampilan katalog lebih rapi.</div>
+                </div>
+            </div>
 
-            <div class="btn-row">
+            <div class="stock-note">
+                Catatan: Jika stok diisi 0, mobil tetap tampil di katalog tetapi tombol booking akan dinonaktifkan dan statusnya menjadi Stok Habis.
+            </div>
+
+            {% if car.image %}
+                <div class="preview-box">
+                    <img src="{{ car.image.url }}" class="preview-img" alt="{{ car.name }}">
+                    <div class="preview-info">
+                        <strong>Gambar mobil saat ini</strong>
+                        <span>Upload gambar baru jika ingin mengganti gambar mobil.</span>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="form-actions">
                 <button type="submit" class="save-btn">{{ button_text }}</button>
                 <a href="{% url 'admin_mobil' %}" class="back-btn">Kembali</a>
             </div>
         </form>
     </div>
+
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const messages = document.querySelectorAll(".message");
+
+        messages.forEach(function (message) {
+            setTimeout(function () {
+                message.classList.add("hide");
+
+                setTimeout(function () {
+                    message.remove();
+                }, 500);
+            }, 10000);
+        });
+    });
+</script>
 
 </body>
 </html>

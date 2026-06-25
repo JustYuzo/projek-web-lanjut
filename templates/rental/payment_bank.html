@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Payment Bank - SmartDrive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
         * {
@@ -67,6 +68,55 @@
             object-fit: contain;
         }
 
+        .message-wrapper {
+            width: 92%;
+            max-width: 1200px;
+            margin: 20px auto 0;
+        }
+
+        .message {
+            background: white;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #222;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+            border-left: 6px solid #2f6fde;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .message.success {
+            background: #dcfce7;
+            color: #166534;
+            border-left-color: #16a34a;
+        }
+
+        .message.error,
+        .message.danger {
+            background: #fee2e2;
+            color: #dc2626;
+            border-left-color: #dc2626;
+        }
+
+        .message.warning {
+            background: #fef3c7;
+            color: #92400e;
+            border-left-color: #f59e0b;
+        }
+
+        .message.info {
+            background: #dbeafe;
+            color: #1d4ed8;
+            border-left-color: #2f6fde;
+        }
+
+        .message.hide-alert {
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+
         .payment-wrapper {
             width: 92%;
             max-width: 1200px;
@@ -101,9 +151,52 @@
 
         .total-price {
             color: #001eff;
-            font-size: 26px;
+            font-size: 30px;
             font-weight: 900;
-            margin-bottom: 38px;
+            margin-bottom: 12px;
+        }
+
+        .payment-breakdown {
+            background: white;
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-bottom: 28px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.04);
+        }
+
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 11px 0;
+            border-bottom: 1px solid #eef1f5;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .breakdown-row span:first-child {
+            color: #6b7280;
+        }
+
+        .breakdown-row:last-child {
+            border-bottom: none;
+            padding-top: 14px;
+            font-size: 18px;
+        }
+
+        .breakdown-row:last-child span:last-child {
+            color: #15803d;
+            font-size: 22px;
+            font-weight: 900;
+        }
+
+        .kode-box {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 7px 12px;
+            border-radius: 9px;
+            font-weight: 900;
         }
 
         .box {
@@ -146,6 +239,7 @@
 
         .bank-card.active {
             border: 3px solid #2f6fde;
+            background: #f5f8ff;
         }
 
         .bank-card.mandiri {
@@ -226,6 +320,11 @@
             font-weight: 900;
         }
 
+        .virtual-value.total-tagihan {
+            color: #15803d;
+            font-size: 18px;
+        }
+
         .copy-btn {
             background: white;
             border: none;
@@ -288,6 +387,40 @@
             border-radius: 10px;
             font-size: 13px;
             font-weight: 700;
+            line-height: 1.5;
+        }
+
+        .proof-box {
+            margin-top: 18px;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .proof-box label {
+            display: block;
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .proof-input {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            padding: 13px;
+            font-size: 13px;
+            font-weight: 700;
+            background: white;
+        }
+
+        .proof-help {
+            margin-top: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #6b7280;
+            line-height: 1.5;
         }
 
         .btn-konfirmasi-payment {
@@ -367,7 +500,7 @@
             display: flex;
             justify-content: space-between;
             gap: 15px;
-            margin-bottom: 24px;
+            margin-bottom: 22px;
             font-size: 13px;
         }
 
@@ -382,8 +515,23 @@
             text-align: right;
         }
 
+        .summary-row.kode span:last-child {
+            color: #92400e;
+        }
+
         .summary-row.total span:last-child {
-            color: #001eff;
+            color: #15803d;
+            font-size: 17px;
+        }
+
+        .summary-note {
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 10px;
+            padding: 13px;
+            font-size: 12px;
+            font-weight: 800;
+            line-height: 1.5;
         }
 
         @media (max-width: 950px) {
@@ -445,10 +593,23 @@
             <a href="{% url 'katalog' %}">Katalog</a>
             <a href="{% url 'ai' %}">AI</a>
             <a href="{% url 'history' %}">Riwayat</a>
+            {% if user.is_authenticated and not user.is_staff and not user.is_superuser %}
+                <a href="{% url 'profil_user' %}">Profil Saya</a>
+            {% endif %}
         </div>
 
         <img src="{% static 'images/logo-tim.png' %}" class="team-logo" alt="Logo Tim">
     </nav>
+
+    {% if messages %}
+        <div class="message-wrapper">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     <div class="payment-wrapper">
 
@@ -458,33 +619,62 @@
 
             <h1 class="title">Pembayaran dengan Transfer Bank</h1>
 
-            <div class="label-small">Total Pembayaran</div>
-            <div class="total-price">Rp {{ total|default:car.price }}</div>
+            <div class="label-small">Total yang harus dibayar</div>
+            <div class="total-price">
+                {% if total_bayar %}
+                    Rp {{ total_bayar }}
+                {% else %}
+                    Rp {{ total|default:car.price }}
+                {% endif %}
+            </div>
+
+            <div class="payment-breakdown">
+                <div class="breakdown-row">
+                    <span>Total Sewa Mobil</span>
+                    <span>Rp {{ total|default:car.price }}</span>
+                </div>
+
+                <div class="breakdown-row">
+                    <span>Kode Unik Pembayaran</span>
+                    <span class="kode-box">{{ kode_unik|default:0 }}</span>
+                </div>
+
+                <div class="breakdown-row">
+                    <span>Total Bayar</span>
+                    <span>
+                        {% if total_bayar %}
+                            Rp {{ total_bayar }}
+                        {% else %}
+                            Rp {{ total|default:car.price }}
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
 
             <div class="box">
                 <h2 class="section-title">Pilih Bank</h2>
 
-            <div class="bank-options">
-                <button class="bank-card active" type="button" data-bank="BCA" data-va="123456789012">
-                    <img src="{% static 'images/bca.png' %}" alt="BCA" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
-                    <span class="bank-fallback">BCA</span>
-                </button>
+                <div class="bank-options">
+                    <button class="bank-card active" type="button" data-bank="BCA" data-va="123456789012">
+                        <img src="{% static 'images/bca.png' %}" alt="BCA" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                        <span class="bank-fallback">BCA</span>
+                    </button>
 
-                <button class="bank-card mandiri" type="button" data-bank="Mandiri" data-va="8808123456789012">
-                    <img src="{% static 'images/mandiri.png' %}" alt="Mandiri" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
-                    <span class="bank-fallback">Mandiri</span>
-                </button>
+                    <button class="bank-card mandiri" type="button" data-bank="Mandiri" data-va="8808123456789012">
+                        <img src="{% static 'images/mandiri.png' %}" alt="Mandiri" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                        <span class="bank-fallback">Mandiri</span>
+                    </button>
 
-                <button class="bank-card" type="button" data-bank="BRI" data-va="3301123456789012">
-                    <img src="{% static 'images/bri.png' %}" alt="BRI" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
-                    <span class="bank-fallback">BRI</span>
-                </button>
+                    <button class="bank-card" type="button" data-bank="BRI" data-va="3301123456789012">
+                        <img src="{% static 'images/bri.png' %}" alt="BRI" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                        <span class="bank-fallback">BRI</span>
+                    </button>
 
-                <button class="bank-card bni" type="button" data-bank="BNI" data-va="7701123456789012">
-                    <img src="{% static 'images/bni.png' %}" alt="BNI" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
-                    <span class="bank-fallback">BNI</span>
-                </button>
-            </div>
+                    <button class="bank-card bni" type="button" data-bank="BNI" data-va="7701123456789012">
+                        <img src="{% static 'images/bni.png' %}" alt="BNI" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                        <span class="bank-fallback">BNI</span>
+                    </button>
+                </div>
 
                 <div class="payment-info-grid">
 
@@ -523,9 +713,15 @@
 
                         <div class="virtual-row">
                             <div class="virtual-label">Total Tagihan</div>
-                            <div class="virtual-value">
-                                <span id="totalBill">Rp {{ total|default:car.price }}</span>
-                                <button class="copy-btn" type="button" onclick="copyText(document.getElementById('totalBill').innerText)">
+                            <div class="virtual-value total-tagihan">
+                                <span id="totalBill">
+                                    {% if total_bayar %}
+                                        Rp {{ total_bayar }}
+                                    {% else %}
+                                        Rp {{ total|default:car.price }}
+                                    {% endif %}
+                                </span>
+                                <button class="copy-btn" type="button" onclick="copyText(document.getElementById('totalBill').innerText.trim())">
                                     Salin
                                 </button>
                             </div>
@@ -553,7 +749,7 @@
 
                             <div class="step">
                                 <div class="step-number">4</div>
-                                <div>Pilih nominal pembayaran lalu transfer sesuai nominal tersebut.</div>
+                                <div>Transfer sesuai total tagihan sampai 3 angka terakhir agar pembayaran mudah diverifikasi admin.</div>
                             </div>
                         </div>
 
@@ -566,16 +762,33 @@
                 </div>
 
                 <div class="save-info">
-                    Simpan nomor virtual ini sebelum melakukan pembayaran.
+                    Pastikan nominal transfer sama persis dengan total bayar, termasuk kode unik. Kode unik membantu admin mencocokkan pembayaran kamu.
                 </div>
 
-                <form method="POST" action="{% url 'konfirmasi_payment' car.id 'bank' %}">
+                <form method="POST" action="{% url 'konfirmasi_payment' car.id 'bank' %}" enctype="multipart/form-data">
                     {% csrf_token %}
 
                     <input type="hidden" name="nama" value="{{ nama }}">
                     <input type="hidden" name="tanggal" value="{{ tanggal_mulai_input }}">
                     <input type="hidden" name="hari" value="{{ durasi|default:1 }}">
                     <input type="hidden" name="total" value="{{ total|default:car.price }}">
+                    <input type="hidden" name="kode_unik" value="{{ kode_unik|default:0 }}">
+                    <input type="hidden" name="bank_pembayaran" id="bankPembayaranInput" value="BCA">
+
+                    <div class="proof-box">
+                        <label for="buktiTransfer">Upload Bukti Transfer</label>
+                        <input
+                            type="file"
+                            id="buktiTransfer"
+                            name="bukti_transfer"
+                            class="proof-input"
+                            accept="image/*"
+                            required
+                        >
+                        <div class="proof-help">
+                            Upload screenshot atau foto bukti transfer. Pastikan nominal pembayaran terlihat jelas.
+                        </div>
+                    </div>
 
                     <button type="submit" class="btn-konfirmasi-payment">
                         Konfirmasi Pembayaran
@@ -625,9 +838,29 @@
                 <span>SmartDrive</span>
             </div>
 
-            <div class="summary-row total">
-                <span>Total Pembayaran</span>
+            <div class="summary-row">
+                <span>Total Sewa</span>
                 <span>Rp {{ total|default:car.price }}</span>
+            </div>
+
+            <div class="summary-row kode">
+                <span>Kode Unik</span>
+                <span>{{ kode_unik|default:0 }}</span>
+            </div>
+
+            <div class="summary-row total">
+                <span>Total Bayar</span>
+                <span>
+                    {% if total_bayar %}
+                        Rp {{ total_bayar }}
+                    {% else %}
+                        Rp {{ total|default:car.price }}
+                    {% endif %}
+                </span>
+            </div>
+
+            <div class="summary-note">
+                Transfer sesuai total bayar agar admin lebih mudah melakukan verifikasi pembayaran.
             </div>
         </div>
 
@@ -636,10 +869,27 @@
 </div>
 
 <script>
+    function autoDismissNotifications() {
+        const notifications = document.querySelectorAll(".message");
+
+        notifications.forEach(notification => {
+            setTimeout(() => {
+                notification.classList.add("hide-alert");
+
+                setTimeout(() => {
+                    notification.remove();
+                }, 500);
+            }, 10000);
+        });
+    }
+
+    autoDismissNotifications();
+
     const bankCards = document.querySelectorAll(".bank-card");
     const selectedBank = document.getElementById("selectedBank");
     const vaNumber = document.getElementById("vaNumber");
     const stepOne = document.getElementById("stepOne");
+    const bankPembayaranInput = document.getElementById("bankPembayaranInput");
 
     bankCards.forEach(card => {
         card.addEventListener("click", function () {
@@ -654,6 +904,7 @@
 
             selectedBank.innerText = bankName;
             vaNumber.innerText = bankVA;
+            bankPembayaranInput.value = bankName;
 
             if (bankName === "BCA") {
                 stepOne.innerText = "Login ke m-BCA atau mobile banking pilihan kamu.";

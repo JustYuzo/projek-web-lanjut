@@ -315,6 +315,137 @@
         .method-value {
             font-size: 14px;
             font-weight: 800;
+            margin-bottom: 14px;
+        }
+
+        .payment-detail-box {
+            background: #f8fafc;
+            border: 1px solid #eef1f5;
+            border-radius: 14px;
+            padding: 16px;
+        }
+
+        .payment-detail-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: #222;
+            margin-bottom: 14px;
+        }
+
+        .payment-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 13px;
+        }
+
+        .payment-row:last-child {
+            border-bottom: none;
+        }
+
+        .payment-row span:first-child {
+            color: #8b8f99;
+            font-weight: 700;
+        }
+
+        .payment-row span:last-child {
+            color: #111827;
+            font-weight: 900;
+            text-align: right;
+        }
+
+        .payment-row .kode-unik {
+            background: #fcefcf;
+            color: #b98200 !important;
+            padding: 5px 9px;
+            border-radius: 8px;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .payment-row.total-bayar span:last-child {
+            color: #1246ff;
+            font-size: 15px;
+        }
+
+        .receipt-btn {
+            width: 100%;
+            margin-top: 14px;
+            background: #2f6fde;
+            color: white;
+            text-decoration: none;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .receipt-btn:hover {
+            background: #1d58bf;
+        }
+
+        .bank-detail {
+            display: block;
+            margin-top: 6px;
+            color: #5f6b7a;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .receipt-waiting {
+            margin-top: 14px;
+            background: #f3f4f6;
+            color: #6b7280;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 12px;
+            font-weight: 800;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+
+        .message-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .message {
+            background: white;
+            border-radius: 12px;
+            padding: 15px 18px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #222;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+            border-left: 5px solid #2f6fde;
+        }
+
+        .message.success {
+            background: #dcfce7;
+            color: #166534;
+            border-left-color: #16a34a;
+        }
+
+        .message.warning {
+            background: #fef3c7;
+            color: #92400e;
+            border-left-color: #f59e0b;
+        }
+
+        .message.error,
+        .message.danger {
+            background: #fee2e2;
+            color: #dc2626;
+            border-left-color: #dc2626;
         }
 
         .empty-box {
@@ -438,6 +569,9 @@
             <a href="{% url 'home' %}">Home</a>
             <a href="{% url 'katalog' %}">Katalog</a>
             <a href="{% url 'ai' %}">AI</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profil_user' %}">Profil Saya</a>
+            {% endif %}
             <a href="{% url 'history' %}" class="active">Riwayat</a>
         </div>
 
@@ -464,6 +598,16 @@
         <div class="subtitle">
             Lihat daftar pesanan, metode pembayaran, dan status persetujuan dari admin.
         </div>
+
+        {% if messages %}
+            <div class="message-wrapper">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}" data-auto-dismiss="true">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
 
         <div class="top-row">
             <div></div>
@@ -533,7 +677,36 @@
                     </div>
                 </div>
 
-                <div></div>
+                <div class="payment-detail-box">
+                    <div class="payment-detail-title">Rincian Pembayaran</div>
+
+                    <div class="payment-row">
+                        <span>Total Sewa</span>
+                        <span>Rp {{ booking.total }}</span>
+                    </div>
+
+                    <div class="payment-row">
+                        <span>Kode Unik</span>
+                        <span>
+                            {% if booking.kode_unik %}
+                                <span class="kode-unik">{{ booking.kode_unik }}</span>
+                            {% else %}
+                                <span class="kode-unik">0</span>
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <div class="payment-row total-bayar">
+                        <span>Total Bayar</span>
+                        <span>
+                            {% if booking.total_bayar %}
+                                Rp {{ booking.total_bayar }}
+                            {% else %}
+                                Rp {{ booking.total }}
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
 
                 <div class="right-side">
                     {% if booking.status == 'menunggu' %}
@@ -548,8 +721,14 @@
                         <div class="status-badge status-menunggu">{{ booking.status }}</div>
                     {% endif %}
 
-                    <div class="price-label">Total Pembayaran</div>
-                    <div class="total-price">Rp {{ booking.total }}</div>
+                    <div class="price-label">Total yang Harus Dibayar</div>
+                    <div class="total-price">
+                        {% if booking.total_bayar %}
+                            Rp {{ booking.total_bayar }}
+                        {% else %}
+                            Rp {{ booking.total }}
+                        {% endif %}
+                    </div>
 
                     <div class="method-label">Metode Pembayaran</div>
                     <div class="method-value">
@@ -558,7 +737,21 @@
                         {% else %}
                             -
                         {% endif %}
+
+                        {% if booking.bank_pembayaran %}
+                            <span class="bank-detail">{{ booking.bank_pembayaran }}</span>
+                        {% endif %}
                     </div>
+
+                    {% if booking.status == 'selesai' %}
+                        <a href="{% url 'cetak_kuitansi_user' booking.id %}" target="_blank" class="receipt-btn">
+                            Cetak Kuitansi
+                        </a>
+                    {% else %}
+                        <div class="receipt-waiting">
+                            Kuitansi tersedia setelah pembayaran berhasil.
+                        </div>
+                    {% endif %}
                 </div>
 
             </div>
@@ -571,6 +764,8 @@
     </div>
 
 </div>
+
+<script src="{% static 'js/auto_dismiss_alert.js' %}"></script>
 
 </body>
 </html>

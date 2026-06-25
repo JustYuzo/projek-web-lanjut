@@ -262,6 +262,66 @@
             min-width: 100px;
         }
 
+
+        /* ================= AUTO DISMISS MESSAGE ================= */
+
+        .message-wrapper {
+            width: 900px;
+            max-width: 92%;
+            margin: 24px auto 0;
+        }
+
+        .message {
+            background: white;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #222;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+            border-left: 5px solid #2f6fde;
+            transition: opacity 0.6s ease, transform 0.6s ease, margin 0.6s ease, padding 0.6s ease, max-height 0.6s ease;
+            max-height: 120px;
+            overflow: hidden;
+        }
+
+        .message.success {
+            border-left-color: #16a34a;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .message.error,
+        .message.danger {
+            border-left-color: #dc2626;
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .message.warning {
+            border-left-color: #f59e0b;
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .message.info {
+            border-left-color: #2f6fde;
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .message.fade-out,
+        .error-text.fade-out {
+            opacity: 0;
+            transform: translateY(-8px);
+            margin: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            max-height: 0;
+            pointer-events: none;
+        }
+
         /* ================= RESPONSIVE ================= */
 
         @media (max-width: 900px) {
@@ -352,6 +412,9 @@
         <a href="{% url 'katalog' %}">Katalog</a>
         <a href="{% url 'ai' %}" class="active">AI</a>
         <a href="{% url 'history' %}">Riwayat</a>
+        {% if user.is_authenticated and not user.is_staff and not user.is_superuser %}
+            <a href="{% url 'profil_user' %}">Profil Saya</a>
+        {% endif %}
     </div>
 
     <div class="nav-right">
@@ -370,6 +433,16 @@
         <img src="{% static 'images/logo-tim.png' %}" class="team-logo" alt="Logo Tim">
     </div>
 </nav>
+
+{% if messages %}
+    <div class="message-wrapper">
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
 
 <div class="container">
 
@@ -479,6 +552,22 @@
             sendMessage();
         }
     });
+
+    function autoDismissNotifications() {
+        const notifications = document.querySelectorAll(".message, .error-text");
+
+        notifications.forEach(notification => {
+            setTimeout(() => {
+                notification.classList.add("fade-out");
+
+                setTimeout(() => {
+                    notification.remove();
+                }, 650);
+            }, 10000);
+        });
+    }
+
+    autoDismissNotifications();
 </script>
 
 </body>

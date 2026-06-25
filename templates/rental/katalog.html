@@ -52,7 +52,7 @@
 
         .nav-menu {
             display: flex;
-            gap: 34px;
+            gap: 28px;
             align-items: center;
         }
 
@@ -61,6 +61,7 @@
             text-decoration: none;
             font-size: 13px;
             font-weight: 700;
+            white-space: nowrap;
         }
 
         .nav-menu a:hover,
@@ -123,6 +124,41 @@
             height: 80px;
             object-fit: contain;
             transform: scale(1.15);
+        }
+
+
+
+        /* ================= AUTO DISMISS MESSAGE ================= */
+
+        .message-wrapper {
+            width: 92%;
+            max-width: 1200px;
+            margin: 24px auto 0;
+            display: grid;
+            gap: 12px;
+        }
+
+        .message {
+            background: white;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #222;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+            border-left: 6px solid #2f6fde;
+            overflow: hidden;
+            transition: opacity 0.45s ease, transform 0.45s ease, max-height 0.45s ease, margin 0.45s ease, padding 0.45s ease;
+        }
+
+        .message.auto-dismiss-hide {
+            opacity: 0;
+            transform: translateY(-8px);
+            max-height: 0;
+            margin: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            border-width: 0;
         }
 
         /* ================= CONTENT ================= */
@@ -261,7 +297,36 @@
             color: #a1969e;
             font-size: 12px;
             font-weight: 800;
-            margin: 10px 0 12px;
+            margin: 10px 0 10px;
+        }
+
+        .stock-badge {
+            display: inline-block;
+            padding: 7px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            white-space: nowrap;
+        }
+
+        .stock-available {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .stock-empty {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .car-card.out-of-stock {
+            opacity: 0.78;
+        }
+
+        .car-card.out-of-stock:hover {
+            transform: none;
+            box-shadow: none;
         }
 
         .detail-btn {
@@ -280,6 +345,13 @@
 
         .detail-btn:hover {
             background-color: #1d58bf;
+        }
+
+        .detail-btn.disabled {
+            background: #d1d5db;
+            color: #6b7280;
+            cursor: not-allowed;
+            pointer-events: none;
         }
 
         .empty-result,
@@ -315,6 +387,10 @@
 
             .catalog-grid {
                 grid-template-columns: repeat(3, 1fr);
+            }
+
+            .nav-menu {
+                gap: 18px;
             }
         }
 
@@ -418,6 +494,9 @@
             <a href="{% url 'katalog' %}" class="active">Katalog</a>
             <a href="{% url 'ai' %}">AI</a>
             <a href="{% url 'history' %}">Riwayat</a>
+            {% if user.is_authenticated and not user.is_staff and not user.is_superuser %}
+                <a href="{% url 'profil_user' %}">Profil Saya</a>
+            {% endif %}
         </div>
 
         <div class="nav-right">
@@ -436,6 +515,16 @@
             <img src="{% static 'images/logo-tim.png' %}" class="team-logo" alt="Logo Tim">
         </div>
     </nav>
+
+    {% if messages %}
+        <div class="message-wrapper">
+            {% for message in messages %}
+                <div class="message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     <main class="main-content">
         <h1 class="page-title">Daftar Mobil Tersedia</h1>
@@ -531,10 +620,11 @@
             <section class="catalog-grid">
                 {% for car in cars %}
                 <div
-                    class="car-card"
+                    class="car-card {% if car.stock <= 0 %}out-of-stock{% endif %}"
                     data-brand="{{ car.brand|lower }}"
                     data-capacity="{{ car.capacity }}"
                     data-price="{{ car.price }}"
+                    data-stock="{{ car.stock }}"
                 >
                     <div class="car-image-box">
                         {% if car.image %}
@@ -551,9 +641,23 @@
 
                     <div class="car-price">Rp {{ car.price }}</div>
 
-                    <a href="{% url 'detail_mobil' car.id %}" class="detail-btn">
-                        Detail
-                    </a>
+                    {% if car.stock > 0 %}
+                        <span class="stock-badge stock-available">
+                            Tersedia {{ car.stock }} Unit
+                        </span>
+
+                        <a href="{% url 'detail_mobil' car.id %}" class="detail-btn">
+                            Detail
+                        </a>
+                    {% else %}
+                        <span class="stock-badge stock-empty">
+                            Stok Habis
+                        </span>
+
+                        <span class="detail-btn disabled">
+                            Tidak Tersedia
+                        </span>
+                    {% endif %}
                 </div>
                 {% empty %}
                 <div class="empty-db">
@@ -570,6 +674,23 @@
     </main>
 
 </div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const autoDismissItems = document.querySelectorAll(".message");
+
+        autoDismissItems.forEach(function (item) {
+            setTimeout(function () {
+                item.classList.add("auto-dismiss-hide");
+
+                setTimeout(function () {
+                    item.remove();
+                }, 500);
+            }, 10000);
+        });
+    });
+</script>
 
 <script>
     const brandCheckboxes = document.querySelectorAll(".brand-filter");

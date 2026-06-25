@@ -45,6 +45,7 @@
             font-weight: 800;
             color: white;
             white-space: nowrap;
+            text-decoration: none;
         }
 
         .brand span {
@@ -64,7 +65,8 @@
             font-weight: 700;
         }
 
-        .nav-menu a:hover {
+        .nav-menu a:hover,
+        .nav-menu a.active {
             color: #2f6fde;
         }
 
@@ -123,6 +125,101 @@
             transform: scale(1.15);
         }
 
+        /* ================= PROFILE ALERT ================= */
+
+        .profile-alert-wrapper {
+            width: 92%;
+            max-width: 1350px;
+            margin: 24px auto 0;
+        }
+
+        .profile-alert {
+            background: white;
+            border-radius: 16px;
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+            border-left: 6px solid #2f6fde;
+        }
+
+        .profile-alert.warning {
+            background: #fff7d6;
+            border-left-color: #f59e0b;
+        }
+
+        .profile-alert.info {
+            background: #dbeafe;
+            border-left-color: #2f6fde;
+        }
+
+        .profile-alert.success {
+            background: #dcfce7;
+            border-left-color: #16a34a;
+        }
+
+        .profile-alert.danger {
+            background: #fee2e2;
+            border-left-color: #dc2626;
+        }
+
+        .profile-alert-text h3 {
+            font-size: 16px;
+            font-weight: 800;
+            margin: 0 0 6px;
+            color: #222;
+        }
+
+        .profile-alert-text p {
+            font-size: 13px;
+            font-weight: 700;
+            color: #4b5563;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .profile-alert-btn {
+            background: #2f6fde;
+            color: white;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .profile-alert-btn:hover {
+            background: #1d58bf;
+        }
+
+        .profile-alert-wrapper.auto-dismiss-notification {
+            max-height: 220px;
+            overflow: hidden;
+            transition: opacity 0.5s ease, transform 0.5s ease, max-height 0.5s ease, margin 0.5s ease;
+        }
+
+        .profile-alert-wrapper.auto-dismiss-notification.hide,
+        .message.auto-dismiss-notification.hide,
+        .message.hide {
+            opacity: 0;
+            transform: translateY(-10px);
+            max-height: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .message.auto-dismiss-notification,
+        .message {
+            transition: opacity 0.5s ease, transform 0.5s ease, max-height 0.5s ease, margin 0.5s ease, padding 0.5s ease;
+        }
+
         /* ================= HERO ================= */
 
         .hero {
@@ -130,7 +227,7 @@
             grid-template-columns: 1fr 1.35fr;
             align-items: center;
             gap: 70px;
-            padding: 80px 120px 70px 120px;
+            padding: 70px 120px 70px 120px;
             min-height: 610px;
             background: #eef1f5;
             overflow: visible;
@@ -281,6 +378,175 @@
             background-color: #1d58bf;
         }
 
+
+        /* ================= MOBIL TERSEDIA DI HOME ================= */
+
+        .home-cars-section {
+            width: 92%;
+            max-width: 1350px;
+            margin: 0 auto 70px;
+        }
+
+        .home-cars-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .home-cars-header h2 {
+            font-size: 30px;
+            font-weight: 900;
+            margin: 0;
+            color: #222;
+        }
+
+        .home-cars-header p {
+            margin: 6px 0 0;
+            color: #8b8f99;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .see-all-btn {
+            background: #2f6fde;
+            color: white;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .see-all-btn:hover {
+            background: #1d58bf;
+        }
+
+        .home-cars-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        .home-car-card {
+            background: white;
+            border-radius: 16px;
+            padding: 14px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+            transition: 0.2s ease;
+        }
+
+        .home-car-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+        }
+
+        .home-car-card.out-of-stock {
+            opacity: 0.78;
+        }
+
+        .home-car-card.out-of-stock:hover {
+            transform: none;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+        }
+
+        .home-car-img {
+            height: 130px;
+            background: #e6e4ea;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 7px;
+            margin-bottom: 12px;
+        }
+
+        .home-car-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .home-car-name {
+            font-size: 15px;
+            font-weight: 900;
+            color: #222;
+            margin-bottom: 7px;
+        }
+
+        .home-car-info {
+            color: #8b8f99;
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .home-car-price {
+            color: #2f6fde;
+            font-size: 13px;
+            font-weight: 900;
+            margin: 10px 0;
+        }
+
+        .stock-badge {
+            display: inline-block;
+            padding: 7px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 900;
+            margin-bottom: 12px;
+            white-space: nowrap;
+        }
+
+        .stock-available {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .stock-empty {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .home-detail-btn {
+            display: block;
+            width: 100%;
+            background: #2f6fde;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+        .home-detail-btn:hover {
+            background: #1d58bf;
+        }
+
+        .home-detail-btn.disabled {
+            background: #d1d5db;
+            color: #6b7280;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .home-empty-cars {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            text-align: center;
+            color: #8b8f99;
+            font-size: 14px;
+            font-weight: 900;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+        }
+
         /* ================= RESPONSIVE ================= */
 
         @media (max-width: 1200px) {
@@ -369,6 +635,10 @@
             .filter-wrapper {
                 padding-left: 40px;
                 padding-right: 40px;
+            }
+
+            .home-cars-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
 
             .nav-menu {
@@ -484,6 +754,25 @@
             .filter-btn {
                 height: 52px;
             }
+
+            .profile-alert {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .home-cars-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .home-cars-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-alert-btn {
+                width: 100%;
+                text-align: center;
+            }
         }
 
         @media (max-width: 500px) {
@@ -522,7 +811,11 @@
             .filter-wrapper {
                 padding-left: 20px;
                 padding-right: 20px;
-                padding-bottom: 60px;
+                padding-bottom: 45px;
+            }
+
+            .home-cars-header h2 {
+                font-size: 24px;
             }
         }
     </style>
@@ -532,15 +825,18 @@
 <div class="page">
 
     <nav class="navbar">
-        <div class="brand">
+        <a href="{% url 'home' %}" class="brand">
             <span>Smart</span>Drive
-        </div>
+        </a>
 
         <div class="nav-menu">
-            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'home' %}" class="active">Home</a>
             <a href="{% url 'katalog' %}">Katalog</a>
             <a href="{% url 'ai' %}">AI</a>
             <a href="{% url 'history' %}">Riwayat</a>
+            {% if user.is_authenticated and not user.is_staff and not user.is_superuser %}
+                <a href="{% url 'profil_user' %}">Profil Saya</a>
+            {% endif %}
         </div>
 
         <div class="nav-right">
@@ -559,6 +855,44 @@
             <img src="{% static 'images/logo-tim.png' %}" class="team-logo" alt="Logo Tim">
         </div>
     </nav>
+
+    {% if user.is_authenticated and not user.is_staff and not user.is_superuser %}
+        <div class="profile-alert-wrapper auto-dismiss-notification">
+            {% if user.profile.status_verifikasi == "terverifikasi" %}
+                <div class="profile-alert success">
+                    <div class="profile-alert-text">
+                        <h3>Profil kamu sudah terverifikasi</h3>
+                        <p>Kamu sudah bisa melakukan booking mobil. Jika ada data yang salah, kamu tetap bisa memperbarui profil dan akan diverifikasi ulang oleh admin.</p>
+                    </div>
+                    <a href="{% url 'profil_user' %}" class="profile-alert-btn">Lihat Profil</a>
+                </div>
+            {% elif user.profile.status_verifikasi == "menunggu" %}
+                <div class="profile-alert info">
+                    <div class="profile-alert-text">
+                        <h3>Profil kamu sedang menunggu verifikasi admin</h3>
+                        <p>Data sudah dikirim. Kamu masih bisa mengecek atau memperbaiki profil jika ada kesalahan sebelum admin menyetujui.</p>
+                    </div>
+                    <a href="{% url 'profil_user' %}" class="profile-alert-btn">Cek Profil</a>
+                </div>
+            {% elif user.profile.status_verifikasi == "ditolak" %}
+                <div class="profile-alert danger">
+                    <div class="profile-alert-text">
+                        <h3>Profil kamu ditolak</h3>
+                        <p>Periksa catatan admin lalu perbaiki biodata, KTP, SIM A, alamat, atau kontak darurat agar bisa diverifikasi ulang.</p>
+                    </div>
+                    <a href="{% url 'profil_user' %}" class="profile-alert-btn">Perbaiki Profil</a>
+                </div>
+            {% else %}
+                <div class="profile-alert warning">
+                    <div class="profile-alert-text">
+                        <h3>Lengkapi profil agar bisa booking</h3>
+                        <p>Isi biodata, nomor HP, KTP, SIM A, alamat, dan kontak darurat. Setelah lengkap, admin akan memverifikasi data kamu.</p>
+                    </div>
+                    <a href="{% url 'profil_user' %}" class="profile-alert-btn">Lengkapi Profil</a>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
 
     <section class="hero">
         <div class="hero-text">
@@ -598,6 +932,61 @@
         </div>
     </div>
 
+    <section class="home-cars-section">
+        <div class="home-cars-header">
+            <div>
+                <h2>Mobil Tersedia</h2>
+                <p>Pilih mobil sesuai kebutuhan dan cek stok unit sebelum melakukan booking.</p>
+            </div>
+
+            <a href="{% url 'katalog' %}" class="see-all-btn">Lihat Semua Mobil</a>
+        </div>
+
+        {% if cars %}
+            <div class="home-cars-grid">
+                {% for car in cars|slice:":4" %}
+                    <div class="home-car-card {% if car.stock <= 0 %}out-of-stock{% endif %}">
+                        <div class="home-car-img">
+                            {% if car.image %}
+                                <img src="{{ car.image.url }}" alt="{{ car.name }}">
+                            {% else %}
+                                <img src="{% static 'images/mobil-hitam.png' %}" alt="{{ car.name }}">
+                            {% endif %}
+                        </div>
+
+                        <div class="home-car-name">{{ car.name }}</div>
+                        <div class="home-car-info">▣ {{ car.transmission }}</div>
+                        <div class="home-car-info">👤 {{ car.capacity }} Orang</div>
+                        <div class="home-car-price">Rp {{ car.price }} / hari</div>
+
+                        {% if car.stock > 0 %}
+                            <span class="stock-badge stock-available">
+                                Tersedia {{ car.stock }} Unit
+                            </span>
+
+                            <a href="{% url 'detail_mobil' car.id %}" class="home-detail-btn">
+                                Detail Mobil
+                            </a>
+                        {% else %}
+                            <span class="stock-badge stock-empty">
+                                Stok Habis
+                            </span>
+
+                            <span class="home-detail-btn disabled">
+                                Tidak Tersedia
+                            </span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="home-empty-cars">
+                Belum ada data mobil. Silakan tambahkan mobil dari halaman admin.
+            </div>
+        {% endif %}
+    </section>
+
+
 </div>
 
 <script>
@@ -629,6 +1018,20 @@
 
         window.location.href = finalUrl;
     }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const notifications = document.querySelectorAll(".auto-dismiss-notification, .message");
+
+        notifications.forEach(function (notification) {
+            setTimeout(function () {
+                notification.classList.add("hide");
+
+                setTimeout(function () {
+                    notification.remove();
+                }, 500);
+            }, 10000);
+        });
+    });
 </script>
 
 </body>

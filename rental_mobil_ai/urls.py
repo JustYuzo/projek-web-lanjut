@@ -5,6 +5,11 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # URL untuk login Google dari django-allauth
+    path('accounts/', include('allauth.urls')),
+
+    # URL utama aplikasi rental
     path('', include('rental.urls')),
 ]
 

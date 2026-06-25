@@ -1,0 +1,496 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ judul_kuitansi }} - SmartDrive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef1f5;
+            color: #222;
+            padding: 34px 0;
+        }
+
+        .page {
+            width: 92%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .top-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 22px;
+        }
+
+        .back-btn,
+        .print-btn {
+            text-decoration: none;
+            border: none;
+            padding: 13px 22px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .back-btn {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .back-btn:hover {
+            background: #d1d5db;
+        }
+
+        .print-btn {
+            background: #2f6fde;
+            color: white;
+        }
+
+        .print-btn:hover {
+            background: #1d58bf;
+        }
+
+        .receipt-card {
+            background: white;
+            border-radius: 18px;
+            padding: 34px 38px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+        }
+
+        .receipt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 24px;
+            margin-bottom: 26px;
+        }
+
+        .brand {
+            font-size: 36px;
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .brand span {
+            color: #2f6fde;
+        }
+
+        .company-info p {
+            color: #6b7280;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.6;
+        }
+
+        .receipt-title {
+            text-align: right;
+        }
+
+        .receipt-title h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #222;
+            margin-bottom: 8px;
+        }
+
+        .receipt-title p {
+            color: #6b7280;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.6;
+        }
+
+        .status-badge {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .status-menunggu {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-diproses {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .status-selesai {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-ditolak {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .section {
+            margin-bottom: 26px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #222;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .info-item {
+            background: #f8fafc;
+            border: 1px solid #eef1f5;
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+
+        .info-item small {
+            display: block;
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .info-item strong {
+            display: block;
+            color: #222;
+            font-size: 14px;
+            font-weight: 800;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .payment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        .payment-table th {
+            background: #f8fafc;
+            color: #6b7280;
+            font-size: 13px;
+            font-weight: 800;
+            text-align: left;
+            padding: 14px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .payment-table td {
+            padding: 14px;
+            border-bottom: 1px solid #f1f1f1;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .payment-table .right {
+            text-align: right;
+        }
+
+        .total-row td {
+            font-size: 17px;
+            font-weight: 800;
+            color: #15803d;
+            background: #f0fdf4;
+        }
+
+        .unique-code {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 7px 11px;
+            border-radius: 8px;
+            font-weight: 800;
+        }
+
+        .footer {
+            margin-top: 34px;
+            display: grid;
+            grid-template-columns: 1fr 260px;
+            gap: 30px;
+            align-items: end;
+        }
+
+        .note {
+            background: #eef1f5;
+            border-radius: 12px;
+            padding: 15px 16px;
+            color: #6b7280;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.6;
+        }
+
+        .signature {
+            text-align: center;
+            color: #222;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .signature-space {
+            height: 70px;
+        }
+
+        .signature strong {
+            display: block;
+            border-top: 1px solid #222;
+            padding-top: 8px;
+            font-weight: 800;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .page {
+                width: 100%;
+                max-width: none;
+            }
+
+            .top-actions {
+                display: none;
+            }
+
+            .receipt-card {
+                box-shadow: none;
+                border-radius: 0;
+                padding: 28px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .receipt-header {
+                flex-direction: column;
+            }
+
+            .receipt-title {
+                text-align: left;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer {
+                grid-template-columns: 1fr;
+            }
+
+            .top-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .back-btn,
+            .print-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="top-actions">
+        {% if is_admin_receipt %}
+            <a href="{% url 'admin_booking' %}" class="back-btn">Kembali ke Admin Booking</a>
+        {% else %}
+            <a href="{% url 'history' %}" class="back-btn">Kembali ke Riwayat</a>
+        {% endif %}
+
+        <button onclick="window.print()" class="print-btn">Cetak Kuitansi</button>
+    </div>
+
+    <div class="receipt-card">
+
+        <div class="receipt-header">
+            <div class="company-info">
+                <div class="brand"><span>Smart</span>Drive</div>
+                <p>Web Rental Mobil SmartDrive</p>
+                <p>Layanan rental mobil berbasis online</p>
+                <p>Admin SmartDrive</p>
+            </div>
+
+            <div class="receipt-title">
+                <h1>{{ judul_kuitansi }}</h1>
+                <p>No. Booking: #SD-{{ booking.id }}</p>
+                <p>Tanggal Cetak: {% now "d M Y H:i" %}</p>
+
+                {% if booking.status == "menunggu" %}
+                    <span class="status-badge status-menunggu">Menunggu Konfirmasi</span>
+                {% elif booking.status == "diproses" %}
+                    <span class="status-badge status-diproses">Sedang Diproses</span>
+                {% elif booking.status == "selesai" %}
+                    <span class="status-badge status-selesai">Berhasil</span>
+                {% elif booking.status == "ditolak" %}
+                    <span class="status-badge status-ditolak">Ditolak</span>
+                {% else %}
+                    <span class="status-badge status-menunggu">{{ booking.status }}</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">Data Penyewa</h3>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <small>Nama Penyewa</small>
+                    <strong>{{ booking.nama }}</strong>
+                </div>
+
+                <div class="info-item">
+                    <small>Akun User</small>
+                    <strong>
+                        {% if booking.user %}
+                            {{ booking.user.email|default:booking.user.username }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">Data Mobil dan Sewa</h3>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <small>Mobil</small>
+                    <strong>
+                        {% if booking.car %}
+                            {{ booking.car.name }}
+                        {% else %}
+                            {{ booking.mobil }}
+                        {% endif %}
+                    </strong>
+                </div>
+
+                <div class="info-item">
+                    <small>Brand</small>
+                    <strong>
+                        {% if booking.car %}
+                            {{ booking.car.brand }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </strong>
+                </div>
+
+                <div class="info-item">
+                    <small>Tanggal Mulai Sewa</small>
+                    <strong>{{ booking.tanggal|date:"d M Y" }}</strong>
+                </div>
+
+                <div class="info-item">
+                    <small>Durasi Sewa</small>
+                    <strong>{{ booking.hari }} Hari</strong>
+                </div>
+
+                <div class="info-item">
+                    <small>Metode Pembayaran</small>
+                    <strong>{{ booking.metode_pembayaran|default:"-" }}</strong>
+                </div>
+
+                <div class="info-item">
+                    <small>Bank / E-Wallet</small>
+                    <strong>{{ booking.bank_pembayaran|default:"-" }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">Rincian Pembayaran</h3>
+
+            <table class="payment-table">
+                <tr>
+                    <th>Keterangan</th>
+                    <th class="right">Jumlah</th>
+                </tr>
+
+                <tr>
+                    <td>Total Sewa Mobil</td>
+                    <td class="right">Rp {{ booking.total }}</td>
+                </tr>
+
+                <tr>
+                    <td>Kode Unik Pembayaran</td>
+                    <td class="right">
+                        {% if booking.kode_unik %}
+                            <span class="unique-code">{{ booking.kode_unik }}</span>
+                        {% else %}
+                            <span class="unique-code">0</span>
+                        {% endif %}
+                    </td>
+                </tr>
+
+                <tr class="total-row">
+                    <td>Total Bayar</td>
+                    <td class="right">
+                        {% if booking.total_bayar %}
+                            Rp {{ booking.total_bayar }}
+                        {% else %}
+                            Rp {{ booking.total }}
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="footer">
+            <div class="note">
+                Kuitansi ini dibuat secara otomatis oleh sistem SmartDrive.
+                Simpan kuitansi ini sebagai bukti transaksi rental mobil.
+                Status pembayaran mengikuti hasil konfirmasi admin.
+            </div>
+
+            <div class="signature">
+                <p>Admin SmartDrive</p>
+                <div class="signature-space"></div>
+                <strong>SmartDrive</strong>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

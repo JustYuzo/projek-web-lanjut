@@ -1,0 +1,874 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Profil Saya - SmartDrive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef1f5;
+            color: #222;
+        }
+
+        .navbar {
+            height: 78px;
+            background-color: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 42px;
+            overflow: visible;
+        }
+
+        .brand {
+            font-size: 34px;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .brand span {
+            color: #2f6fde;
+        }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .user-area span {
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .logout-btn {
+            background-color: #2f6fde;
+            color: white;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 9px 20px;
+            border-radius: 7px;
+            border: none;
+            display: inline-block;
+        }
+
+        .logout-btn:hover {
+            background-color: #1d58bf;
+        }
+
+        .team-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            transform: scale(1.15);
+        }
+
+        .container {
+            width: 92%;
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 38px 0 60px;
+        }
+
+        .top-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .title h1 {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: #222;
+        }
+
+        .title p {
+            color: #6b7280;
+            font-size: 15px;
+            font-weight: 600;
+            max-width: 720px;
+            line-height: 1.6;
+        }
+
+        .top-buttons {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .add-btn {
+            background-color: #2f6fde;
+            color: white;
+            text-decoration: none;
+            padding: 16px 26px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 170px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .add-btn:hover {
+            background-color: #1d58bf;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 22px 28px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+            margin-bottom: 24px;
+        }
+
+        .profile-card {
+            position: sticky;
+            top: 98px;
+        }
+
+        .profile-photo-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .profile-img {
+            width: 130px;
+            height: 130px;
+            background: #e6e4ea;
+            border-radius: 18px;
+            object-fit: cover;
+            padding: 4px;
+        }
+
+        .profile-placeholder {
+            width: 130px;
+            height: 130px;
+            background: #e6e4ea;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2f6fde;
+            font-size: 50px;
+            font-weight: 800;
+        }
+
+        .profile-name {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        .profile-name h2 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #222;
+            margin-bottom: 7px;
+        }
+
+        .profile-name p {
+            color: #6b7280;
+            font-size: 13px;
+            font-weight: 700;
+            word-break: break-word;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .status-belum_lengkap {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .status-menunggu {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-terverifikasi {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-ditolak {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .status-center {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+
+        .side-info {
+            display: grid;
+            gap: 12px;
+        }
+
+        .side-item {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 13px 14px;
+            border: 1px solid #eef1f5;
+        }
+
+        .side-item small {
+            display: block;
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .side-item strong {
+            display: block;
+            color: #222;
+            font-size: 14px;
+            font-weight: 800;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .note-box {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.6;
+            margin-top: 16px;
+        }
+
+        .success-box {
+            background: #dcfce7;
+            color: #166534;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+
+        .danger-box {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+
+        .admin-note {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.6;
+            margin-top: 16px;
+        }
+
+        .message {
+            background: white;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 18px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #222;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #222;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            color: #222;
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .form-control,
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        input[type="date"],
+        input[type="file"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 13px 14px;
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            background: white;
+            color: #222;
+            font-size: 14px;
+            font-weight: 700;
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 115px;
+        }
+
+        input[type="file"] {
+            cursor: pointer;
+        }
+
+        .form-control:focus,
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #2f6fde;
+            box-shadow: 0 0 0 3px rgba(47, 111, 222, 0.12);
+        }
+
+        .file-preview {
+            margin-top: 12px;
+            background: #f8fafc;
+            border: 1px solid #eef1f5;
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .preview-img {
+            width: 82px;
+            height: 62px;
+            object-fit: cover;
+            border-radius: 10px;
+            background: #e6e4ea;
+            border: 1px solid #e5e7eb;
+        }
+
+        .file-preview a {
+            color: #1d4ed8;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .file-preview p {
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .errorlist {
+            color: #dc2626;
+            padding-left: 18px;
+            margin-top: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1.5;
+        }
+
+        .form-action {
+            border-top: 1px solid #e5e7eb;
+            margin-top: 28px;
+            padding-top: 22px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .save-btn {
+            background-color: #2f6fde;
+            color: white;
+            text-decoration: none;
+            padding: 15px 26px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            min-width: 170px;
+        }
+
+        .save-btn:hover {
+            background-color: #1d58bf;
+        }
+
+        .back-btn {
+            background: #dbeafe;
+            color: #1d4ed8;
+            text-decoration: none;
+            padding: 15px 26px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .back-btn:hover {
+            background: #cfe0ff;
+        }
+
+        @media (max-width: 1100px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-card {
+                position: static;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .navbar {
+                height: auto;
+                min-height: 78px;
+                padding: 16px 20px;
+                flex-wrap: wrap;
+                gap: 14px;
+            }
+
+            .brand {
+                font-size: 26px;
+            }
+
+            .user-area {
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .team-logo {
+                width: 60px;
+                height: 60px;
+                transform: scale(1.1);
+            }
+
+            .top-area {
+                flex-direction: column;
+            }
+
+            .title h1 {
+                font-size: 34px;
+            }
+
+            .top-buttons {
+                width: 100%;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .navbar {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .user-area {
+                justify-content: center;
+            }
+
+            .add-btn,
+            .save-btn,
+            .back-btn {
+                width: 100%;
+            }
+
+            .form-action {
+                justify-content: stretch;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <a href="{% url 'home' %}" class="brand">
+        <span>Smart</span>Drive
+    </a>
+
+    <div class="user-area">
+        <span>Halo, {{ request.user.username }}</span>
+        <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+        <img src="{% static 'images/logo-tim.png' %}" class="team-logo" alt="Logo Tim">
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="top-area">
+        <div class="title">
+            <h1>Profil Saya</h1>
+            <p>
+                Lengkapi data profil kamu agar admin dapat memverifikasi akun dan kamu bisa melakukan booking mobil di SmartDrive.
+            </p>
+        </div>
+
+        <div class="top-buttons">
+            <a href="{% url 'katalog' %}" class="add-btn">Katalog Mobil</a>
+            <a href="{% url 'history' %}" class="add-btn">Riwayat Booking</a>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message" data-auto-dismiss="true">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if profile.status_verifikasi == "terverifikasi" %}
+        <div class="success-box" data-auto-dismiss="true">
+            Profil kamu sudah terverifikasi. Kamu sudah bisa melakukan booking mobil di SmartDrive.
+        </div>
+    {% elif profile.status_verifikasi == "menunggu" %}
+        <div class="warning-box" data-auto-dismiss="true">
+            Profil kamu sedang menunggu verifikasi admin. Mohon tunggu admin memeriksa data dan dokumen kamu.
+        </div>
+    {% elif profile.status_verifikasi == "ditolak" %}
+        <div class="danger-box" data-auto-dismiss="true">
+            Profil kamu ditolak. Periksa catatan admin, lalu perbaiki data yang diminta.
+        </div>
+    {% else %}
+        <div class="warning-box" data-auto-dismiss="true">
+            Profil kamu belum lengkap. Isi biodata, KTP, SIM A, alamat, dan kontak darurat agar bisa diverifikasi admin.
+        </div>
+    {% endif %}
+
+    <div class="layout">
+
+        <div class="card profile-card">
+            <div class="profile-photo-wrap">
+                {% if profile.foto_profil %}
+                    <img src="{{ profile.foto_profil.url }}" class="profile-img" alt="Foto Profil">
+                {% else %}
+                    <div class="profile-placeholder">
+                        {{ request.user.username|slice:":1"|upper }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="profile-name">
+                <h2>{{ profile.nama_lengkap|default:request.user.username }}</h2>
+                <p>{{ request.user.email|default:"Email belum tersedia" }}</p>
+            </div>
+
+            <div class="status-center">
+                <span class="status-badge status-{{ profile.status_verifikasi }}">
+                    {{ profile.get_status_verifikasi_display }}
+                </span>
+            </div>
+
+            <div class="side-info">
+                <div class="side-item">
+                    <small>Nomor HP</small>
+                    <strong>{{ profile.no_hp|default:"Belum diisi" }}</strong>
+                </div>
+
+                <div class="side-item">
+                    <small>NIK / KTP</small>
+                    <strong>{{ profile.nik_ktp|default:"Belum diisi" }}</strong>
+                </div>
+
+                <div class="side-item">
+                    <small>Nomor SIM A</small>
+                    <strong>{{ profile.nomor_sim_a|default:"Belum diisi" }}</strong>
+                </div>
+
+                <div class="side-item">
+                    <small>Kota / Provinsi</small>
+                    <strong>
+                        {% if profile.kota or profile.provinsi %}
+                            {{ profile.kota|default:"-" }}, {{ profile.provinsi|default:"-" }}
+                        {% else %}
+                            Belum diisi
+                        {% endif %}
+                    </strong>
+                </div>
+            </div>
+
+            {% if profile.catatan_admin %}
+                <div class="admin-note">
+                    <strong>Catatan Admin:</strong><br>
+                    {{ profile.catatan_admin }}
+                </div>
+            {% endif %}
+
+            <div class="note-box">
+                Pastikan foto KTP dan SIM A jelas, tidak blur, dan semua data terlihat agar proses verifikasi lebih cepat.
+            </div>
+        </div>
+
+        <div class="card">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="form-section">
+                    <h3 class="section-title">Foto Profil</h3>
+
+                    <div class="form-group">
+                        <label>Upload Foto Profil</label>
+                        {{ form.foto_profil }}
+                        {{ form.foto_profil.errors }}
+
+                        {% if profile.foto_profil %}
+                            <div class="file-preview">
+                                <img src="{{ profile.foto_profil.url }}" class="preview-img" alt="Foto Profil">
+                                <div>
+                                    <a href="{{ profile.foto_profil.url }}" target="_blank">Lihat foto saat ini</a>
+                                    <p>Upload ulang jika ingin mengganti foto.</p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">Biodata Pribadi</h3>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nama Lengkap</label>
+                            {{ form.nama_lengkap }}
+                            {{ form.nama_lengkap.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Nomor HP</label>
+                            {{ form.no_hp }}
+                            {{ form.no_hp.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Tempat Lahir</label>
+                            {{ form.tempat_lahir }}
+                            {{ form.tempat_lahir.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Tanggal Lahir</label>
+                            {{ form.tanggal_lahir }}
+                            {{ form.tanggal_lahir.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Jenis Kelamin</label>
+                            {{ form.jenis_kelamin }}
+                            {{ form.jenis_kelamin.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>NIK / KTP</label>
+                            {{ form.nik_ktp }}
+                            {{ form.nik_ktp.errors }}
+                        </div>
+
+                        <div class="form-group full">
+                            <label>Upload Foto KTP</label>
+                            {{ form.foto_ktp }}
+                            {{ form.foto_ktp.errors }}
+
+                            {% if profile.foto_ktp %}
+                                <div class="file-preview">
+                                    <img src="{{ profile.foto_ktp.url }}" class="preview-img" alt="Foto KTP">
+                                    <div>
+                                        <a href="{{ profile.foto_ktp.url }}" target="_blank">Lihat foto KTP saat ini</a>
+                                        <p>Pastikan NIK dan nama terlihat jelas.</p>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">Data SIM A</h3>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nomor SIM A</label>
+                            {{ form.nomor_sim_a }}
+                            {{ form.nomor_sim_a.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Masa Berlaku SIM A</label>
+                            {{ form.masa_berlaku_sim }}
+                            {{ form.masa_berlaku_sim.errors }}
+                        </div>
+
+                        <div class="form-group full">
+                            <label>Upload Foto SIM A</label>
+                            {{ form.foto_sim_a }}
+                            {{ form.foto_sim_a.errors }}
+
+                            {% if profile.foto_sim_a %}
+                                <div class="file-preview">
+                                    <img src="{{ profile.foto_sim_a.url }}" class="preview-img" alt="Foto SIM A">
+                                    <div>
+                                        <a href="{{ profile.foto_sim_a.url }}" target="_blank">Lihat foto SIM A saat ini</a>
+                                        <p>Pastikan nomor SIM dan masa berlaku terlihat jelas.</p>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">Alamat Lengkap</h3>
+
+                    <div class="form-grid">
+                        <div class="form-group full">
+                            <label>Alamat Lengkap</label>
+                            {{ form.alamat_lengkap }}
+                            {{ form.alamat_lengkap.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Kota / Kabupaten</label>
+                            {{ form.kota }}
+                            {{ form.kota.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Provinsi</label>
+                            {{ form.provinsi }}
+                            {{ form.provinsi.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Kode Pos</label>
+                            {{ form.kode_pos }}
+                            {{ form.kode_pos.errors }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">Kontak Darurat</h3>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nama Kontak Darurat</label>
+                            {{ form.kontak_darurat_nama }}
+                            {{ form.kontak_darurat_nama.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>No HP Kontak Darurat</label>
+                            {{ form.kontak_darurat_no_hp }}
+                            {{ form.kontak_darurat_no_hp.errors }}
+                        </div>
+
+                        <div class="form-group full">
+                            <label>Hubungan Dengan Kontak Darurat</label>
+                            {{ form.kontak_darurat_hubungan }}
+                            {{ form.kontak_darurat_hubungan.errors }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-action">
+                    <a href="{% url 'home' %}" class="back-btn">Kembali</a>
+                    <button type="submit" class="save-btn">Simpan Profil</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script src="{% static 'js/auto_dismiss_alert.js' %}"></script>
+
+</body>
+</html>

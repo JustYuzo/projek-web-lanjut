@@ -187,88 +187,15 @@
             line-height: 1.5;
         }
 
-        .upload-input {
-            display: none;
-        }
-
-        .upload-btn {
-            width: 100%;
-            height: 46px;
-            background: #2f6fde;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 800;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 8px;
-        }
-
-        .upload-btn:hover {
-            background: #1d58bf;
-        }
-
-        .ktp-status {
+        .profile-note {
+            background: #fff7d6;
+            color: #8a3f00;
+            border-radius: 10px;
+            padding: 13px 14px;
             font-size: 12px;
             font-weight: 700;
-            color: #dc2626;
-            line-height: 1.4;
-            margin-top: 4px;
-        }
-
-        .ktp-status.success {
-            color: #15803d;
-        }
-
-        .ktp-status.error {
-            color: #dc2626;
-        }
-
-        .lihat-ktp-btn {
-            display: none;
-            width: 100%;
-            height: 42px;
-            margin-top: 10px;
-            background: #eef4ff;
-            color: #2f6fde;
-            border: 1px solid #cfe0ff;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 800;
-            cursor: pointer;
-        }
-
-        .lihat-ktp-btn:hover {
-            background: #dcecff;
-        }
-
-        .ktp-preview-box {
-            display: none;
-            margin-top: 10px;
-            background: #f5f8ff;
-            border: 1px solid #dbeafe;
-            border-radius: 10px;
-            padding: 10px;
-        }
-
-        .preview-title {
-            font-size: 12px;
-            font-weight: 800;
-            color: #2f6fde;
-            margin-bottom: 8px;
-        }
-
-        .ktp-preview-box img {
-            width: 100%;
-            height: 170px;
-            object-fit: contain;
-            border-radius: 8px;
-            background: white;
-            border: 1px solid #e5e7eb;
-            display: block;
+            line-height: 1.6;
+            margin: 2px 0 18px;
         }
 
         .method-grid {
@@ -433,6 +360,33 @@
             background: #1d58bf;
         }
 
+
+        /* ================= NOTIFIKASI ================= */
+
+        .message-wrapper {
+            width: 92%;
+            max-width: 1150px;
+            margin: 18px auto 0;
+        }
+
+        .message {
+            background: white;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #222;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+            opacity: 1;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .message.fade-out {
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+
         @media (max-width: 950px) {
             .payment-wrapper {
                 grid-template-columns: 1fr;
@@ -482,10 +436,23 @@
             <a href="{% url 'katalog' %}">Katalog</a>
             <a href="{% url 'ai' %}">AI</a>
             <a href="{% url 'history' %}">Riwayat</a>
+            {% if user.is_authenticated and not user.is_staff and not user.is_superuser %}
+                <a href="{% url 'profil_user' %}">Profil Saya</a>
+            {% endif %}
         </div>
 
         <img src="{% static 'images/logo-tim.png' %}" class="team-logo" alt="Logo Tim">
     </nav>
+
+    {% if messages %}
+        <div class="message-wrapper">
+            {% for message in messages %}
+                <div class="message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     <h1 class="payment-title">Payment</h1>
 
@@ -517,11 +484,17 @@
             <div class="box">
                 <div class="form-title">Data Penyewa</div>
 
-                <form id="paymentForm" method="POST" action="{% url 'booking' car.id %}" enctype="multipart/form-data">
+                <form id="paymentForm" method="POST" action="{% url 'booking' car.id %}">
                     {% csrf_token %}
 
                     <label>Nama</label>
-                    <input type="text" name="nama" placeholder="Nama Lengkap" required>
+                    <input
+                        type="text"
+                        name="nama"
+                        placeholder="Nama Lengkap"
+                        value="{% if request.user.profile.nama_lengkap %}{{ request.user.profile.nama_lengkap }}{% elif request.user.get_full_name %}{{ request.user.get_full_name }}{% else %}{{ request.user.username }}{% endif %}"
+                        required
+                    >
 
                     <div class="form-row">
                         <div>
@@ -551,40 +524,9 @@
                         Pilih tanggal mulai dan tanggal selesai. Durasi dan total harga akan dihitung otomatis.
                     </div>
 
-                    <div class="form-row">
-                        <div>
-                            <label>NO HP</label>
-                            <input type="text" name="no_hp" placeholder="No Handphone" required>
-                        </div>
-
-                        <div>
-                            <label>KTP</label>
-
-                            <label for="ktpFile" class="upload-btn" id="uploadKtpLabel">
-                                Upload KTP
-                            </label>
-
-                            <input
-                                type="file"
-                                id="ktpFile"
-                                name="ktp"
-                                class="upload-input"
-                                accept="image/*"
-                            >
-
-                            <div id="ktpStatus" class="ktp-status error">
-                                Belum ada file KTP yang diupload.
-                            </div>
-
-                            <button type="button" id="lihatKtpBtn" class="lihat-ktp-btn" onclick="toggleKtpPreview()">
-                                Lihat Pratinjau KTP
-                            </button>
-
-                            <div id="ktpPreviewBox" class="ktp-preview-box">
-                                <div class="preview-title">Pratinjau KTP</div>
-                                <img id="ktpPreview" src="" alt="Pratinjau KTP">
-                            </div>
-                        </div>
+                    <div class="profile-note">
+                        Data nomor HP, KTP, SIM A, dan alamat sudah diambil dari biodata profil yang telah diverifikasi admin.
+                        Pada halaman ini user cukup memilih tanggal sewa dan metode pembayaran.
                     </div>
 
                     <input type="hidden" name="tanggal" id="tanggalInput" value="{{ today|date:'Y-m-d' }}">
@@ -690,7 +632,7 @@
             </div>
 
             <div class="info-box">
-                Pembayaran anda aman dan terenkripsi. Kami tidak menyimpan detail kartu dan akun e-wallet anda.
+                Pastikan tanggal sewa dan metode pembayaran sudah benar sebelum melanjutkan pembayaran.
             </div>
 
             <button type="button" class="pay-btn" onclick="goToPayment()">
@@ -703,12 +645,19 @@
 </div>
 
 <script>
-    const ktpFile = document.getElementById("ktpFile");
-    const ktpStatus = document.getElementById("ktpStatus");
-    const uploadKtpLabel = document.getElementById("uploadKtpLabel");
-    const ktpPreviewBox = document.getElementById("ktpPreviewBox");
-    const ktpPreview = document.getElementById("ktpPreview");
-    const lihatKtpBtn = document.getElementById("lihatKtpBtn");
+    document.addEventListener("DOMContentLoaded", function () {
+        const messages = document.querySelectorAll(".message");
+
+        messages.forEach(function (message) {
+            setTimeout(function () {
+                message.classList.add("fade-out");
+
+                setTimeout(function () {
+                    message.remove();
+                }, 500);
+            }, 10000);
+        });
+    });
 
     const tanggalMulaiInput = document.getElementById("tanggalMulaiInput");
     const tanggalSelesaiInput = document.getElementById("tanggalSelesaiInput");
@@ -724,8 +673,6 @@
     const tanggalSelesaiText = document.getElementById("tanggalSelesaiText");
 
     const hargaPerHari = Number("{{ car.price }}");
-
-    let ktpPreviewVisible = false;
 
     function parseLocalDate(dateString) {
         const parts = dateString.split("-");
@@ -788,73 +735,6 @@
     tanggalSelesaiInput.addEventListener("change", updateHarga);
     updateHarga();
 
-    ktpFile.addEventListener("change", function () {
-        if (ktpFile.files.length > 0) {
-            const file = ktpFile.files[0];
-            const fileName = file.name;
-
-            if (!file.type.startsWith("image/")) {
-                alert("File harus berupa gambar KTP.");
-
-                ktpFile.value = "";
-                ktpStatus.textContent = "File harus berupa gambar KTP.";
-                ktpStatus.classList.remove("success");
-                ktpStatus.classList.add("error");
-
-                uploadKtpLabel.textContent = "Upload KTP";
-                lihatKtpBtn.style.display = "none";
-                ktpPreview.src = "";
-                ktpPreviewBox.style.display = "none";
-                ktpPreviewVisible = false;
-
-                return;
-            }
-
-            ktpStatus.textContent = "File KTP berhasil diupload: " + fileName;
-            ktpStatus.classList.remove("error");
-            ktpStatus.classList.add("success");
-
-            uploadKtpLabel.textContent = "Ganti File KTP";
-
-            const previewUrl = URL.createObjectURL(file);
-            ktpPreview.src = previewUrl;
-
-            ktpPreviewBox.style.display = "none";
-            ktpPreviewVisible = false;
-
-            lihatKtpBtn.style.display = "block";
-            lihatKtpBtn.textContent = "Lihat Pratinjau KTP";
-        } else {
-            ktpStatus.textContent = "Belum ada file KTP yang diupload.";
-            ktpStatus.classList.remove("success");
-            ktpStatus.classList.add("error");
-
-            uploadKtpLabel.textContent = "Upload KTP";
-            lihatKtpBtn.style.display = "none";
-
-            ktpPreview.src = "";
-            ktpPreviewBox.style.display = "none";
-            ktpPreviewVisible = false;
-        }
-    });
-
-    function toggleKtpPreview() {
-        if (ktpFile.files.length === 0) {
-            alert("Upload KTP terlebih dahulu.");
-            return;
-        }
-
-        ktpPreviewVisible = !ktpPreviewVisible;
-
-        if (ktpPreviewVisible) {
-            ktpPreviewBox.style.display = "block";
-            lihatKtpBtn.textContent = "Sembunyikan Pratinjau KTP";
-        } else {
-            ktpPreviewBox.style.display = "none";
-            lihatKtpBtn.textContent = "Lihat Pratinjau KTP";
-        }
-    }
-
     function goToPayment() {
         const form = document.getElementById("paymentForm");
 
@@ -862,26 +742,6 @@
 
         if (!form.checkValidity()) {
             form.reportValidity();
-            return;
-        }
-
-        if (ktpFile.files.length === 0) {
-            alert("Upload KTP terlebih dahulu sebelum melanjutkan pembayaran.");
-
-            ktpStatus.textContent = "KTP wajib diupload sebelum transaksi dilanjutkan.";
-            ktpStatus.classList.remove("success");
-            ktpStatus.classList.add("error");
-
-            ktpPreview.src = "";
-            ktpPreviewBox.style.display = "none";
-            lihatKtpBtn.style.display = "none";
-            ktpPreviewVisible = false;
-
-            uploadKtpLabel.scrollIntoView({
-                behavior: "smooth",
-                block: "center"
-            });
-
             return;
         }
 
