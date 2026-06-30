@@ -1,12 +1,13 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import dj_database_url
 
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ========== FUNGSI PEMBANTU (tetap pakai punya Anda) ==========
+# ========== FUNGSI PEMBANTU ==========
 def env_bool(name, default=False):
     value = os.getenv(name)
     if value is None:
@@ -27,9 +28,9 @@ if not SECRET_KEY:
     if DEBUG:
         SECRET_KEY = "django-insecure-dev-key-smartdrive-local-only"
     else:
-        raise RuntimeError("SECRET_KEY belum diisi. Tambahkan SECRET_KEY di file .env atau environment variable Render.")
+        raise RuntimeError("SECRET_KEY belum diisi. Tambahkan SECRET_KEY di environment variable Render.")
 
-ALLOWED_HOSTS = env_list("ALLOWED_HOSTS", ["127.0.0.1", "localhost"])
+ALLOWED_HOSTS = env_list("ALLOWED_HOSTS", ["127.0.0.1", "localhost", "*"])
 CSRF_TRUSTED_ORIGINS = env_list(
     "CSRF_TRUSTED_ORIGINS",
     ["http://127.0.0.1:8000", "http://localhost:8000"]
@@ -37,37 +38,40 @@ CSRF_TRUSTED_ORIGINS = env_list(
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 
-# ========== PERUBAHAN 1: FOLDER PERSISTEN UNTUK RENDER ==========
-# Buat folder 'persistent' di root proyek (akan di-mount oleh Render)
-PERSISTENT_DIR = BASE_DIR / 'persistent'
-
-# ========== PERUBAHAN 2: DATABASE SQLITE DI DALAM PERSISTENT ==========
+# ========== DATABASE (PostgreSQL via Supabase / Local SQLite) ==========
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": PERSISTENT_DIR / "db.sqlite3",  # <-- Pindah ke persistent
-    }
+    'default': dj_database_url.config(
+        # Fallback ke SQLite lokal jika DATABASE_URL di .env kosong
+        default=os.getenv('DATABASE_URL', f'sqlite:///{BASE_DIR / "db.sqlite3"}'),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
-# ========== PERUBAHAN 3: MEDIA (FOTO MOBIL) DI DALAM PERSISTENT ==========
-MEDIA_URL = "/media/"
-MEDIA_ROOT = PERSISTENT_DIR / "media"  # <-- Pindah ke persistent
+# ========== MEDIA (Foto mobil via Cloudinary) ==========
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
+}
 
-# ========== STATIC FILES (tetap di BASE_DIR, aman) ==========
-STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]
-STATIC_ROOT = BASE_DIR / "staticfiles"
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# ========== STATIC FILES ==========
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STORAGES = {
     "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
-# ========== APLIKASI (tidak berubah) ==========
+# ========== APLIKASI ==========
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -76,6 +80,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
+
+    "cloudinary_storage",  
+    "cloudinary",          
 
     "rental",
 
@@ -87,7 +94,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # <-- WhiteNoise sudah benar
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -116,7 +123,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "rental_mobil_ai.wsgi.application"
 
-# ========== VALIDASI PASSWORD (tidak berubah) ==========
+# ========== VALIDASI PASSWORD ==========
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -137,7 +144,7 @@ LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/login/"
 
-# ========== ALLAUTH (tidak berubah) ==========
+# ========== ALLAUTH ==========
 SITE_ID = 1
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
@@ -161,24 +168,15 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-# ========== PERUBAHAN 4: KONFIGURASI KEAMANAN PRODUKSI (DI RENDER) ==========
+# ========== KEAMANAN PRODUKSI ==========
 if not DEBUG:
-    # Render sudah menyediakan HTTPS, jadi kita aktifkan
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     USE_X_FORWARDED_HOST = True
-
-    # Redirect HTTP ke HTTPS (ini penting)
     SECURE_SSL_REDIRECT = env_bool("SECURE_SSL_REDIRECT", True)
-
-    # Cookie hanya dikirim lewat HTTPS
     SESSION_COOKIE_SECURE = env_bool("SESSION_COOKIE_SECURE", True)
     CSRF_COOKIE_SECURE = env_bool("CSRF_COOKIE_SECURE", True)
-
-    # Keamanan tambahan
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = "DENY"
-
-    # HSTS (bisa diaktifkan perlahan)
     SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "0"))
     SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", False)
     SECURE_HSTS_PRELOAD = env_bool("SECURE_HSTS_PRELOAD", False)
