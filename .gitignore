@@ -1,6 +1,32 @@
-venv/
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Django
 db.sqlite3
+*.sqlite3
+staticfiles/
+
+# Environment
 .env
+.env.local
+
+# Upload user
+media/profile/
+media/bukti_transfer/
+
+# IDE
 .vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

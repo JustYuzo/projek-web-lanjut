@@ -475,12 +475,96 @@
             font-weight: 800;
         }
 
+
+
+        .ai-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .ai-result-box {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 16px;
+        }
+
+        .ai-result-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .ai-result-head h4 {
+            font-size: 15px;
+            font-weight: 800;
+            color: #222;
+        }
+
+        .ai-status {
+            display: inline-block;
+            padding: 8px 11px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .ai-status-jelas,
+        .ai-status-valid,
+        .ai-status-cukup_jelas {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .ai-status-buram,
+        .ai-status-pending,
+        .ai-status-perlu_dicek,
+        .ai-status-perlu_upload_ulang {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .ai-status-tidak_valid {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .ai-note {
+            background: white;
+            border-radius: 10px;
+            padding: 12px 13px;
+            border: 1px solid #eef1f5;
+            color: #374151;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.6;
+            min-height: 70px;
+        }
+
+        .ai-helper-note {
+            margin-top: 16px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.6;
+        }
+
         @media (max-width: 1100px) {
             .layout {
                 grid-template-columns: 1fr;
             }
 
-            .document-grid {
+            .document-grid,
+            .ai-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -796,6 +880,42 @@
                     </div>
                 </div>
             </div>
+
+            <div class="card">
+                <h3 class="section-title">Analisis AI Dokumen</h3>
+
+                <div class="ai-grid">
+                    <div class="ai-result-box">
+                        <div class="ai-result-head">
+                            <h4>AI Cek KTP</h4>
+                            <span class="ai-status ai-status-{{ profile.ai_status_ktp|default:'pending' }}">
+                                {{ profile.ai_status_ktp|default:"Belum Dianalisis" }}
+                            </span>
+                        </div>
+
+                        <div class="ai-note">
+                            {{ profile.ai_catatan_ktp|default:"Belum ada catatan AI untuk KTP. Analisis akan muncul setelah user upload atau memperbarui foto KTP." }}
+                        </div>
+                    </div>
+
+                    <div class="ai-result-box">
+                        <div class="ai-result-head">
+                            <h4>AI Cek SIM A</h4>
+                            <span class="ai-status ai-status-{{ profile.ai_status_sim|default:'pending' }}">
+                                {{ profile.ai_status_sim|default:"Belum Dianalisis" }}
+                            </span>
+                        </div>
+
+                        <div class="ai-note">
+                            {{ profile.ai_catatan_sim|default:"Belum ada catatan AI untuk SIM A. Analisis akan muncul setelah user upload atau memperbarui foto SIM A." }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ai-helper-note">
+                    AI hanya membantu pengecekan awal kualitas dokumen. Keputusan akhir tetap dilakukan oleh admin.
+                </div>
+            </div>
         </div>
 
         <div>
@@ -882,7 +1002,7 @@
 
                 <div class="note-box">
                     Verifikasi hanya jika data KTP, SIM A, alamat, dan kontak darurat sudah jelas.
-                    Jika dokumen blur atau tidak sesuai, ubah status menjadi Ditolak dan beri catatan admin.
+                    Gunakan hasil AI sebagai bantuan awal, bukan keputusan akhir. Jika dokumen blur atau tidak sesuai, ubah status menjadi Ditolak dan beri catatan admin.
                 </div>
             </div>
         </div>

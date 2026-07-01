@@ -6,11 +6,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 
-from PIL import Image
-from rembg import remove
-from io import BytesIO
-from django.core.files.base import ContentFile
-import os
 import random
 
 # Definisi Global untuk Status AI
@@ -54,30 +49,6 @@ class Car(models.Model):
         Car.objects.filter(pk=self.pk).update(stock=F("stock") + 1)
         self.refresh_from_db(fields=["stock"])
         return True
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.image:
-            try:
-                if self.image.name.endswith("_removebg.png"):
-                    return
-                image_path = self.image.path
-                with open(image_path, "rb") as input_file:
-                    input_data = input_file.read()
-                output_data = remove(input_data)
-                img = Image.open(BytesIO(output_data)).convert("RGBA")
-                buffer = BytesIO()
-                img.save(buffer, format="PNG")
-                file_name = os.path.splitext(os.path.basename(self.image.name))[0]
-                new_file_name = f"{file_name}_removebg.png"
-                self.image.save(
-                    f"cars/{new_file_name}",
-                    ContentFile(buffer.getvalue()),
-                    save=False
-                )
-                super().save(update_fields=["image"])
-            except Exception as e:
-                print("Gagal remove background:", e)
 
     def __str__(self):
         return self.name

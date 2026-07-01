@@ -5,6 +5,7 @@ import random
 
 from dotenv import load_dotenv
 from google import genai
+from google.genai import types
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
@@ -204,22 +205,252 @@ def proses_stock_saat_status_berubah(booking, status_baru):
 
     return True, "Stok booking sudah sesuai."
 
-    # --- FUNGSI AI (TAMBAHAN) ---
-def analyze_image_with_gemini(image_file, prompt):
+# =========================
+# AI VERIFICATION HELPER
+# =========================
+
+def ekstrak_json_dari_text(text_response):
+    """
+    Mengambil JSON dari output Gemini.
+    Dibuat aman karena kadang AI membungkus JSON dengan ```json.
+    """
+    if not text_response:
+        return None
+
+    cleaned = text_response.strip()
+    cleaned = cleaned.replace("```json", "").replace("```", "").strip()
+
     try:
-        if not client: return None
+        return json.loads(cleaned)
+    except Exception:
+        pass
+
+    start = cleaned.find("{")
+    end = cleaned.rfind("}")
+
+    if start != -1 and end != -1 and end > start:
+        try:
+            return json.loads(cleaned[start:end + 1])
+        except Exception:
+            return None
+
+    return None
+
+
+def ambil_angka_rupiah(value):
+    """
+    Mengubah nominal dari AI menjadi angka integer.
+    Contoh:
+    - "Rp 450.127" -> 450127
+    - "450,127" -> 450127
+    - 450127 -> 450127
+    """
+    if value is None:
+        return 0
+
+    if isinstance(value, int):
+        return value
+
+    if isinstance(value, float):
+        return int(value)
+
+    angka = "".join(ch for ch in str(value) if ch.isdigit())
+
+    if angka == "":
+        return 0
+
+    try:
+        return int(angka)
+    except ValueError:
+        return 0
+
+
+def analyze_image_with_gemini(image_file, prompt):
+    """
+    Helper umum untuk membaca gambar memakai Gemini.
+    Output dipaksa dalam bentuk dict JSON.
+    """
+    try:
+        if not client:
+            return None
+
         image_bytes = image_file.read()
         image_file.seek(0)
-        mime_type = image_file.content_type if image_file.content_type else "image/jpeg"
+
+        mime_type = getattr(image_file, "content_type", None) or "image/jpeg"
+
         response = client.models.generate_content(
-            model='gemini-1.5-flash',
-            contents=[prompt, {"mime_type": mime_type, "data": image_bytes}]
+            model=os.getenv("GEMINI_VISION_MODEL", "gemini-2.5-flash"),
+            contents=[
+                prompt,
+                types.Part.from_bytes(
+                    data=image_bytes,
+                    mime_type=mime_type
+                )
+            ],
         )
-        text = response.text.replace("```json", "").replace("```", "").strip()
-        return json.loads(text)
+
+        return ekstrak_json_dari_text(response.text)
+
     except Exception as e:
-        print(f"AI Error: {e}")
+        print(f"AI Image Error: {e}")
+        try:
+            image_file.seek(0)
+        except Exception:
+            pass
         return None
+
+
+def analisis_ai_pembayaran(bukti_transfer, total_bayar, kode_unik):
+    """
+    AI membaca bukti transfer.
+    Keputusan akhir tetap dilakukan admin.
+    """
+    prompt = f"""
+Anda adalah asisten verifikasi pembayaran untuk sistem rental mobil SmartDrive.
+
+Analisis gambar bukti pembayaran ini.
+Ambil informasi yang terlihat dari gambar.
+
+Data dari sistem:
+- Total tagihan sistem: Rp {int(total_bayar):,}
+- Kode unik sistem: {kode_unik}
+
+Tugas:
+1. Deteksi nominal transfer.
+2. Deteksi tanggal transfer jika terlihat.
+3. Deteksi bank atau e-wallet jika terlihat.
+4. Cek apakah kode unik pada nominal transfer sesuai dengan total tagihan.
+5. Beri status awal untuk membantu admin.
+
+Aturan penting:
+- Jangan menyatakan bukti transfer asli atau palsu.
+- Jangan mengambil keputusan final.
+- Keputusan valid atau tidak valid tetap dilakukan oleh admin.
+- Jawab hanya JSON valid, tanpa markdown.
+
+Format JSON:
+{{
+  "nominal_terdeteksi": 0,
+  "tanggal_transfer": "",
+  "metode_terdeteksi": "",
+  "kode_unik_sesuai": false,
+  "status": "pending",
+  "catatan": ""
+}}
+
+Pilihan status:
+- "jelas" jika nominal terlihat jelas dan sesuai total tagihan.
+- "tidak_valid" jika nominal terlihat jelas tetapi tidak sesuai total tagihan.
+- "buram" jika gambar tidak jelas, gelap, blur, atau nominal sulit dibaca.
+- "pending" jika informasi belum cukup dan perlu dicek admin.
+"""
+
+    hasil = analyze_image_with_gemini(bukti_transfer, prompt)
+
+    if not hasil:
+        return {
+            "nominal_terdeteksi": 0,
+            "status": "pending",
+            "catatan": "AI belum dapat membaca bukti pembayaran. Admin perlu mengecek manual.",
+            "raw": ""
+        }
+
+    nominal = ambil_angka_rupiah(hasil.get("nominal_terdeteksi"))
+    total_bayar_int = ambil_angka_rupiah(total_bayar)
+
+    status = hasil.get("status") or "pending"
+    status = str(status).strip().lower()
+
+    if status not in ["jelas", "tidak_valid", "buram", "pending"]:
+        status = "pending"
+
+    if nominal > 0:
+        if nominal == total_bayar_int:
+            status = "jelas"
+            catatan_default = "Nominal transfer sesuai dengan total tagihan sistem."
+        else:
+            status = "tidak_valid"
+            catatan_default = "Nominal transfer tidak sesuai dengan total tagihan sistem."
+    else:
+        catatan_default = "Nominal transfer belum terbaca jelas oleh AI."
+
+    catatan_ai = hasil.get("catatan") or catatan_default
+
+    kode_unik_sesuai = hasil.get("kode_unik_sesuai")
+    if kode_unik_sesuai is True:
+        kode_unik_text = " Kode unik terdeteksi sesuai."
+    elif kode_unik_sesuai is False:
+        kode_unik_text = " Kode unik belum terkonfirmasi sesuai."
+    else:
+        kode_unik_text = ""
+
+    return {
+        "nominal_terdeteksi": nominal,
+        "status": status,
+        "catatan": f"{catatan_ai}{kode_unik_text}".strip(),
+        "raw": json.dumps(hasil, ensure_ascii=False)
+    }
+
+
+def analisis_ai_dokumen(image_file, jenis_dokumen):
+    """
+    AI mengecek kualitas gambar KTP/SIM.
+    AI tidak menentukan dokumen asli atau palsu.
+    """
+    prompt = f"""
+Anda adalah asisten pengecekan dokumen untuk sistem rental mobil SmartDrive.
+
+Analisis gambar {jenis_dokumen}.
+Tugas AI hanya membantu admin mengecek kualitas gambar dan kesesuaian umum dokumen.
+
+Yang perlu dicek:
+1. Apakah gambar terlihat jelas.
+2. Apakah gambar terlalu buram.
+3. Apakah gambar terlalu gelap.
+4. Apakah gambar tampak seperti {jenis_dokumen}.
+5. Untuk SIM, jika terlihat, cek apakah ada informasi masa berlaku.
+
+Aturan penting:
+- Jangan menyatakan dokumen asli atau palsu.
+- Jangan mengambil keputusan hukum.
+- Jangan menyimpan atau menuliskan data sensitif lengkap.
+- Keputusan final tetap dilakukan admin.
+- Jawab hanya JSON valid, tanpa markdown.
+
+Format JSON:
+{{
+  "status": "pending",
+  "catatan": ""
+}}
+
+Pilihan status:
+- "jelas" jika dokumen terlihat cukup jelas.
+- "buram" jika gambar blur, gelap, miring parah, atau sulit dibaca.
+- "tidak_valid" jika gambar tidak tampak seperti {jenis_dokumen}.
+- "pending" jika informasi belum cukup dan perlu dicek admin.
+"""
+
+    hasil = analyze_image_with_gemini(image_file, prompt)
+
+    if not hasil:
+        return {
+            "status": "pending",
+            "catatan": f"AI belum dapat menganalisis {jenis_dokumen}. Admin perlu mengecek manual."
+        }
+
+    status = hasil.get("status") or "pending"
+    status = str(status).strip().lower()
+
+    if status not in ["jelas", "buram", "tidak_valid", "pending"]:
+        status = "pending"
+
+    catatan = hasil.get("catatan") or f"Tidak ada catatan AI untuk {jenis_dokumen}."
+
+    return {
+        "status": status,
+        "catatan": catatan
+    }
 
 # =========================
 # HALAMAN USER
@@ -382,6 +613,20 @@ def profil_user(request):
 
         if form.is_valid():
             profile = form.save(commit=False)
+
+            foto_ktp_baru = request.FILES.get("foto_ktp")
+            foto_sim_baru = request.FILES.get("foto_sim_a")
+
+            if foto_ktp_baru:
+                hasil_ai_ktp = analisis_ai_dokumen(foto_ktp_baru, "KTP")
+                profile.ai_status_ktp = hasil_ai_ktp["status"]
+                profile.ai_catatan_ktp = hasil_ai_ktp["catatan"]
+
+            if foto_sim_baru:
+                hasil_ai_sim = analisis_ai_dokumen(foto_sim_baru, "SIM A")
+                profile.ai_status_sim = hasil_ai_sim["status"]
+                profile.ai_catatan_sim = hasil_ai_sim["catatan"]
+
 
             if profile.data_lengkap():
                 if profile.status_verifikasi == Profile.STATUS_TERVERIFIKASI:
@@ -647,6 +892,20 @@ def konfirmasi_payment(request, car_id, metode):
         else:
             metode_pembayaran = metode
 
+        hasil_ai_pembayaran = {
+            "nominal_terdeteksi": 0,
+            "status": "pending",
+            "catatan": "Belum ada bukti pembayaran untuk dianalisis AI.",
+            "raw": ""
+        }
+
+        if bukti_transfer:
+            hasil_ai_pembayaran = analisis_ai_pembayaran(
+                bukti_transfer=bukti_transfer,
+                total_bayar=payment_data["total_bayar"],
+                kode_unik=payment_data["kode_unik"]
+            )
+
         with transaction.atomic():
             car = Car.objects.select_for_update().get(id=car.id)
 
@@ -673,6 +932,10 @@ def konfirmasi_payment(request, car_id, metode):
                 bukti_transfer=bukti_transfer,
                 kode_unik=payment_data["kode_unik"],
                 total_bayar=payment_data["total_bayar"],
+                ai_nominal_terdeteksi=hasil_ai_pembayaran["nominal_terdeteksi"],
+                ai_status_pembayaran=hasil_ai_pembayaran["status"],
+                ai_catatan_pembayaran=hasil_ai_pembayaran["catatan"],
+                ai_raw_response=hasil_ai_pembayaran["raw"],
                 stock_dikurangi=True,
                 status="menunggu"
             )
