@@ -204,6 +204,22 @@ def proses_stock_saat_status_berubah(booking, status_baru):
 
     return True, "Stok booking sudah sesuai."
 
+    # --- FUNGSI AI (TAMBAHAN) ---
+def analyze_image_with_gemini(image_file, prompt):
+    try:
+        if not client: return None
+        image_bytes = image_file.read()
+        image_file.seek(0)
+        mime_type = image_file.content_type if image_file.content_type else "image/jpeg"
+        response = client.models.generate_content(
+            model='gemini-1.5-flash',
+            contents=[prompt, {"mime_type": mime_type, "data": image_bytes}]
+        )
+        text = response.text.replace("```json", "").replace("```", "").strip()
+        return json.loads(text)
+    except Exception as e:
+        print(f"AI Error: {e}")
+        return None
 
 # =========================
 # HALAMAN USER
