@@ -13,6 +13,13 @@ from django.core.files.base import ContentFile
 import os
 import random
 
+# Definisi Global untuk Status AI
+AI_STATUS_CHOICES = [
+    ("pending", "Belum Diperiksa"),
+    ("jelas", "Jelas"),
+    ("buram", "Buram"),
+    ("tidak_valid", "Tidak Valid"),
+]
 
 class Car(models.Model):
     name = models.CharField(max_length=100)
@@ -20,14 +27,10 @@ class Car(models.Model):
     transmission = models.CharField(max_length=50)
     capacity = models.IntegerField()
     price = models.IntegerField()
-
-    # FITUR BARU: stok mobil
-    # Default 1 supaya mobil lama yang sudah ada tetap otomatis punya stok.
     stock = models.PositiveIntegerField(
         default=1,
         help_text="Jumlah unit mobil yang tersedia untuk disewa."
     )
-
     image = models.ImageField(upload_to="cars/", blank=True, null=True)
 
     @property
@@ -41,59 +44,38 @@ class Car(models.Model):
         return "Stok Habis"
 
     def kurangi_stock(self):
-        """
-        Mengurangi stok 1 unit secara aman.
-        Return True jika stok berhasil dikurangi.
-        Return False jika stok sudah habis.
-        """
         updated = Car.objects.filter(pk=self.pk, stock__gt=0).update(stock=F("stock") - 1)
-
         if updated:
             self.refresh_from_db(fields=["stock"])
             return True
-
         return False
 
     def tambah_stock(self):
-        """
-        Mengembalikan stok 1 unit.
-        Dipakai kalau booking ditolak/dibatalkan admin.
-        """
         Car.objects.filter(pk=self.pk).update(stock=F("stock") + 1)
         self.refresh_from_db(fields=["stock"])
         return True
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-
         if self.image:
             try:
                 if self.image.name.endswith("_removebg.png"):
                     return
-
                 image_path = self.image.path
-
                 with open(image_path, "rb") as input_file:
                     input_data = input_file.read()
-
                 output_data = remove(input_data)
-
                 img = Image.open(BytesIO(output_data)).convert("RGBA")
-
                 buffer = BytesIO()
                 img.save(buffer, format="PNG")
-
                 file_name = os.path.splitext(os.path.basename(self.image.name))[0]
                 new_file_name = f"{file_name}_removebg.png"
-
                 self.image.save(
                     f"cars/{new_file_name}",
                     ContentFile(buffer.getvalue()),
                     save=False
                 )
-
                 super().save(update_fields=["image"])
-
             except Exception as e:
                 print("Gagal remove background:", e)
 
@@ -114,122 +96,38 @@ class Profile(models.Model):
         (STATUS_DITOLAK, "Ditolak"),
     ]
 
-    JENIS_KELAMIN_CHOICES = [
-        ("L", "Laki-laki"),
-        ("P", "Perempuan"),
-    ]
+    JENIS_KELAMIN_CHOICES = [("L", "Laki-laki"), ("P", "Perempuan")]
 
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        related_name="profile"
-    )
-
-    foto_profil = models.ImageField(
-        upload_to="profile/foto/",
-        blank=True,
-        null=True
-    )
-
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    foto_profil = models.ImageField(upload_to="profile/foto/", blank=True, null=True)
     nama_lengkap = models.CharField(max_length=150, blank=True)
-
-    no_hp = models.CharField(
-        max_length=20,
-        blank=True,
-        validators=[
-            RegexValidator(
-                regex=r"^[0-9+\-\s]{10,20}$",
-                message="Nomor HP harus berisi angka dan minimal 10 digit."
-            )
-        ]
-    )
-
+    no_hp = models.CharField(max_length=20, blank=True, validators=[RegexValidator(regex=r"^[0-9+\-\s]{10,20}$", message="Nomor HP harus berisi angka dan minimal 10 digit.")])
     tempat_lahir = models.CharField(max_length=100, blank=True)
     tanggal_lahir = models.DateField(blank=True, null=True)
-
-    jenis_kelamin = models.CharField(
-        max_length=1,
-        choices=JENIS_KELAMIN_CHOICES,
-        blank=True
-    )
-
-    nik_ktp = models.CharField(
-        max_length=16,
-        blank=True,
-        null=True,
-        unique=True,
-        validators=[
-            RegexValidator(
-                regex=r"^[0-9]{16}$",
-                message="NIK/KTP harus 16 digit angka."
-            )
-        ]
-    )
-
-    foto_ktp = models.ImageField(
-        upload_to="profile/ktp/",
-        blank=True,
-        null=True
-    )
-
-    nomor_sim_a = models.CharField(
-        max_length=30,
-        blank=True
-    )
-
-    masa_berlaku_sim = models.DateField(
-        blank=True,
-        null=True
-    )
-
-    foto_sim_a = models.ImageField(
-        upload_to="profile/sim/",
-        blank=True,
-        null=True
-    )
-
+    jenis_kelamin = models.CharField(max_length=1, choices=JENIS_KELAMIN_CHOICES, blank=True)
+    nik_ktp = models.CharField(max_length=16, blank=True, null=True, unique=True, validators=[RegexValidator(regex=r"^[0-9]{16}$", message="NIK/KTP harus 16 digit angka.")])
+    foto_ktp = models.ImageField(upload_to="profile/ktp/", blank=True, null=True)
+    nomor_sim_a = models.CharField(max_length=30, blank=True)
+    masa_berlaku_sim = models.DateField(blank=True, null=True)
+    foto_sim_a = models.ImageField(upload_to="profile/sim/", blank=True, null=True)
     alamat_lengkap = models.TextField(blank=True)
     kota = models.CharField(max_length=100, blank=True)
     provinsi = models.CharField(max_length=100, blank=True)
     kode_pos = models.CharField(max_length=10, blank=True)
-
     kontak_darurat_nama = models.CharField(max_length=150, blank=True)
+    kontak_darurat_no_hp = models.CharField(max_length=20, blank=True, validators=[RegexValidator(regex=r"^[0-9+\-\s]{10,20}$", message="Nomor kontak darurat harus berisi angka dan minimal 10 digit.")])
+    kontak_darurat_hubungan = models.CharField(max_length=100, blank=True, help_text="Contoh: Orang tua, saudara, pasangan, teman.")
+    
+    # Field AI untuk Profile
+    ai_status_ktp = models.CharField(max_length=20, choices=AI_STATUS_CHOICES, default="pending")
+    ai_catatan_ktp = models.TextField(blank=True, null=True)
+    ai_status_sim = models.CharField(max_length=20, choices=AI_STATUS_CHOICES, default="pending")
+    ai_catatan_sim = models.TextField(blank=True, null=True)
 
-    kontak_darurat_no_hp = models.CharField(
-        max_length=20,
-        blank=True,
-        validators=[
-            RegexValidator(
-                regex=r"^[0-9+\-\s]{10,20}$",
-                message="Nomor kontak darurat harus berisi angka dan minimal 10 digit."
-            )
-        ]
-    )
-
-    kontak_darurat_hubungan = models.CharField(
-        max_length=100,
-        blank=True,
-        help_text="Contoh: Orang tua, saudara, pasangan, teman."
-    )
-
-    status_verifikasi = models.CharField(
-        max_length=20,
-        choices=STATUS_CHOICES,
-        default=STATUS_BELUM_LENGKAP
-    )
-
+    status_verifikasi = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_BELUM_LENGKAP)
     catatan_admin = models.TextField(blank=True)
-
-    diverifikasi_oleh = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        related_name="profile_diverifikasi"
-    )
-
+    diverifikasi_oleh = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, related_name="profile_diverifikasi")
     tanggal_verifikasi = models.DateTimeField(blank=True, null=True)
-
     dibuat_pada = models.DateTimeField(auto_now_add=True)
     diperbarui_pada = models.DateTimeField(auto_now=True)
 
@@ -241,25 +139,7 @@ class Profile(models.Model):
         return f"Profil {self.user.username}"
 
     def data_lengkap(self):
-        wajib = [
-            self.nama_lengkap,
-            self.no_hp,
-            self.tempat_lahir,
-            self.tanggal_lahir,
-            self.jenis_kelamin,
-            self.nik_ktp,
-            self.foto_ktp,
-            self.nomor_sim_a,
-            self.masa_berlaku_sim,
-            self.foto_sim_a,
-            self.alamat_lengkap,
-            self.kota,
-            self.provinsi,
-            self.kode_pos,
-            self.kontak_darurat_nama,
-            self.kontak_darurat_no_hp,
-            self.kontak_darurat_hubungan,
-        ]
+        wajib = [self.nama_lengkap, self.no_hp, self.tempat_lahir, self.tanggal_lahir, self.jenis_kelamin, self.nik_ktp, self.foto_ktp, self.nomor_sim_a, self.masa_berlaku_sim, self.foto_sim_a, self.alamat_lengkap, self.kota, self.provinsi, self.kode_pos, self.kontak_darurat_nama, self.kontak_darurat_no_hp, self.kontak_darurat_hubungan]
         return all(wajib)
 
     def bisa_booking(self):
@@ -279,66 +159,27 @@ class Booking(models.Model):
         ("ditolak", "Ditolak"),
     ]
 
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True
-    )
-
-    car = models.ForeignKey(
-        Car,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True
-    )
-
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    car = models.ForeignKey(Car, on_delete=models.SET_NULL, null=True, blank=True)
     nama = models.CharField(max_length=100)
     mobil = models.CharField(max_length=100)
     tanggal = models.DateField()
     hari = models.IntegerField()
     total = models.IntegerField()
+    metode_pembayaran = models.CharField(max_length=50, blank=True, null=True)
+    bank_pembayaran = models.CharField(max_length=50, blank=True, null=True)
+    bukti_transfer = models.ImageField(upload_to="bukti_transfer/", blank=True, null=True)
+    kode_unik = models.IntegerField(default=0, help_text="Kode unik 3 angka.")
+    total_bayar = models.IntegerField(default=0, help_text="Total harga sewa + kode unik.")
+    
+    # Field AI untuk Booking
+    ai_nominal_terdeteksi = models.IntegerField(default=0, blank=True, null=True)
+    ai_status_pembayaran = models.CharField(max_length=20, choices=AI_STATUS_CHOICES, default="pending")
+    ai_catatan_pembayaran = models.TextField(blank=True, null=True)
+    ai_raw_response = models.TextField(blank=True, null=True, help_text="Respon mentah AI.")
 
-    metode_pembayaran = models.CharField(
-        max_length=50,
-        blank=True,
-        null=True
-    )
-
-    bank_pembayaran = models.CharField(
-        max_length=50,
-        blank=True,
-        null=True
-    )
-
-    bukti_transfer = models.ImageField(
-        upload_to="bukti_transfer/",
-        blank=True,
-        null=True
-    )
-
-    kode_unik = models.IntegerField(
-        default=0,
-        help_text="Kode unik 3 angka untuk membedakan pembayaran."
-    )
-
-    total_bayar = models.IntegerField(
-        default=0,
-        help_text="Total harga sewa + kode unik."
-    )
-
-    # FITUR BARU: penanda agar stok tidak berkurang/bertambah dobel
-    stock_dikurangi = models.BooleanField(
-        default=False,
-        help_text="Menandai apakah stok mobil sudah dikurangi untuk booking ini."
-    )
-
-    status = models.CharField(
-        max_length=30,
-        choices=STATUS_CHOICES,
-        default="menunggu"
-    )
-
+    stock_dikurangi = models.BooleanField(default=False, help_text="Menandai apakah stok mobil sudah dikurangi.")
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default="menunggu")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -348,9 +189,7 @@ class Booking(models.Model):
     def save(self, *args, **kwargs):
         if not self.kode_unik:
             self.kode_unik = self.generate_kode_unik()
-
         self.total_bayar = int(self.total) + int(self.kode_unik)
-
         super().save(*args, **kwargs)
 
     def __str__(self):
